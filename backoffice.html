@@ -1,0 +1,309 @@
+
+
+<div id="navback" class="navBack" style="top: 0; " >
+    <p onclick= "navBack('accueil')" >Accueil</p>
+    <p onclick="navBack('contact')">Contact</p>
+    <p onclick="navBack('portfolio')">Portfolio</p>
+</div>
+<div id="contenu">
+    <div id="backAccueil" class="dflex" >
+        <div id="navbackaccueil" class="navBack" style="top: 50px; z-index: 1000;">
+            <p onclick="navBackAccueil('carrousel')">Carrousel </p>
+            <p onclick="navBackAccueil('profile')">Profile</p>
+            <p onclick="navBackAccueil('img')">Img</p>
+            <p onclick="navBackAccueil('services')">Services</p>
+        </div>
+        <div id="lecarrou" class="dflex">
+            <div id="contentcarrou" class="contenuback">
+                <h2 class="titreback">Gestion du diaporama d'accueil</h2>
+            <p>Pour supprimer une image cliquez dessu !</p>
+            <div>
+                <div id="fmobile">
+                    <div id="imgM">
+                        <!-- action dynamique -->
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="gradient">
+                <div class="conteneurform">
+                    <div class="formform">
+                        <div class="conteneurimgform">
+                            <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
+                        </div>
+                        <h2 class="titreform">Nouvelle image</h2>
+                        <input type="file" id="downloadMobile" accept="image/*">
+                        <p id="errMob" class="err"></p>
+                        <div class="background">
+                            <?xml version="1.0" encoding="utf-8"?>
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 4H8.8C7.11984 4 6.27976 4 5.63803 4.32698C5.07354 4.6146 4.6146 5.07354 4.32698 5.63803C4 6.27976 4 7.11984 4 8.8V15.2C4 16.8802 4 17.7202 4.32698 18.362C4.6146 18.9265 5.07354 19.3854 5.63803 19.673C6.27976 20 7.11984 20 8.8 20H15.2C16.8802 20 17.7202 20 18.362 19.673C18.9265 19.3854 19.3854 18.9265 19.673 18.362C20 17.7202 20 16.8802 20 15.2V11" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 16L8.29289 11.7071C8.68342 11.3166 9.31658 11.3166 9.70711 11.7071L13 15M13 15L15.7929 12.2071C16.1834 11.8166 16.8166 11.8166 17.2071 12.2071L20 15M13 15L15.25 17.25" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M18.5 3V5.5M18.5 8V5.5M18.5 5.5H16M18.5 5.5H21" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        </div>
+                        <span id="messageTextProfile" class="message"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="profile" class="dnone">
+            <div class="dflex contenuback">
+                <h2 class="titreback">Gestion du profile</h2>
+            <div class="flex" id="un">
+                <h3 class="sous-titre-back">Photo de présentation</h3>
+                <div id="bulleProfileImg">
+                    <div class="modifprofileimg">
+                        <div class="background">
+                            <img src="/icon/edit.svg" class="svgsign">
+                        </div>
+                    </div>
+                    <input type="file" id="downloadProfile" accept="image/*">
+    
+                </div>
+                <span id="messageImgProfile" class="message"></span>
+            </div>
+            <div class="flex" id="deux">
+                <h3 class="sous-titre-back">Texte de présentation</h3>
+                <p id="text-presentation"></p>
+                
+            </div>
+            </div>
+        
+            
+            <div class="gradient">
+                <div class="conteneurform">
+                    <div class="formform">
+                        <div class="conteneurimgform">
+                            <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
+                        </div>
+                        <h2 class="titreform">Nouvelle présentation</h2>
+                        <textarea class="areaform" id="read-new-presentation" placeholder="Ecrire une nouvelle présentation"></textarea>
+                        <div class="background-button">
+                            <button id="button-reading-presentation" class="buttonform">Modifier</button>
+                        </div>
+                        <span id="messageTextProfile" class="message"></span>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="dnone" id="trois">
+            <div class="dflex contenuback">
+                <h2 class="titreback">Prestations et services</h2>
+                <ul class="flex" id="content-services">
+                    
+                </ul>
+            </div>
+            
+
+            <div class="gradient">
+                <div class="conteneurform">
+                    <div class="conteneurimgform">
+                        <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
+                    </div>
+                    <h2 class="titreform">Nouvelle préstation</h2>
+                    <input type="text" id="read-new-services" class="inputform" placeholder="Ajouter une nouvelle préstation">
+                    <div class="background-button" >
+                        <button id="button-reading-services"  class="buttonform">Valider</button>
+                    </div>
+                    <span id="messageService" class="message"></span>
+                </div>
+            </div>
+            
+        </div>
+        <div id="illustration-accueil" class="dnone">
+            <div class="dflex contenuback" id="content-illustration-img">
+                <h2 class="titreback">Illustration de l'accueil</h2>
+                <img src="" id="img-illustration" alt="illustration de l'image d'accueil">
+            </div>
+            <div class="gradient">
+                <div class="conteneurform">
+                    <div class="formform">
+                        <div class="conteneurimgform">
+                            <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
+                        </div>
+                        <h2 class="titreform">Changer l'illustration</h2>
+                        <input type="file" id="downloadIllustration" accept="image/*">
+                        <div class="background">
+                            <?xml version="1.0" encoding="utf-8"?>
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 4H8.8C7.11984 4 6.27976 4 5.63803 4.32698C5.07354 4.6146 4.6146 5.07354 4.32698 5.63803C4 6.27976 4 7.11984 4 8.8V15.2C4 16.8802 4 17.7202 4.32698 18.362C4.6146 18.9265 5.07354 19.3854 5.63803 19.673C6.27976 20 7.11984 20 8.8 20H15.2C16.8802 20 17.7202 20 18.362 19.673C18.9265 19.3854 19.3854 18.9265 19.673 18.362C20 17.7202 20 16.8802 20 15.2V11" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 16L8.29289 11.7071C8.68342 11.3166 9.31658 11.3166 9.70711 11.7071L13 15M13 15L15.7929 12.2071C16.1834 11.8166 16.8166 11.8166 17.2071 12.2071L20 15M13 15L15.25 17.25" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M18.5 3V5.5M18.5 8V5.5M18.5 5.5H16M18.5 5.5H21" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        </div>
+                        <span id="messageIllustration" class="message"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="backContact" class="dnone">
+        <div id="navbackcontact" class="navBack" style="top: 50px; z-index: 1000;">
+            <p onclick="navBackContact('reseaux')">Réseaux</p>
+            <p onclick="navBackContact('img')">Img</p>
+        </div>
+        <div id="imgcontact" class="dnone">
+            <div class="dflex contenuback">
+                <h2 class="titreback">Illustration contact</h2>
+                <img src="/imgcontact/illustration-contact.jpg" id="img-illustration-contact" alt="illustration de l'image d'accueil">
+            </div>
+            <div class="gradient">
+                <div class="conteneurform">
+                    <div class="formform">
+                        <div class="conteneurimgform">
+                            <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
+                        </div>
+                        <h2 class="titreform">Changer l'illustration</h2>
+                        <input type="file" id="downloadIllustration-contact" accept="image/*">
+                        <div class="background">
+                            <?xml version="1.0" encoding="utf-8"?>
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 4H8.8C7.11984 4 6.27976 4 5.63803 4.32698C5.07354 4.6146 4.6146 5.07354 4.32698 5.63803C4 6.27976 4 7.11984 4 8.8V15.2C4 16.8802 4 17.7202 4.32698 18.362C4.6146 18.9265 5.07354 19.3854 5.63803 19.673C6.27976 20 7.11984 20 8.8 20H15.2C16.8802 20 17.7202 20 18.362 19.673C18.9265 19.3854 19.3854 18.9265 19.673 18.362C20 17.7202 20 16.8802 20 15.2V11" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 16L8.29289 11.7071C8.68342 11.3166 9.31658 11.3166 9.70711 11.7071L13 15M13 15L15.7929 12.2071C16.1834 11.8166 16.8166 11.8166 17.2071 12.2071L20 15M13 15L15.25 17.25" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M18.5 3V5.5M18.5 8V5.5M18.5 5.5H16M18.5 5.5H21" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        </div>
+                        <span id="messageIllustration" class="message"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="reseaux" class="dflex">
+            <div class="dflex contenuback">
+                <h2 class="titreback">Gestion des réseaux sociaux</h2>
+                <div id="listeReseaux"></div>
+            </div>
+            <div class="gradient">
+                <div id="addReseau" class="conteneurform">
+                    <div class="conteneurimgform">
+                        <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
+                    </div>
+                        <h2 class="titreform">Créer un réseau </h2>
+                        <div class="formform">
+                            <select id="options" name="options"  class="inputform">
+                                <option value="facebook">Facebook</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="linkedin">Linkedin</option>
+                                <option value="mail">Adresse mail</option>
+                                <option value="snapchat">Snapchat</option>
+                                <option value="telephone">Téléphone</option>
+                                <option value="tiktok">Tiktok</option>
+                                <option value="Youtube">Youtube</option>
+                                <option value="link">Autres</option>
+                            </select>
+                            <input type="text" class="inputform" id="linkReseau" placeholder="URL https:// ...">
+                            <input type="text" class="inputform" id="textReseau" placeholder="Ce que vous voulez afficher">
+                            <div class="background-button"><button id="sendLink" class="buttonform">Valider</button></div>
+                            <span id="messageReseau" class="message"></span>
+                        </div>
+                        
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="backPortfolio" class="dnone">
+        <div class="blure"></div>
+        <div id="parentportfolio" class="dflex">
+            <div class="cardChoice" id="gestionphotos" onclick="handlePhotoClick()">
+                <div class="illus">
+                    <img src="icon/photo.svg"  alt="icon camera photo">
+                    <div class="background" style="top: 39.5%;">
+                        <img class="imgform" style="width: 75px; height:75px" src="logo/logotransparant.png" alt="logo siteUp">
+                    </div>
+                </div>
+            
+            </div>
+            <div class="cardChoice" id="gestionvideos" onclick="handleVideoClick()">
+                <div class="illus">
+                    <img src="icon/video.svg" style="width: 170px ;height: 170px;;"  alt="icon camera video">
+                    <div class="background" style="right: 57.5%; top : 27%">
+                        <img class="imgform"  style="width: 75px; height:75px"  src="logo/logotransparant.png" alt="logo siteUp">
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div id="contenuPhotoVideo" style="position: relative;" class="dnone gradient100">
+        </div>
+    </div>
+
+    <div id="backTicket" class="dnone gradient100">
+
+        <div id="getticket">
+            <h2 id="ticketh2">Vous avez un ticket en cour</h2>
+            
+
+            <div id="contentRemoveTicket">
+                <div class="removefolder">
+                    <div class="background">
+                        <img src="icon/remove.svg">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="addticket">
+            <h2>Ajouter un ticket</h2>
+            <div id="formticket">
+                <div class="ticketinput">
+                    <h3>ID client :</h3>
+                    <div>
+                        <input class="inputticket" type="text" id="idticket">
+                        
+                        <div class="background-button" style="width: auto; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                            <button class="buttonticket" id="generId">Auto</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="ticketinput">
+                    <h3>Clef client :</h3>
+                    <div>
+                        <input class="inputticket" type="text" id="keyticket">
+                        <div class="background-button" style="width: auto; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                            <button class="buttonticket" id="generKey">Auto</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="ticketinput">
+                    <h3>Nom client :</h3>
+                    <div>
+                        <input class="inputticket" type="text" id="nomticket" style="border-top-right-radius: 50px; border-bottom-right-radius: 50px;">
+                    </div>
+                </div>
+                <div class="ticketinput">
+                    <h3>Prenom client :</h3>
+                    <div>
+                        <input class="inputticket" type="text" id="prenomticket" style="border-top-right-radius: 50px; border-bottom-right-radius: 50px;">
+                    </div>
+                </div>
+                <div id="dossierticket">
+
+                    <div id="upload">
+                        <button class="buttonform" id="buttonUploadFolder" style="border-radius: 50px; margin: 2px;">Upload</button>
+                        <input id="uploadDossier" type="file" multiple>
+                    </div>
+
+                    <p id="titreDossierUpload"></p>
+
+                    <div style="position: relative;">
+
+                            <p class="tailleTicket">0%</p>
+                        
+                            <img class="svgFolder" src="icon/folder.svg" alt="svg d'un dossier">
+                        <div style="position: absolute;bottom: 20px;right: 15px;">
+                            <div class="background">
+                                <img src="logo/logotransparant.png" id="loadingFolder" class="imgFolder" alt="logo siteup">
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="background-button" id="animloaderticket" style="width: auto;">
+                    <button id="submitTicket" class="buttonform" style="border-radius: 50px; margin: 2px;">Créer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

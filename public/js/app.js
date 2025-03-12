@@ -1,0 +1,524 @@
+
+const burger = document.querySelector('#burger')
+
+const a = document.querySelectorAll('.menu')
+const header = document.querySelector('header')
+
+const video = document.getElementById("myVideo");
+let isReversing = false;
+let interval = null;
+
+// Initialisation de la vidéo en mode muet
+video.muted = true;
+
+// Demander l'interaction utilisateur pour démarrer la vidéo
+document.addEventListener("click", () => {
+    video.muted = false;  // Retirer le mute une fois l'utilisateur a cliqué
+    video.play().catch(error => console.log("Lecture bloquée :", error));  // Démarrer la lecture après un clic
+}, { once: true });
+
+// Observer la visibilité de la vidéo
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            video.play().catch(error => console.log("Lecture bloquée :", error));  // Démarre la vidéo si visible à 50%
+        } else {
+            video.pause();
+        }
+    });
+}, { threshold: [0.5] });
+
+observer.observe(video);
+
+// Lorsque la vidéo est terminée, commencer à la lire en arrière
+video.addEventListener("ended", () => {
+    // Commence à lire la vidéo en arrière
+    isReversing = true;
+    video.pause();
+    video.currentTime = video.duration; // Positionner la vidéo à la fin
+    reverseVideo(); // Commencer la lecture en arrière
+});
+
+// Fonction pour jouer la vidéo en arrière
+function reverseVideo() {
+    if (interval) clearInterval(interval);  // Clear any existing interval
+
+    // Rewind the video by small steps (this should be around 1 frame per step)
+    interval = setInterval(() => {
+        if (video.currentTime <= 0) {
+            // Quand on est à la fin, on recommence à jouer normalement
+            isReversing = false;
+            video.play();  // Reprendre la lecture en avant
+            clearInterval(interval);
+        } else {
+            video.currentTime -= 0.033; // Reculer d’une frame (30 FPS)
+        }
+    }, 33); // Rewind roughly at 30 FPS (33ms per frame)
+}
+
+// Fonction de gestion de la lecture, incluant la marche arrière
+video.addEventListener("play", () => {
+    if (isReversing) {
+        reverseVideo(); // Si la vidéo est en mode reverse, on commence à la lire en arrière
+    }
+});
+
+let lastHeight = window.innerHeight;
+
+function updateVh() {
+    // Récupérer la hauteur de la fenêtre (viewport) en pixels
+    const viewportHeight = window.innerHeight;
+    const navHeight = 70; // Hauteur de la barre de navigation (ajuste si nécessaire)
+    const screenHeight = screen.height;
+
+    // Estimer la hauteur de la barre d'outils du bas (en pixels)
+    const bottomBarHeight = screenHeight - viewportHeight;
+
+    // Appliquer la hauteur de la fenêtre à la variable CSS --vh en pixels
+    document.documentElement.style.setProperty('--vh', `${viewportHeight}px`);
+
+    const navBar = document.querySelector('#navigation');
+
+    // if (navBar) {
+    //     // Calculer le top en fonction de la hauteur de la barre d'outils (ou de la barre de pied de page)
+    //     const topValue = `calc(var(--vh) - ${bottomBarHeight - 15}px)`;
+    //     navBar.style.top = topValue;
+
+    //     // Gérer l'affichage de la nav bar en fonction du scroll
+    //     window.addEventListener('scroll', () => {
+    //         if (window.scrollY > 0) {
+    //             navBar.style.position = 'fixed';
+    //             navBar.style.bottom = '0px';
+    //             navBar.style.top = 'auto'; // On réinitialise le top
+    //         }
+    //     });
+
+    //     simulateScroll();
+    // }
+}
+
+
+function simulateScroll() {
+    let scrollPosition = 0;
+    const targetScrollPosition = 1;  // Légère valeur pour simuler le scroll
+
+    function scrollStep() {
+        if (scrollPosition < targetScrollPosition) {
+            scrollPosition += 0.1;  // Incrémenter la position du scroll
+            window.scrollTo(0, scrollPosition);
+            requestAnimationFrame(scrollStep);
+        }
+    }
+
+    requestAnimationFrame(scrollStep);
+}
+
+
+// Appeler updateVh au chargement de la page
+updateVh();
+
+
+
+
+loadImages()
+
+let gradientmoove = document.querySelector('.background');
+let countdeg = 3;
+
+setInterval(() => {
+    // Animez l'arrière-plan de l'élément principal
+    gradientmoove.style.background = `linear-gradient(${countdeg}deg, rgb(255 0 67) 0%, rgb(0 7 185) 88%)`;
+
+    document.documentElement.style.setProperty('--deg-', `${countdeg}deg`);
+
+    // Incrémentez l'angle
+    countdeg = (countdeg + 1) % 360;
+}, 50);
+
+
+
+
+async function loadImages() {
+    try {
+        const response = await fetch('/api/images');
+        if (!response.ok) throw new Error('Erreur lors de la récupération des images');
+        const images = await response.json();
+
+        // Utilisez le tableau d'images pour configurer le carrousel
+     // Vous pouvez l'utiliser dans votre fonction carrousel
+        // Exemple : afficher chaque image dans un élément img
+        let tabImg = []
+        images.forEach(imagePath => {
+            tabImg.push(imagePath)
+            
+        });
+        
+
+        playCarrou(tabImg)
+    } catch (error) {
+        console.error('Erreur:', error);
+    }
+}
+
+
+function playCarrou(tabImg){
+
+
+        
+    let img= document.createElement('img')
+    img.src = tabImg[tabImg.length-1];
+    img.style.transition='1s linear'
+    img.classList.add('limage')
+    img.classList.add('blur')
+    header.appendChild(img)
+    header.prepend(img);
+    let count = 0
+
+    setInterval(() => {
+        img.src=tabImg[count]
+        if (count >= tabImg.length -1) {
+            count = 0
+        }else{
+            count++
+        }
+    }, 5000);
+    
+
+}
+
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// css dynamique
+
+function dynamicCss(css){
+    const leslinks = document.querySelectorAll('.dynamic-css')
+    leslinks.forEach(link=>{
+        if(link.id === css){
+            link.rel = 'stylesheet';
+            link.media = "all"
+        }else{
+            link.media = "none"
+        }
+        
+    })
+}
+
+// // Pré-charger toutes les pages HTML lors du chargement du site
+const htmlCache = {};
+
+function preloadHTMLPages() {
+    const pages = ['accueil', 'portfolio', 'contact', 'lock']; 
+    const promises = pages.map(page => {
+        return fetch(`/content/${page}`).then(response => response.text()).then(html => {
+            htmlCache[page] = html;  
+            
+        });
+    });
+
+    Promise.all(promises).then(() => {
+    }).catch(error => {
+        console.error('Erreur lors du préchargement des pages:', error);
+    });
+}
+let actupage = "accueil"
+preloadHTMLPages();
+
+// menu dynamique 
+function loadContent(page) {
+    const mainContent = document.getElementById('main-content');
+
+    mainContent.style.transition="0s"
+    mainContent.scrollIntoView({
+        behavior: 'smooth', // Défilement fluide
+        block: 'start',     // Aligne l'élément au début de la vue
+    });
+    
+    mainContent.style.opacity = 0
+    setTimeout(() => {
+        mainContent.style.transition="0.1s ease-out"
+        mainContent.style.opacity = 1
+    }, 100);
+    
+    
+    if (htmlCache[page]) {
+        const html = htmlCache[page];
+        
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        mainContent.textContent = '';
+        Array.from(doc.body.childNodes).forEach(node => {
+            dynamicCss(page);
+            mainContent.appendChild(node);
+           
+           
+            
+        });
+        if(page == "accueil"){
+            document.querySelector('#jsaccueil').remove()
+            const sc = document.createElement('script')
+            sc.src = "/js/accueil.js"
+            sc.id = "jsaccueil"
+            document.body.appendChild(sc)
+            actupage = "accueil"
+        }
+        if(page == "contact"){
+            document.querySelector('#jscontact').remove()
+            const sc = document.createElement('script')
+            sc.src = "/js/contact.js"
+            sc.id = "jscontact"
+            document.body.appendChild(sc)
+            actupage = "contact"
+        }
+        if(page == "portfolio"){
+            document.querySelector('#jsportfolio').remove()
+            const sc = document.createElement('script')
+            sc.src = "/js/portfolio.js"
+            sc.id = "jsportfolio"
+            document.body.appendChild(sc)
+            actupage = "portfolio"
+        }
+        if(page == "lock"){
+            document.querySelector('#jslock').remove()
+            const sc = document.createElement('script')
+            sc.src = "/js/lock.js"
+            sc.id = "jslock"
+            document.body.appendChild(sc)
+            actupage = "lock"
+        }
+        animvisible();
+    } else {
+        console.error(`Page ${page} non trouvée dans le cache.`);
+    }
+
+
+}
+
+// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+function animvisible() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            } else {
+                entry.target.classList.remove('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    // Réinitialiser les observations
+    document.querySelectorAll('.scroll-fade').forEach(p => {
+        observer.observe(p);
+    });
+    document.querySelectorAll('.translate').forEach(p => {
+        observer.observe(p);
+    });
+}
+
+
+// Initialisation
+animvisible();
+
+function testnum(){
+    // Numéro de téléphone à composer
+const phoneNumber = "+1234567890";
+
+// Ouvrir l'application d'appel avec ce numéro
+window.location.href = `tel:${phoneNumber}`;
+}
+
+
+
+
+
+
+
+
+fetch('/contactfooter')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des contacts');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Contacts récupérés:', data);
+        traitement(data)
+        
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+
+
+function traitement(data){
+    const reseaufooter = document.querySelector('#reseaufooter')
+    reseaufooter.textContent=""
+
+    data.forEach(contact => {
+        Object.keys(contact).forEach(key => {
+            const value = contact[key];
+
+
+            if(key !== "mail" && key !=="telephone" ){
+                const a = document.createElement('a')
+                a.href = value.link
+                const slink = document.createElement('img')
+                slink.src= `/iconfooter/${key}.svg`
+
+                a.appendChild(slink)
+                reseaufooter.appendChild(a)
+            }
+            
+        });
+    });
+
+}
+
+
+
+fetch('/globale')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des contacts');
+        }
+        return response.json();
+    })
+    .then(data => {
+        
+        globale(data)
+        
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+
+function globale(data){
+    const titreh1 = document.querySelector('h1')
+    const signature  = document.querySelector('#signature')
+    
+    titreh1.textContent=data.titre
+    signature.textContent=data.signature
+
+}
+
+
+setTimeout(() => {
+    const header = document.querySelector("header")
+    const main = document.querySelector("main")
+    const footer = document.querySelector("footer")
+
+    header.style.transform="scale(1.0)"
+    header.style.opacity="1"
+
+    document.querySelector('#charging').style.opacity="0"
+    setTimeout(() => {
+        document.querySelector('#charging').remove()
+
+
+
+    }, 500);
+
+}, 1000);
+
+
+
+document.querySelector('#admin').addEventListener('click',()=>{
+    if(!document.querySelector('.loaderi')){
+        load()
+
+    setTimeout(() => {
+        document.querySelector('#logonavbarre').style.opacity="1"
+        finload()
+    }, 2000);
+    }
+    
+})
+
+function load(){
+    const button=document.querySelector('.bubbly-button')
+    button.style.overflow='hidden'
+    const t = document.querySelector('#mooveAnim')
+    
+    t.style.zIndex="1"
+    t.style.opacity="1"
+    document.querySelector('#logonavbarre').style.opacity="0"
+    const div = document.createElement('div')
+    div.classList.add('loaderi')
+    
+    const img = document.createElement('img')
+    img.src="/logo/logocoupe.png"
+    img.style.width="auto"
+    img.style.height="58px"
+    img.style.borderRadius = "50px"
+    
+    const grad = document.createElement('div')
+    grad.classList.add('gradload')
+    grad.appendChild(img)
+    document.querySelector('#admin').appendChild(div)
+    document.querySelector('#admin').appendChild(grad)
+    
+}
+
+function finload(){
+    document.querySelector('.loaderi').remove()
+    document.querySelector('.gradload').remove()
+    document.querySelector('#logonavbarre').style.opacity="1"
+    const button=document.querySelector('.bubbly-button')
+    button.style.overflow='visible'
+    button.classList.add('anima');
+    setTimeout(function(){
+      button.classList.remove('anima');
+    },700);
+}
+
+
+
+
+const tabPages = ['accueil', 'contact', 'portfolio', 'lock'];
+
+document.addEventListener("DOMContentLoaded", function () {
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener("touchstart", function (e) {
+        touchStartX = e.touches[0].clientX;
+    });
+
+    document.addEventListener("touchend", function (e) {
+        touchEndX = e.changedTouches[0].clientX;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        let diff = touchEndX - touchStartX;
+        let currentIndex = tabPages.indexOf(actupage); // Trouver l'index de la page actuelle
+
+        if (diff > 50) {
+            // Swipe de gauche à droite (page précédente)
+            if (currentIndex > 0) {
+                actupage = tabPages[currentIndex - 1];
+            } else {
+                // On revient à la dernière page si on est au début
+                actupage = tabPages[tabPages.length - 1];
+            }
+            loadContent(actupage);
+        } else if (diff < -50) {
+            // Swipe de droite à gauche (page suivante)
+            if (currentIndex < tabPages.length - 1) {
+                actupage = tabPages[currentIndex + 1];
+            } else {
+                // On revient à la première page si on est à la fin
+                actupage = tabPages[0];
+            }
+            loadContent(actupage);
+        }
+    }
+});
+
+
+
+
+
+
