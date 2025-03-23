@@ -1,8 +1,8 @@
 (()=>{
-    const nom = document.querySelector('#inputnom');
-const mail = document.querySelector('#inputmail');
-const msg = document.querySelector('#inputmsg');
-const button = document.querySelector('#submit');
+//     const nom = document.querySelector('#inputnom');
+// const mail = document.querySelector('#inputmail');
+// const msg = document.querySelector('#inputmsg');
+// const button = document.querySelector('#submit');
 const taberr = []
 
 
@@ -55,92 +55,92 @@ function finload(){
     },700);
 }
 
-button.addEventListener('click', ()=>{
+// button.addEventListener('click', ()=>{
 
-    if(taberr.length == 0){
-        const lenom = valide(nom);
-        const lemail = valide(mail);
-        const lemsg = valide(msg);
-        if(lenom && lemail && lemsg){
-            load()
-            fetch('/contact-message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    nom: lenom,
-                    email: lemail,
-                    message: lemsg
-                })
-            })
-            .then(response => {
-                if(response.ok) {
-                    return response.json();
-                }
-                throw new Error('Une erreur est survenue lors de l\'envoi du message.');
-            })
-            .then(data => {
-                nom.value = ""
-                mail.value = ""
-                msg.value=""
+//     if(taberr.length == 0){
+//         const lenom = valide(nom);
+//         const lemail = valide(mail);
+//         const lemsg = valide(msg);
+//         if(lenom && lemail && lemsg){
+//             load()
+//             fetch('/contact-message', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json'
+//                 },
+//                 body: JSON.stringify({
+//                     nom: lenom,
+//                     email: lemail,
+//                     message: lemsg
+//                 })
+//             })
+//             .then(response => {
+//                 if(response.ok) {
+//                     return response.json();
+//                 }
+//                 throw new Error('Une erreur est survenue lors de l\'envoi du message.');
+//             })
+//             .then(data => {
+//                 nom.value = ""
+//                 mail.value = ""
+//                 msg.value=""
 
-                finload()
-                setTimeout(() => {
-                    resOverlay(data.success)
-                }, 800);
-            })
-            .catch(error => {
+//                 finload()
+//                 setTimeout(() => {
+//                     resOverlay(data.success)
+//                 }, 800);
+//             })
+//             .catch(error => {
                 
-                finload()
-                setTimeout(() => {
-                    resOverlay(error,true)
-                }, 800);
-            });
-        }
-    }
-    else{
-        taberr.forEach(lerr =>{
-            err(lerr)
-        })
-    }
+//                 finload()
+//                 setTimeout(() => {
+//                     resOverlay(error,true)
+//                 }, 800);
+//             });
+//         }
+//     }
+//     else{
+//         taberr.forEach(lerr =>{
+//             err(lerr)
+//         })
+//     }
     
-})
+// })
 
-nom.addEventListener('input', (event) => {
-    nom.style.color = "#666";
-    nom.style.border="none"
-    const saisi = event.target.value
-    if(saisi.length > 150){
-        err(nom)
-        event.target.value = saisi.slice(0, 150);
-    }
-});
+// nom.addEventListener('input', (event) => {
+//     nom.style.color = "#666";
+//     nom.style.border="none"
+//     const saisi = event.target.value
+//     if(saisi.length > 150){
+//         err(nom)
+//         event.target.value = saisi.slice(0, 150);
+//     }
+// });
 
-mail.addEventListener('input', (event) => {
-    mail.style.color = "#666";
-    mail.style.border="none"
-    const saisi = event.target.value
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+// mail.addEventListener('input', (event) => {
+//     mail.style.color = "#666";
+//     mail.style.border="none"
+//     const saisi = event.target.value
+//     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    if(saisi.length > 150){
-        err(nom)
-        event.target.value = saisi.slice(0, 150);
-    }
-    // else if(!emailRegex.test(saisi)){
-    //     err(mail)
-    // }
-});
+//     if(saisi.length > 150){
+//         err(nom)
+//         event.target.value = saisi.slice(0, 150);
+//     }
+//     // else if(!emailRegex.test(saisi)){
+//     //     err(mail)
+//     // }
+// });
 
-msg.addEventListener('input', (event) => {
-    msg.style.color = "#666";
-    msg.style.border="none"
-    const saisi = event.target.value
-    if(saisi.length > 450){
-        err(msg)
-        event.target.value = saisi.slice(0, 450);
-    }
-});
+// msg.addEventListener('input', (event) => {
+//     msg.style.color = "#666";
+//     msg.style.border="none"
+//     const saisi = event.target.value
+//     if(saisi.length > 450){
+//         err(msg)
+//         event.target.value = saisi.slice(0, 450);
+//     }
+// });
 
 
 function err(input){

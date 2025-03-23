@@ -4,65 +4,6 @@ const burger = document.querySelector('#burger')
 const a = document.querySelectorAll('.menu')
 const header = document.querySelector('header')
 
-const video = document.getElementById("myVideo");
-let isReversing = false;
-let interval = null;
-
-// Initialisation de la vidéo en mode muet
-video.muted = true;
-
-// Demander l'interaction utilisateur pour démarrer la vidéo
-document.addEventListener("click", () => {
-    video.muted = false;  // Retirer le mute une fois l'utilisateur a cliqué
-    video.play().catch(error => console.log("Lecture bloquée :", error));  // Démarrer la lecture après un clic
-}, { once: true });
-
-// Observer la visibilité de la vidéo
-const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-            video.play().catch(error => console.log("Lecture bloquée :", error));  // Démarre la vidéo si visible à 50%
-        } else {
-            video.pause();
-        }
-    });
-}, { threshold: [0.5] });
-
-observer.observe(video);
-
-// Lorsque la vidéo est terminée, commencer à la lire en arrière
-video.addEventListener("ended", () => {
-    // Commence à lire la vidéo en arrière
-    isReversing = true;
-    video.pause();
-    video.currentTime = video.duration; // Positionner la vidéo à la fin
-    reverseVideo(); // Commencer la lecture en arrière
-});
-
-// Fonction pour jouer la vidéo en arrière
-function reverseVideo() {
-    if (interval) clearInterval(interval);  // Clear any existing interval
-
-    // Rewind the video by small steps (this should be around 1 frame per step)
-    interval = setInterval(() => {
-        if (video.currentTime <= 0) {
-            // Quand on est à la fin, on recommence à jouer normalement
-            isReversing = false;
-            video.play();  // Reprendre la lecture en avant
-            clearInterval(interval);
-        } else {
-            video.currentTime -= 0.033; // Reculer d’une frame (30 FPS)
-        }
-    }, 33); // Rewind roughly at 30 FPS (33ms per frame)
-}
-
-// Fonction de gestion de la lecture, incluant la marche arrière
-video.addEventListener("play", () => {
-    if (isReversing) {
-        reverseVideo(); // Si la vidéo est en mode reverse, on commence à la lire en arrière
-    }
-});
-
 let lastHeight = window.innerHeight;
 
 function updateVh() {
@@ -154,37 +95,12 @@ async function loadImages() {
         });
         
 
-        playCarrou(tabImg)
+        
     } catch (error) {
         console.error('Erreur:', error);
     }
 }
 
-
-function playCarrou(tabImg){
-
-
-        
-    let img= document.createElement('img')
-    img.src = tabImg[tabImg.length-1];
-    img.style.transition='1s linear'
-    img.classList.add('limage')
-    img.classList.add('blur')
-    header.appendChild(img)
-    header.prepend(img);
-    let count = 0
-
-    setInterval(() => {
-        img.src=tabImg[count]
-        if (count >= tabImg.length -1) {
-            count = 0
-        }else{
-            count++
-        }
-    }, 5000);
-    
-
-}
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 // css dynamique
@@ -206,7 +122,7 @@ function dynamicCss(css){
 const htmlCache = {};
 
 function preloadHTMLPages() {
-    const pages = ['accueil', 'portfolio', 'contact', 'lock']; 
+    const pages = ['accueil', 'pics', 'contact', 'lock']; 
     const promises = pages.map(page => {
         return fetch(`/content/${page}`).then(response => response.text()).then(html => {
             htmlCache[page] = html;  
@@ -269,13 +185,13 @@ function loadContent(page) {
             document.body.appendChild(sc)
             actupage = "contact"
         }
-        if(page == "portfolio"){
-            document.querySelector('#jsportfolio').remove()
+        if(page == "pics"){
+            document.querySelector('#jspics').remove()
             const sc = document.createElement('script')
-            sc.src = "/js/portfolio.js"
-            sc.id = "jsportfolio"
+            sc.src = "/js/pics.js"
+            sc.id = "jspics"
             document.body.appendChild(sc)
-            actupage = "portfolio"
+            actupage = "pics"
         }
         if(page == "lock"){
             document.querySelector('#jslock').remove()
@@ -395,10 +311,10 @@ fetch('/globale')
     });
 
 function globale(data){
-    const titreh1 = document.querySelector('h1')
+    
     const signature  = document.querySelector('#signature')
     
-    titreh1.textContent=data.titre
+    
     signature.textContent=data.signature
 
 }
@@ -418,9 +334,9 @@ setTimeout(() => {
 
 
 
-    }, 500);
+    }, 1000);
 
-}, 1000);
+}, 2000);
 
 
 
@@ -476,7 +392,7 @@ function finload(){
 
 
 
-const tabPages = ['accueil', 'contact', 'portfolio', 'lock'];
+const tabPages = ['accueil', 'contact', 'pics', 'lock'];
 
 document.addEventListener("DOMContentLoaded", function () {
     let touchStartX = 0;
