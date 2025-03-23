@@ -74,7 +74,7 @@ setInterval(() => {
 
     // Incrémentez l'angle
     countdeg = (countdeg + 1) % 360;
-}, 50);
+}, 1000);
 
 
 
@@ -327,18 +327,57 @@ setTimeout(() => {
 
     header.style.transform="scale(1.0)"
     header.style.opacity="1"
+    
 
     document.querySelector('#charging').style.opacity="0"
+    document.querySelector('#getstarted').style.opacity = "1"
+
+    
     setTimeout(() => {
         document.querySelector('#charging').remove()
-
-
-
+        animHead()
     }, 1000);
-
+    addobserver()
 }, 2000);
 
 
+function animHead() {
+    setTimeout(() => {
+        document.querySelector('#getstarted').style.opacity = "1"
+    }, 150);
+    
+    setTimeout(() => {
+        document.querySelector('#arrow').style.transform ="translateX(0)"
+        document.querySelector('#picsbuttonhead').style.transform ="translateX(0)"
+    }, 170);
+}
+
+function resetAnim() {
+    document.querySelector('#getstarted').style.opacity = "0";
+    document.querySelector('#arrow').style.transform = "translateX(30px)";
+    document.querySelector('#picsbuttonhead').style.transform = "translateX(-40px)";
+}
+
+
+// Observer
+function addobserver(){
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animHead(); // L'élément entre dans l'écran
+            } else {
+                resetAnim(); // L'élément sort de l'écran
+            }
+        });
+    }, { threshold: 0.2 }); // Déclenche quand 20% de l'élément est visible
+    
+    // Observer sur l'élément cible
+    const target = document.querySelector('#getstarted');
+    if (target) {
+        observer.observe(target);
+    }
+    
+}
 
 document.querySelector('#admin').addEventListener('click',()=>{
     if(!document.querySelector('.loaderi')){
