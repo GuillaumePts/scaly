@@ -87,8 +87,8 @@ app.get('/content/accueil', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/accueil.html'));
 });
 
-app.get('/content/portfolio', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/portfolio.html'));
+app.get('/content/pics', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/pics.html'));
 });
 
 app.get('/content/lock', (req, res) => {

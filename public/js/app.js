@@ -39,6 +39,9 @@ function updateVh() {
 }
 
 
+
+
+
 function simulateScroll() {
     let scrollPosition = 0;
     const targetScrollPosition = 1;  // Légère valeur pour simuler le scroll

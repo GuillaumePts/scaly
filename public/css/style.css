@@ -303,7 +303,7 @@ header #getstarted #boxarrow div button{
     
 }
 
-header div{
+/* header div{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -330,7 +330,7 @@ header div p{
     filter: drop-shadow(4px 4px 7px rgba(0, 0, 0, 0.68));
     font-size: 0.8rem;
     margin-bottom: 20px;
-}
+} */
 
 
 
