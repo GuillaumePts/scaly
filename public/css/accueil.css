@@ -6,13 +6,15 @@
     position: relative;
     height: auto;
     display: flex;
-    justify-content: center;
+    justify-content: start;
+    flex-direction: column;
     align-items: center;
     gap: 50px;
     -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
     mask-image: radial-gradient(circle, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
     backdrop-filter: blur(10px);
-    min-height: 100vh
+    min-height: 100vh;
+    padding: 150px 10px;
 }
 
 
@@ -22,33 +24,141 @@
     justify-content: center;
     align-items: center;
     position: relative;
+    
+    transition: all 0.4s ease-in-out
 }
 
 
-#main-content #one #presentation img{
-    width: 100%;
+#main-content #one #presentation #mobiledevice{
+    width: 35%;
     height: auto;
-    transition: transform 0.5s ease-in-out;
-    z-index: 18;
+    transition: all 0.4s ease-in-out
+}
+
+#main-content #one #presentation #descr{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    gap: 25px;
+    padding-top: 50px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 19;
+    opacity: 0;
+    transition: all 0.4s ease-in-out
+}
+
+#main-content #one #presentation #descr div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+
+#main-content #one #presentation #descr div img{
+    width: 40px;
+    height: 40px;
+}
+
+#main-content #one #presentation #descr div p{
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 3px;
+    font-family: var(--font-fam-one);
+    color: var(--color-font);
+    transition: all 0.4s ease-in-out
 }
 
 
 #p1{
     position: absolute;
     opacity: 0;
+    -webkit-mask-image: radial-gradient(circle, rgb(0 0 0) 50%, rgb(0 0 0) 100%);
+    mask-image: radial-gradient(circle, rgb(0 0 0) 50%, rgb(0 0 0) 100%);
+    background: radial-gradient(circle, rgb(0 0 0 / 27%) 50%, rgb(0 0 0 / 0%) 100%);
+    width: 100%;
+    height: 100%;
+    font-size: 1.5rem;
+    bottom: 0;
+    left: 10px;
+    z-index: 18;
+    padding: 50px 50px 20px auto;
 }
+
+
 
 
 .presentation-p{
-    width: 95%;
+
     font-weight: 300;
     letter-spacing: 3px;
-    font-size: 1rem;
+    
     font-family: var(--font-fam-one);
     color: var(--color-font);
     transform: translateY(-30px);
+    transition: all 0.4s ease-in-out
 }
 
+#two{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    min-height: 90vh;
+    transition: all 0.4s ease-in-out
+}
+
+#p2{
+    width: 95%;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+#two #carrou{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+#two #carrou img{
+    width: 80%;
+    height: auto;
+}
+
+#two #cara{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+}
+
+#two #cara div{
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
+
+#two #cara div img{
+    background-color: #fff;
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+}
+
+#two #cara div p{
+    font-size: 0.9rem;
+    width: 90%;
+    text-align: center;
+}
 
 
 @media (min-width: 800px) {
