@@ -143,6 +143,42 @@ function finload(){
 // });
 
 
+// function mavideo() {
+//     const video1 = document.querySelector("#meduse1");
+//     const video2 = document.querySelector("#meduse2");
+
+//     if (!video1 || !video2) {
+//         console.error("Les vidéos ne sont pas trouvées !");
+//         return;
+//     }
+
+//     // Initialement, on cache video2
+//     video2.style.display = "none";
+
+//     function playLoop(videoOut, videoIn) {
+//         videoOut.style.display = "block";  // Afficher la vidéo sortante
+//         videoIn.style.display = "none";   // Cacher la vidéo entrante
+
+//         videoOut.play();  // Lancer la vidéo sortante
+//         setTimeout(() => {
+//             videoOut.pause();  // Pause la vidéo sortante
+//             videoOut.currentTime = 0;  // Réinitialiser la lecture
+
+//             videoOut.style.display = "none";  // Cacher la vidéo sortante
+//             videoIn.style.display = "block";  // Afficher la vidéo entrante
+//             videoIn.play();  // Lancer la vidéo entrante
+
+//             // Répéter le processus après 5 secondes
+//             setTimeout(() => playLoop(videoIn, videoOut), 5000);  // Durée fixe de 5 secondes
+//         }, 5000);  // Durée de 5 secondes pour la vidéo sortante
+//     }
+
+//     playLoop(video1, video2);  // Commencer avec video1, puis alterner avec video2
+// }
+
+// mavideo()
+
+
 function err(input){
     input.style.color = "red";
     input.style.border="3px solid red"
@@ -231,7 +267,7 @@ fetch('/contactfooter')
     })
     .then(data => {
         console.log('Contacts récupérés:', data);
-        traitement2(data)
+        // traitement2(data)
         
     })
     .catch(error => {
