@@ -22,11 +22,6 @@ router.post("/login", [
     body("password").isLength({ min: 1 })
 ], async (req, res) => {
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-
-    const { email, password } = req.body;
-
     try {
         const user = await User.findOne({ email });
         if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
@@ -36,12 +31,34 @@ router.post("/login", [
 
         if (!user.isVerified) return res.status(403).json({ message: "Veuillez vérifier votre e-mail." });
 
+        // Générer un token JWT
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+        // Stocker le token en HttpOnly cookie
         res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-        res.json({ message: "Connexion réussie", token });
+
+        // Envoyer toutes les données de l'utilisateur
+        res.json({
+            message: "Connexion réussie",
+            user: {
+                id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                address: user.address,
+                subscriptionDate: user.subscriptionDate,
+                subscriptionEndDate: user.subscriptionEndDate,
+                stripeCustomerId: user.stripeCustomerId,
+                siteId: user.siteId,
+                isVerified: user.isVerified,
+                role: user.role,
+                isActive: user.isActive,
+                profilePicture: user.profilePicture,
+                phoneNumber: user.phoneNumber
+            }
+        });
     } catch (err) {
-        console.error(err); // Log l'erreur pour avoir plus de détails
-    res.status(500).json({ message: "Erreur serveur", error: err.message });
+        res.status(500).json({ message: "Erreur serveur" });
     }
     
 });

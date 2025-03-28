@@ -1,0 +1,7 @@
+@import 'style.css';
+
+.one{
+    width: 100%;
+    min-height: 100vh;
+    background-color: black;
+}

@@ -13,6 +13,7 @@ const upload = multer({ storage: storage });
 const sharp = require('sharp');
 const { MongoClient } = require("mongodb");
 const mongoose = require('mongoose');
+const crypto = require("crypto");
 
 // const sqlite3 = require('sqlite3').verbose();
 // const db = new sqlite3.Database('/db.sqlite');
@@ -162,6 +163,46 @@ const authRoutes = require("./routes/auth.js");  // Assure-toi du bon chemin du 
 
 // app.use(cors());
 app.use("/api", authRoutes); 
+
+// async function createFakeUser() {
+//   try {
+//       await mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+//       const email = "fakeuser@example.com";
+//       const existingUser = await User.findOne({ email });
+
+//       if (existingUser) {
+//           console.log("⚠️ L'utilisateur existe déjà.");
+//           return;
+//       }
+
+//       const hashedPassword = await bcrypt.hash("password123", 10);
+//       const fakeUser = new User({
+//           firstName: "John",
+//           lastName: "Doe",
+//           email,
+//           password: hashedPassword,
+//           address: "123 Rue du Test, Paris, France",
+//           subscriptionDate: new Date(),
+//           subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 jours
+//           stripeCustomerId: "cus_fake123456",
+//           siteId: crypto.randomBytes(8).toString("hex"), // Génère un ID unique de 16 caractères
+//           isVerified: true,
+//           role: "client",
+//           isActive: true,
+//           phoneNumber: "+33123456789"
+//       });
+
+//       await fakeUser.save();
+//       console.log("✅ Faux utilisateur créé avec succès !");
+//   } catch (err) {
+//       console.error("❌ Erreur lors de la création du faux utilisateur :", err);
+//   } finally {
+//       mongoose.connection.close();
+//   }
+
+  
+// }
 
 
 

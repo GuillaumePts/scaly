@@ -337,7 +337,7 @@ setTimeout(() => {
 
     
     setTimeout(() => {
-        document.querySelector('#charging').remove()
+        document.querySelector('#charging').style.display = "none"
         animHead()
     }, 1000);
     addobserver()

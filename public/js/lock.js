@@ -24,15 +24,15 @@ document.getElementById('submit-button').addEventListener('click', async functio
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
+        credentials: 'include'
     });
 
     const data = await response.json();
     if (response.ok) {
         finload()
-        // Connexion réussie
-        // alert('Connexion réussie!');
-        // Rediriger l'utilisateur vers la page d'accueil ou dashboard
+        goback()
+        window.clientData = data.user;
         console.log(data);
     } else {
         finload()
@@ -40,6 +40,36 @@ document.getElementById('submit-button').addEventListener('click', async functio
         alert(data.message);
     }
 });
+
+
+function goback(){
+    const script = document.querySelector('script')
+    script.id ="clientjs"
+    script.src = "/js/client.js"
+    document.body.appendChild(script)
+
+    const link = document.createElement("link");
+    link.id = "cssclient";
+    link.rel = "stylesheet";
+    link.href = "/css/client.css";
+    document.head.appendChild(link);
+
+    document.querySelector('#lock').style.display ="none"
+    document.querySelector('#unlock').style.display ="flex"
+
+    document.querySelector('#charging').style.display = "flex"
+
+    fetch("/dashboard")
+        .then(res => res.json())
+        .then(data => {
+            document.querySelector('#main-content').textContent=""
+            
+        })
+        .catch(() => console.log('problème'));
+
+}
+
+
 
 
 
