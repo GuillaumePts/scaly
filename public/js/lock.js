@@ -14,268 +14,35 @@ const inputid = document.querySelector('#id');
 const lock = document.querySelector('#divlock');
 const unlock = document.querySelector('#unlock')
 
-lebutton.addEventListener('click', (event)=>{
-    event.preventDefault();
+document.getElementById('submit-button').addEventListener('click', async function() {
+    load()
+    const email = document.getElementById('id').value;
+    const password = document.getElementById('password').value;
 
-    if(inputpass.value && inputid.value){
+    const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password })
+    });
 
-        inputid.style.border="none"
-        inputpass.style.border="none"
-        inputid.style.color="#000"
-        inputpass.style.color="#000"
-        const data = {
-            pass : inputpass.value,
-            id : inputid.value
-        }
-        const url = '/connexion'
-        
-        postData(url, data);
-    }else{
-        inputid.style.color = "red";
-        inputid.style.border="3px solid red"
-        inputpass.style.color = "red";
-        inputpass.style.border="3px solid red"
-    }
-})
-
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-        event.preventDefault(); // Empêche le rechargement de la page par défaut
-
-        if (inputpass.value && inputid.value) {
-            const data = {
-                pass: inputpass.value,
-                id: inputid.value
-            };
-            const url = '/connexion';
-            
-            postData(url, data);
-        } else {
-            alert('je peux pas envoyer');
-        }
+    const data = await response.json();
+    if (response.ok) {
+        finload()
+        // Connexion réussie
+        // alert('Connexion réussie!');
+        // Rediriger l'utilisateur vers la page d'accueil ou dashboard
+        console.log(data);
+    } else {
+        finload()
+        // Erreur
+        alert(data.message);
     }
 });
 
-// Fonction pour envoyer des données via POST
-async function postData(url, data) {
-    try {
-        const response = await fetch(url, {
-            method: 'POST', // Méthode HTTP
-            headers: {
-                'Content-Type': 'application/json' // Indique que le corps de la requête est en JSON
-            },
-            body: JSON.stringify(data) // Conversion des données en chaîne JSON
-        });
-
-        if (!response.ok) {
-            
-            resOverlay('L\'identifiant ou la clé fournie est invalide',true)
-            
-            
-        }
-
-        const result = await response.json(); // Analyse de la réponse
-        unlock.style.display = "flex"
-        lock.style.display = 'none'
-        
-        
-        
-        if(result.html){
-            if(result.session === "admin"){
-                unlock.style.display = "flex"
-                lock.style.display = 'none'
-                creatJsEtCssBack()
-                goBack(result.html)
-            }
-            if (result.session === "client") {
-                unlock.style.display = "flex"
-                lock.style.display = 'none'
-                goClient(result.html)
-            }
-        }else{
-        
-            resOverlay(result.message,true)
-        }
-
-    } catch (error) {
-        
-        
-    }
-}
 
 
-
-function creatJsEtCssBack(){
-    const js = document.createElement('script');
-    js.src = 'js/back.js'
-    js.id = "backjs"
-    const body = document.querySelector('body')
-    body.appendChild(js)
-    const jsbackpage = document.createElement('script');
-    jsbackpage.src = 'js/backAccueil.js';
-    jsbackpage.id ='scriptBackPage';
-    body.appendChild(jsbackpage);
-
-    const css = document.createElement('link');
-    css.rel='stylesheet';
-    css.href='css/back.css';
-    css.classList.add('dynamic-css')
-    css.id = "cssback";
-    const head = document.querySelector('head')
-    head.appendChild(css)
-    ajoutTicket()
-}
-
-function goBack(html){
-    const overlay = document.createElement('div');
-    overlay.classList.add('loadoverlay');
-
-  // Création du contenu de l'overlay
-    const bk = document.createElement('div');
-    bk.classList.add('background')
-    const logo = document.createElement('img')
-    logo.src= "/logo/logotransparant.png"
-    logo.classList.add('logoload')
-    bk.appendChild(logo)
-    
-
-    // Création du bouton de fermeture
-    
-    overlay.appendChild(bk);
-
-  // Ajout de l'overlay dans le body
-    document.body.appendChild(overlay);
-
-    document.querySelector('#lock').media= "none";
-
-    const mainContent = document.querySelector('#main-content')
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-        
-    mainContent.textContent = '';
-    Array.from(doc.body.childNodes).forEach(node => {
-        mainContent.appendChild(node)
-    });
-    
-    setTimeout(() => {
-        overlay.style.opacity="0"
-        overlay.remove()
-    }, 1000);
-
-}
-
-function goClient(html){
-    const overlay = document.createElement('div');
-    overlay.classList.add('loadoverlay');
-
-  // Création du contenu de l'overlay
-    const bk = document.createElement('div');
-    bk.classList.add('background')
-    const logo = document.createElement('img')
-    logo.src= "/logo/logotransparant.png"
-    logo.classList.add('logoload')
-    bk.appendChild(logo)
-    
-
-    // Création du bouton de fermeture
-    
-    overlay.appendChild(bk);
-
-  // Ajout de l'overlay dans le body
-    document.body.appendChild(overlay);
-
-    document.querySelector('#lock').media= "none";
-
-    const mainContent = document.querySelector('#main-content')
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-        
-    mainContent.textContent = '';
-    Array.from(doc.body.childNodes).forEach(node => {
-        mainContent.appendChild(node)
-    });
-    const script = document.createElement('script')
-    script.src = '/js/client.js';
-    script.id = "client"
-    document.body.appendChild(script)
-    
-    setTimeout(() => {
-        overlay.style.opacity="0"
-        overlay.remove()
-    }, 1000);
-}
-
-
-
-function ajoutTicket(){
-    const contentTicket = document.createElement('div')
-    contentTicket.classList.add('contentticket')
-
-    const ticket = document.createElement('img')
-    ticket.src = "icon/tickets.svg"
-    ticket.style.width="100%"
-
-    const bk = document.createElement('div')
-    bk.classList.add('background')
-
-    const logo = document.createElement('img')
-    logo.src = "/logo/logotransparant.png"
-    logo.classList.add('logoTicket')
-
-    const contentlogo = document.createElement('div')
-    contentlogo.classList.add('contentlogoticket')
-
-    bk.appendChild(logo)
-    contentlogo.appendChild(bk)
-    contentTicket.appendChild(ticket)
-    contentTicket.appendChild(contentlogo)
-
-
-    document.body.appendChild(contentTicket)
-
-    
-}
-
-
-
-function resOverlay(msg,err){
-    const overlay = document.createElement('div');
-    overlay.classList.add('overlayy');
-    const p = document.createElement('p')
-    p.classList.add("poverlay")
-    if(err){
-        p.style.color="red"
-    }else{
-        p.style.color = "#5babff"
-    }
-    p.textContent = msg
-  
-    // Création du contenu de l'overlay
-    const overlayContent = document.createElement('div');
-    overlayContent.classList.add('overlay-content');
-    overlayContent.style.margin="0px 10px"
-    overlayContent.appendChild(p)
-  
-    overlay.addEventListener('click', () => {
-        overlay.style.opacity = "0";
-        overlay.style.visibility = "hidden";
-        setTimeout(() => overlay.remove(), 300); // Supprime après animation
-    });
-  
-    // Applique l'animation d'apparition
-    setTimeout(() => {
-        overlay.style.opacity = "1";
-        overlay.style.visibility = "visible";
-    }, 10);
-    // Ajout du contenu dans l'overlay
-    overlay.appendChild(overlayContent);
-  
-    // Ajout de l'overlay dans le body
-    document.body.appendChild(overlay);
-    setTimeout(() => {
-        overlay.remove()
-    }, 5000);
-}
 
 function load(){
         

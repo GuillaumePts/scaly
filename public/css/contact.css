@@ -11,6 +11,10 @@ video{
 }
 
 
+#main-content{
+    gap: 0;
+}
+
 
 #main-content > div:nth-child(1){
     position: relative;
@@ -18,7 +22,8 @@ video{
     justify-content: center;
     align-items: center;
     width: 100%;
-    
+    min-height: 100vh;
+    background-color: black;
 
 }
 
@@ -78,6 +83,7 @@ video{
     align-items: center;
     overflow: hidden;
     min-height: 90vh;
+    border-top: 4px solid black;
 }
 
 /* #main-content > div:nth-child(2) > div:nth-child(1){
