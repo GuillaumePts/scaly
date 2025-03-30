@@ -33,7 +33,7 @@ document.getElementById('submit-button').addEventListener('click', async functio
         finload()
         goback()
         window.clientData = data.user;
-        console.log(data);
+        
     } else {
         finload()
         // Erreur
@@ -43,7 +43,7 @@ document.getElementById('submit-button').addEventListener('click', async functio
 
 
 function goback(){
-    const script = document.querySelector('script')
+    const script = document.createElement('script')
     script.id ="clientjs"
     script.src = "/js/client.js"
     document.body.appendChild(script)
@@ -54,18 +54,47 @@ function goback(){
     link.href = "/css/client.css";
     document.head.appendChild(link);
 
-    document.querySelector('#lock').style.display ="none"
+    document.querySelector('#divlock').style.display ="none"
     document.querySelector('#unlock').style.display ="flex"
 
     document.querySelector('#charging').style.display = "flex"
 
-    fetch("/dashboard")
-        .then(res => res.json())
-        .then(data => {
-            document.querySelector('#main-content').textContent=""
-            
+    fetch("/api/dashboard", {
+        method: "GET",
+        credentials: "include"
+    })
+        .then(res => {
+            if (res.ok) {
+                return res.text(); // On récupère le HTML dans ce cas
+            } else {
+                return res.json(); // Sinon, on tente de récupérer un message d'erreur JSON
+            }
         })
-        .catch(() => console.log('problème'));
+        .then(data => {
+            
+            document.querySelector('#main-content').textContent = ''
+            
+            if (typeof data === "string") {
+                // Si on reçoit du texte, cela signifie probablement qu'on a une page HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, "text/html");
+    
+                // Ajoute chaque enfant du <body> à #main-content
+                Array.from(doc.body.children).forEach(child => {
+                    document.querySelector('#main-content').appendChild(child);
+                });
+
+                document.querySelector('#charging').style.display = "none"
+            } else {
+                // Si c'est un objet JSON, on gère l'erreur
+                document.querySelector('#charging').style.display = "none"
+                console.error(data.message);
+            }
+        })
+        .catch((err) => {
+            console.log("Erreur : ", err);
+        });
+    
 
 }
 

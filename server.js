@@ -27,6 +27,16 @@ app.use(express.static('public', {
   }
 }));
 
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+
+app.use(cors({
+    origin: "http://192.168.1.69:9999", // Remplace par ton IP ou domaine exact
+    credentials: true // Autorise les cookies
+}));
+
+app.use(cookieParser())
+
 
 
 
@@ -160,9 +170,10 @@ app.post('/contact-message',(req,res)=>{
 /////////////////////////////////////////////////////
 // MONGODB////////////////////////////
 const authRoutes = require("./routes/auth.js");  // Assure-toi du bon chemin du fichier
-
+const clientRoutes = require("./routes/dashboard.js")
 // app.use(cors());
 app.use("/api", authRoutes); 
+app.use("/api", clientRoutes); 
 
 // async function createFakeUser() {
 //   try {

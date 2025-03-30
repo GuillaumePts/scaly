@@ -22,6 +22,8 @@ router.post("/login", [
     body("password").isLength({ min: 1 })
 ], async (req, res) => {
 
+    const { email, password } = req.body;  
+    
     try {
         const user = await User.findOne({ email });
         if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
@@ -58,6 +60,7 @@ router.post("/login", [
             }
         });
     } catch (err) {
+        console.log(err);
         res.status(500).json({ message: "Erreur serveur" });
     }
     
@@ -85,6 +88,7 @@ router.post("/send-verification", async (req, res) => {
         res.json({ message: "E-mail de vérification envoyé." });
     } catch (err) {
         res.status(500).json({ message: "Erreur serveur" });
+        console.log(err);
     }
 });
 
