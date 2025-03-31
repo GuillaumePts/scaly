@@ -5,7 +5,7 @@
             <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
         </div>
     
-        <div >
+        <div id="burger" >
             <div class="background">
                 <img class="imgform" src="/icon/burger.svg" alt="logo du menu">
             </div>
@@ -13,64 +13,108 @@
         
     </div>
 
-    <div id="Abonnement" class="pageback">
-        <h2>Abonnement</h2>
+    <div id="sous-nav" class="translate">
+        <div>
+            <p id="gen" class="page">Général</p>
+            <p id="sub" class="page">Abonnement</p>
+            <p id="buy" class="page">Paiement</p>
+        </div>
+        
+        <div>
+            <span class="background-button" style="width: auto;">
+                <button type="button" id="logout" class="buttonform" style="background-color: black;">Déconnexion</button>
+            </span>
+        </div>
+    </div>
+
+    <div id="Abonnement" class="pageback sub">
         <div class="cara">
+            <h2>Abonnement</h2>
             <div>
                 <p class="param">Statut</p>
-                <p class="value"></p>
+                <p class="value" id="subscriptionStatus">1</p>
             </div>
             <div>
                 <p class="param">Produit</p>
-                <p class="value"></p>
+                <p class="value" id="subscriptionProduct">1</p>
             </div>
             <div>
                 <p class="param">Option</p>
-                <p class="value"></p>
+                <p class="value" id="subscriptionOption">1</p>
             </div>
             <div>
                 <p class="param">Date de souscription</p>
-                <p class="value"></p>
+                <p class="value" id="subscriptionDate">1</p>
+            </div>
+            <div>
+                <p class="param">ID Scaly Pic's</p>
+                <p class="value" id="siteId">1</p>
             </div>
         </div>
     </div>
-    <div id="general" class="pageback">
-        
+    
+    <div id="general" class="pageback gen">
         <div class="cara">
             <h2>Générales</h2>
             <div>
                 <p class="param">Nom</p>
-                <p class="value"></p>
+                <p class="value" id="lastName">1</p>
             </div>
             <div>
                 <p class="param">Prénom</p>
-                <p class="value"></p>
+                <p class="value" id="firstName">1</p>
             </div>
             <div>
-                <p class="param">Age</p>
-                <p class="value"></p>
+                <p class="param">Date de Naissance</p>
+                <p class="value" id="birthDate">1</p>
             </div>
             <div>
                 <p class="param">Adresse</p>
-                <p class="value"></p>
+                <p class="value" id="address">1</p>
             </div>
             <div>
                 <p class="param">Téléphone</p>
-                <p class="value"></p>
+                <p class="value" id="phoneNumber">1</p>
             </div>
         </div>
-        
-        <div>
+    
+        <div class="cara">
             <h2>Sécurité</h2>
             <div>
                 <p class="param">Adresse Mail</p>
-                <p class="value"></p>
+                <p class="value" id="email">1</p>
+            </div>
+            <div>
+                <p class="param">Adresse Mail vérifiée</p>
+                <p class="value" id="isVerified">1</p>
             </div>
             <div>
                 <p class="param">Mot de passe</p>
-                <p class="value"></p>
+                <p class="value" id="password">1</p>
             </div>
         </div>
     </div>
+    
+    <div id="paiement" class="pageback buy">
+        <div class="cara">
+            <h2>Information de paiement</h2>
+            <div>
+                <p class="param">ID Client Stripe</p>
+                <p class="value" id="stripeCustomerId">1</p>
+            </div>
+            <div>
+                <p class="param">ID Abonnement Stripe</p>
+                <p class="value" id="stripeSubscriptionId">1</p>
+            </div>
+            <div>
+                <p class="param">Moyen de paiement Stripe</p>
+                <p class="value" id="stripePaymentMethodId">1</p>
+            </div>
+        </div>
+    </div>
+    
 </div>
+
+
+
 

@@ -43,6 +43,14 @@ function loadUnlock(){
                     document.querySelector('#main-content').appendChild(child);
                 });
 
+                const  menu = document.querySelector('#burger')
+                console.log(menu);
+                
+                document.querySelector('#burger').addEventListener('click',()=>{
+                    document.querySelector('#sous-nav').classList.toggle('translate')
+                    
+            })
+
             } else {
                 // Si c'est un objet JSON, on gère l'erreur
                 console.error(data.message);
@@ -70,5 +78,39 @@ document.querySelector('#admin').addEventListener('click', () => {
     .catch(err => console.error("Erreur de déconnexion :", err));
 });
 
+const observer = new MutationObserver(() => {
+    const menu = document.querySelector("#burger");
+    if (menu) {
+        menu.addEventListener("click", () => {
+            document.querySelector("#sous-nav").classList.toggle("translate");
+            console.log('tfc');
+        });
+        addEvent()
+        observer.disconnect(); // On arrête l'observation une fois `#burger` détecté
+    }
+});
 
-console.log('coucoui')
+// Observer les changements dans #main-content
+observer.observe(document.querySelector("#main-content"), { childList: true, subtree: true });
+
+function addEvent(){
+    const pages = document.querySelectorAll('.page');
+
+    pages.forEach(page =>{
+        page.addEventListener('click',()=>{
+            pagination(pages,page.id)
+        })
+    })
+}
+
+function pagination(tabpage,page){
+    tabpage.forEach(lapage =>{
+        if(lapage.id != page){
+            document.querySelector(`.${lapage.id}`).style.display = "none"
+        }else{
+            document.querySelector(`.${lapage.id}`).style.display = "flex"
+        }
+    })
+}
+
+
