@@ -1,116 +1,113 @@
-if (window.clientData) {
-    console.log("Utilisateur connecté :", window.clientData);
-    
-} else {
-    // Si la page a été rechargée, récupérer les données depuis le backend via le token
-    fetch("/me", { credentials: 'include' })
-        .then(res => res.json())
-        .then(data => {
-            if (data.user) {
-                window.clientData = data.user;
-                console.log("Utilisateur récupéré :", data.user);
-            } else {
-                console.log('pute'); // Redirige vers la connexion si non authentifié
-            }
-        })
-        .catch(() => window.location.href = "/login");
-}
-
-
-function loadUnlock(){
-    fetch("/api/dashboard", {
-        method: "GET",
-        credentials: "include"
-    })
-        .then(res => {
-            if (res.ok) {
-                return res.text(); // On récupère le HTML dans ce cas
-            } else {
-                return res.json(); // Sinon, on tente de récupérer un message d'erreur JSON
-            }
-        })
-        .then(data => {
-            
-            document.querySelector('#main-content').textContent = ''
-            
-            if (typeof data === "string") {
-                // Si on reçoit du texte, cela signifie probablement qu'on a une page HTML
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data, "text/html");
-    
-                // Ajoute chaque enfant du <body> à #main-content
-                Array.from(doc.body.children).forEach(child => {
-                    document.querySelector('#main-content').appendChild(child);
-                });
-
-                const  menu = document.querySelector('#burger')
-                console.log(menu);
-                
-                document.querySelector('#burger').addEventListener('click',()=>{
-                    document.querySelector('#sous-nav').classList.toggle('translate')
-                    
-            })
-
-            } else {
-                // Si c'est un objet JSON, on gère l'erreur
-                console.error(data.message);
-            }
-        })
-        .catch((err) => {
-            console.log("Erreur : ", err);
+// ⚡ Fonction pour récupérer les données utilisateur
+async function fetchUserData() {
+    try {
+        const response = await fetch("/api/user_client", {
+            credentials: "include"  // Assure-toi que le cookie est inclus dans la requête
         });
+        const data = await response.json();
+        if (!data.user) throw new Error("Utilisateur non authentifié");
+
+        window.clientData = data.user;
+        return data.user;
+    } catch (error) {
+        console.error("Erreur lors du chargement des données utilisateur :", error);
+    }
 }
 
-document.querySelector('#admin').addEventListener('click', () => {
-    fetch("/api/logout", { // Envoie la requête de déconnexion
-        method: "GET",
-        credentials: "include"  // S'assure d'inclure les cookies (si tu utilises les cookies pour stocker le token)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.message === "Déconnexion réussie") {
-            // Rediriger ou effectuer d'autres actions après la déconnexion
-            document.querySelector('#divlock').style.display ="flex"
-            document.querySelector('#unlock').style.display ="none"
-            window.location.href = "/"; // Exemple de redirection vers la page de login
-        }
-    })
-    .catch(err => console.error("Erreur de déconnexion :", err));
-});
 
-const observer = new MutationObserver(() => {
+// ⚡ Fonction pour charger le tableau de bord
+async function loadDashboard() {
+    try {
+        const response = await fetch("/api/dashboard", { credentials: "include" });
+        const data = await response.text(); // On attend la réponse complète en HTML
+
+        document.querySelector("#main-content").innerHTML = data;
+
+        // Ajout des événements une fois le contenu chargé
+        setupMenu();
+        fillUserData();
+        setupPagination();
+
+    } catch (error) {
+        console.error("Erreur lors du chargement du dashboard :", error);
+    }
+}
+
+// ⚡ Remplissage des champs utilisateur
+function fillUserData() {
+    if (!window.clientData) return;
+
+    const fillField = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value || "Non renseigné";
+    };
+
+    fillField("subscriptionStatus", window.clientData.subscriptionStatus);
+    fillField("subscriptionProduct", window.clientData.subscriptionProduct);
+    fillField("subscriptionOption", window.clientData.subscriptionOption);
+    fillField("subscriptionDate", new Date(window.clientData.subscriptionDate).toLocaleDateString());
+    fillField("siteId", window.clientData.siteId);
+
+    fillField("lastName", window.clientData.lastName);
+    fillField("firstName", window.clientData.firstName);
+    fillField("birthDate", window.clientData.birthDate ? new Date(window.clientData.birthDate).toLocaleDateString() : "Non renseigné");
+    fillField("address", window.clientData.address);
+    fillField("phoneNumber", window.clientData.phoneNumber);
+
+    fillField("email", window.clientData.email);
+    fillField("isVerified", window.clientData.isVerified ? "Oui" : "Non");
+
+    fillField("stripeCustomerId", window.clientData.stripeCustomerId);
+    fillField("stripeSubscriptionId", window.clientData.stripeSubscriptionId);
+    fillField("stripePaymentMethodId", window.clientData.stripePaymentMethodId);
+}
+
+// ⚡ Gestion du menu burger
+function setupMenu() {
     const menu = document.querySelector("#burger");
     if (menu) {
         menu.addEventListener("click", () => {
             document.querySelector("#sous-nav").classList.toggle("translate");
-            console.log('tfc');
         });
-        addEvent()
-        observer.disconnect(); // On arrête l'observation une fois `#burger` détecté
     }
-});
-
-// Observer les changements dans #main-content
-observer.observe(document.querySelector("#main-content"), { childList: true, subtree: true });
-
-function addEvent(){
-    const pages = document.querySelectorAll('.page');
-
-    pages.forEach(page =>{
-        page.addEventListener('click',()=>{
-            pagination(pages,page.id)
-        })
-    })
 }
 
-function pagination(tabpage,page){
-    tabpage.forEach(lapage =>{
-        if(lapage.id != page){
-            document.querySelector(`.${lapage.id}`).style.display = "none"
-        }else{
-            document.querySelector(`.${lapage.id}`).style.display = "flex"
+// ⚡ Gestion de la pagination
+function setupPagination() {
+    const pages = document.querySelectorAll(".page");
+
+    pages.forEach(page => {
+        page.addEventListener("click", () => {
+            pages.forEach(p => document.querySelector(`.${p.id}`).style.display = "none");
+            document.querySelector(`.${page.id}`).style.display = "flex";
+        });
+    });
+
+    // Masquer certaines sections au démarrage
+    document.querySelector("#abonnement").style.display = "none";
+    document.querySelector("#paiement").style.display = "none";
+    document.querySelector("#charging").style.display = "none";
+    
+    document.querySelector("#logout").addEventListener("click", async () => {
+        try {
+            const response = await fetch("/api/logout", { credentials: "include" });
+            const data = await response.json();
+            if (data.message === "Déconnexion réussie") {
+                document.querySelector("#divlock").style.display = "flex";
+                document.querySelector("#unlock").style.display = "none";
+                window.location.href = "/";
+            }
+        } catch (error) {
+            console.error("Erreur de déconnexion :", error);
         }
-    })
+    });
 }
 
+// ⚡ Déconnexion
 
+
+// ⚡ Initialisation : charger les données et afficher le dashboard
+(async () => {
+    await fetchUserData();
+    await loadDashboard();
+})();

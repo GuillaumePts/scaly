@@ -160,7 +160,7 @@ function loadContent(page) {
     
     if (htmlCache[page]) {
         const html = htmlCache[page];
-        
+        console.log(html);
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         
@@ -168,10 +168,9 @@ function loadContent(page) {
         Array.from(doc.body.childNodes).forEach(node => {
             dynamicCss(page);
             mainContent.appendChild(node);
-           
-           
-            
         });
+
+        
         if(page == "accueil"){
             document.querySelector('#jsaccueil').remove()
             const sc = document.createElement('script')

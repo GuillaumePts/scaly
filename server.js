@@ -171,49 +171,67 @@ app.post('/contact-message',(req,res)=>{
 // MONGODB////////////////////////////
 const authRoutes = require("./routes/auth.js");  // Assure-toi du bon chemin du fichier
 const clientRoutes = require("./routes/dashboard.js")
+
 // app.use(cors());
 app.use("/api", authRoutes); 
 app.use("/api", clientRoutes); 
 
-// async function createFakeUser() {
-//   try {
-//       await mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-//       const email = "fakeuser@example.com";
-//       const existingUser = await User.findOne({ email });
 
-//       if (existingUser) {
-//           console.log("⚠️ L'utilisateur existe déjà.");
-//           return;
-//       }
 
-//       const hashedPassword = await bcrypt.hash("password123", 10);
-//       const fakeUser = new User({
-//           firstName: "John",
-//           lastName: "Doe",
-//           email,
-//           password: hashedPassword,
-//           address: "123 Rue du Test, Paris, France",
-//           subscriptionDate: new Date(),
-//           subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 jours
-//           stripeCustomerId: "cus_fake123456",
-//           siteId: crypto.randomBytes(8).toString("hex"), // Génère un ID unique de 16 caractères
-//           isVerified: true,
-//           role: "client",
-//           isActive: true,
-//           phoneNumber: "+33123456789"
-//       });
 
-//       await fakeUser.save();
-//       console.log("✅ Faux utilisateur créé avec succès !");
-//   } catch (err) {
-//       console.error("❌ Erreur lors de la création du faux utilisateur :", err);
-//   } finally {
-//       mongoose.connection.close();
-//   }
 
-  
-// }
+
+
+
+
+async function createFakeUser() {
+  try {
+      await mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+      const email = "fakeuser@example.com";
+      const existingUser = await User.findOne({ email });
+
+      if (existingUser) {
+          console.log("⚠️ L'utilisateur existe déjà.");
+          return;
+      }
+
+      const hashedPassword = await bcrypt.hash("password123", 10);
+      const fakeUser = new User({
+          firstName: "John",
+          lastName: "Doe",
+          email,
+          password: hashedPassword,
+          address: "123 Rue du Test, Paris, France",
+          phoneNumber: "+33123456789",
+          birthDate: new Date("1995-06-15"),
+          isVerified: true,
+
+          // Infos abonnement
+          subscriptionStatus: "actif",
+          subscriptionProduct: "Scaly P'ics",
+          subscriptionOption: "white",
+          subscriptionDate: new Date(),
+
+          // ID unique pour Scaly Pic’s
+          siteId: crypto.randomBytes(8).toString("hex"),
+
+          // Infos Stripe
+          stripeCustomerId: "cus_fake123456",
+          stripeSubscriptionId: "sub_fake78910",
+          stripePaymentMethodId: "pm_fake54321"
+      });
+
+      await fakeUser.save();
+      console.log("✅ Faux utilisateur créé avec succès !");
+  } catch (err) {
+      console.error("❌ Erreur lors de la création du faux utilisateur :", err);
+  } finally {
+      mongoose.connection.close();
+  }
+}
+
 
 
 

@@ -32,7 +32,6 @@ document.getElementById('submit-button').addEventListener('click', async functio
     if (response.ok) {
         finload()
         goback()
-        window.clientData = data.user;
         
     } else {
         finload()
@@ -84,7 +83,7 @@ function goback(){
                     document.querySelector('#main-content').appendChild(child);
                 });
 
-                document.querySelector('#charging').style.display = "none"
+                
             } else {
                 // Si c'est un objet JSON, on gère l'erreur
                 document.querySelector('#charging').style.display = "none"

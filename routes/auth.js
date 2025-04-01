@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// Connexion avec email + mot de passe
+
 router.post("/login", [
     body("email").isEmail(),
     body("password").isLength({ min: 1 })
@@ -25,9 +25,12 @@ router.post("/login", [
     const { email, password } = req.body;  
     
     try {
+        // Ne pas exclure le mot de passe ici, sinon impossible de le comparer
         const user = await User.findOne({ email });
+
         if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
 
+        // Vérification du mot de passe
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Mot de passe incorrect" });
 
@@ -39,32 +42,53 @@ router.post("/login", [
         // Stocker le token en HttpOnly cookie
         res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
 
-        // Envoyer toutes les données de l'utilisateur
+        // Convertir l'utilisateur en objet et supprimer le mot de passe
+
         res.json({
             message: "Connexion réussie",
-            user: {
-                id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                address: user.address,
-                subscriptionDate: user.subscriptionDate,
-                subscriptionEndDate: user.subscriptionEndDate,
-                stripeCustomerId: user.stripeCustomerId,
-                siteId: user.siteId,
-                isVerified: user.isVerified,
-                role: user.role,
-                isActive: user.isActive,
-                profilePicture: user.profilePicture,
-                phoneNumber: user.phoneNumber
-            }
         });
+
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Erreur serveur" });
     }
     
 });
+
+router.get("/user_client", async (req, res) => {
+    const token = req.cookies.token; // Le token est dans le cookie
+
+    if (!token) {
+        return res.status(401).json({ message: "Utilisateur non authentifié" });
+    }
+
+    try {
+        // Vérifier le token JWT
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        // Trouver l'utilisateur par son ID
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: "Utilisateur introuvable" });
+        }
+
+        // Retirer le mot de passe avant de renvoyer l'utilisateur
+        const { password, ...userWithoutPassword } = user.toObject();
+
+        res.json({
+            user: userWithoutPassword
+        });
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Erreur serveur" });
+    }
+});
+
+
+
 
 // Envoi d'un e-mail de vérification
 router.post("/send-verification", async (req, res) => {
