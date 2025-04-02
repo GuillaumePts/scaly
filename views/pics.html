@@ -1,34 +1,66 @@
 <div id="pics">
 
-    <img id="backimg" src="/white/whiteback.jpg" alt="fond d'écran white">
+    <img class="backimg" id="Blanc" src="/Blanc/Blancback.jpg" alt="fond d'écran Blanc">
+    <img class="backimg" id="Noir" style="display: none;" src="/Noir/Noirback.jpg" alt="fond d'écran Noir">
+    <img class="backimg" id="Vert" style="display: none;" src="/Vert/Vertback.jpg" alt="fond d'écran Vert">
+    <img class="backimg" id="Rose" style="display: none;" src="/Rose/Roseback.jpg" alt="fond d'écran Rose">
 
     <div id="contentselect">
-        <!-- <select name="" id="">
-            <option value="">White</option>
-            <option value="">Black</option>
-            <option value="">Pink</option>
-            <option value="">Green</option>
-        </select> -->
-    
-        <!-- <select name="" id="">
-            <option value="">Portable</option>
-            <option value="">Tablette</option>
-            <option value="">Dekstop</option>
-        </select> -->
-        <button><span>white  v</span></button>
-        <button><span>Portable  v</span></button>
+
+        <button id="colors"><span>Blanc</span></button>
+        <button id="devices"><span>Portable</span></button>
     </div>
 
-    <!-- <h2>Configuration</h2> -->
-    <img id="produitimg" src="/imgPc/portfolio2.png" alt="photo du produit scaly p'ics">
+
+    <img id="produitimg" class="translate" src="/imgPc/portfolio2.png" alt="photo du produit scaly p'ics">
     
     <div id="conf">
+
+    </div>
+</div>
+<div id="form">
+    <div class="form">
+        <div>
+            <label for="nom">Nom :</label>
+            <input type="text" id="nom">
+        </div>
+        <div>
+            <label for="prenom">Prenom :</label>
+            <input type="text" id="prenom">
+        </div>
+        <div>
+            <label for="date">Date de naissance :</label>
+            <input type="date" name="date" id="date">
+        </div>
+        <div>
+            <label for="adresse">Adresse :</label>
+            <input type="text" id="adresse">
+        </div>
         
+        <div>
+            <label for="ville">Ville :</label>
+            <input type="text" id="ville">
+        </div>
         
-        <!-- <div id="goform">
-            <div style="background-color: aqua;">
-                <button class="buttonform">Commencer</button>
-            </div>
-        </div> -->
+        <div>
+            <label for="code_postal">Code Postal :</label>
+            <input type="text" id="code_postal">
+        </div>
+        <div>
+            <label for="mail">E-mail :</label>
+            <input type="text" id="mail">
+        </div>
+        <div>
+            <label for="tel">Numéro de téléphone :</label>
+            <input type="text" id="tel">
+        </div>
+        <div>
+            <label for="password">Mot de passe :</label>
+            <input type="password" id="password">
+        </div>
+        <div>
+            <label for="password">Confirmer mot de passe :</label>
+            <input type="password" id="passwordconfirme">
+        </div>
     </div>
 </div>

@@ -10,6 +10,7 @@
     --color-primaire : #ffffff;
     --red : #c13434;
     --back-folder:#ffffffa8;
+    --before-color: #fff;
     
 }
 
@@ -110,7 +111,7 @@ body{
 }
 
 .overlayy {
-    z-index: 1000000000000000000000000000000000;
+    z-index: 10000;
     position: fixed;
     top: 0;
     left: 0;
@@ -371,17 +372,16 @@ main{
 }
 
 
-body::after {
+/* body::after {
     content: '';
 
-    position: fixed; /* Permet de couvrir toute la page */
+    position: fixed; 
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: url('/imgPc/back-removebg.png') center/cover no-repeat;
-    z-index: -2; /* Encore plus bas que le main-content */
-}
+    z-index: -2;} */
 
 /* body::before {
     content: '';
