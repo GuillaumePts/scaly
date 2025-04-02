@@ -93,6 +93,7 @@
         document.querySelector('#devices').style.boxShadow = `0px 0px 10px ${neon}`;
         document.querySelector('#devices').style.backgroundColor = color;
         document.querySelector('#conf').style.backgroundColor = color;
+        document.querySelector('#form').style.backgroundColor = color;
         // Modifier la variable CSS pour le ::before
         document.documentElement.style.setProperty('--before-color', neon);
     
