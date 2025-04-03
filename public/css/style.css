@@ -455,7 +455,13 @@ main{
     /* overflow: hidden; */
 }
 
-
+.blur-background {
+    position: absolute;
+    inset: 0; /* Remplit le parent */
+    background: rgba(255, 255, 255, 0.2); /* Couleur semi-transparente */
+    backdrop-filter: blur(5px);
+    z-index: 20; /* Applique un flou sur l'arrière-plan */ /* Envoie l'élément derrière les enfants */
+}
 
 
 .gradload{

@@ -18,49 +18,90 @@
 
     </div>
 </div>
+
 <div id="form">
-    <div class="form">
-        <div>
-            <label for="nom">Nom :</label>
-            <input type="text" id="nom">
-        </div>
-        <div>
-            <label for="prenom">Prenom :</label>
-            <input type="text" id="prenom">
-        </div>
-        <div>
-            <label for="date">Date de naissance :</label>
-            <input type="date" name="date" id="date">
-        </div>
-        <div>
-            <label for="adresse">Adresse :</label>
-            <input type="text" id="adresse">
-        </div>
-        
-        <div>
-            <label for="ville">Ville :</label>
-            <input type="text" id="ville">
-        </div>
-        
-        <div>
-            <label for="code_postal">Code Postal :</label>
-            <input type="text" id="code_postal">
-        </div>
-        <div>
-            <label for="mail">E-mail :</label>
-            <input type="text" id="mail">
-        </div>
-        <div>
-            <label for="tel">Numéro de téléphone :</label>
-            <input type="text" id="tel">
-        </div>
-        <div>
-            <label for="password">Mot de passe :</label>
-            <input type="password" id="password">
-        </div>
-        <div>
-            <label for="password">Confirmer mot de passe :</label>
-            <input type="password" id="passwordconfirme">
-        </div>
+    <div class="blur-background"></div>
+    <div id="infogeneral" class="formProduit">
+        <form class="iii translate">
+            <div>
+                <label for="nom">Nom :</label>
+                <input class="inputform2" type="text" id="nom" name="nom" autocomplete="family-name" required>
+                <p class="errform"></p>
+            </div>
+            <div>
+                <label for="prenom">Prénom :</label>
+                <input class="inputform2" type="text" id="prenom" name="prenom" autocomplete="given-name" required>
+                <p class="errform"></p>
+            </div>
+            <div>
+                <label for="date">Date de naissance :</label>
+                <input class="inputform2" type="date" name="date" id="date" required>
+                <p class="errform"></p>
+            </div>
+            <div>
+                <label for="adresse">Adresse :</label>
+                <input class="inputform2" type="text" id="adresse" name="adresse" autocomplete="street-address" required>
+                <p class="errform"></p>
+            </div>
+            <div>
+                <label for="ville">Ville :</label>
+                <input class="inputform2" type="text" id="ville" name="ville" autocomplete="address-level2" required>
+                <p class="errform"></p>
+            </div>
+            <div>
+                <label for="code_postal">Code Postal :</label>
+                <input class="inputform2" type="text" id="code_postal" name="code_postal" pattern="[0-9]{5}" maxlength="5" autocomplete="postal-code" required>
+                <p class="errform"></p>
+            </div>
+            <div>
+                <label for="mail">E-mail :</label>
+                <input class="inputform2" type="email" id="mail" name="email" autocomplete="email" required>
+                <p class="errform"></p>
+            </div>
+            <div>
+                <label for="tel">Numéro de téléphone :</label>
+                <input class="inputform2" type="tel" id="tel" name="tel" autocomplete="tel" required>
+                <p class="errform"></p>
+            </div>
+            <div>
+                <label for="password">Mot de passe :</label>
+                <input class="inputform2" type="password" id="password" name="password" required>
+                <p class="errform"></p>
+            </div>
+            <div>
+                <label for="passwordconfirme">Confirmer mot de passe :</label>
+                <input class="inputform2" type="password" id="passwordconfirme" name="passwordconfirme" required>
+                <p class="errform"></p>
+            </div>
+            <span class="background-button">
+                <button type="submit" id="submit-button" class="buttonform">Valider</button>
+            </span>
+        </form>
     </div>
+
+    <div class="formProduit" id="paiement">
+
+        <form class="formform" id="payment-form">
+            
+
+            <form id="payment-form">
+                <div id="card-element"></div> <!-- Stripe va insérer la carte ici -->
+                <p id="card-errors" class="errform"></p>
+                <button type="submit">Payer</button>
+            </form>
+    
+
+            <div>
+                <input type="checkbox" id="cgv" required>
+                <label for="cgv">J'accepte les <a href="/cgv">Conditions Générales de Vente</a></label>
+                <p class="errform"></p>
+            </div>
+    
+            <span class="background-button">
+                <button type="submit" id="submit-button-produit" class="buttonform">Payer</button>
+            </span>
+        </form>
+    </div>
+    
+
 </div>

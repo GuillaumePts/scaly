@@ -14,6 +14,7 @@ const sharp = require('sharp');
 const { MongoClient } = require("mongodb");
 const mongoose = require('mongoose');
 const crypto = require("crypto");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // const sqlite3 = require('sqlite3').verbose();
 // const db = new sqlite3.Database('/db.sqlite');

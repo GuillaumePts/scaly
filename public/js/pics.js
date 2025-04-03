@@ -1,5 +1,7 @@
-(()=>{
 
+
+
+(()=>{
     document.querySelector('#colors').addEventListener('click', () => {
         const obj = {
             Blanc: ['#eee', '#fff'],
@@ -93,9 +95,11 @@
         document.querySelector('#devices').style.boxShadow = `0px 0px 10px ${neon}`;
         document.querySelector('#devices').style.backgroundColor = color;
         document.querySelector('#conf').style.backgroundColor = color;
-        document.querySelector('#form').style.backgroundColor = color;
+        // document.querySelector('#form').style.backgroundColor = color;
+        // document.querySelector('#form').style.backgroundImage = `url(/${name}/${name}back.jpg)`;
         // Modifier la variable CSS pour le ::before
         document.documentElement.style.setProperty('--before-color', neon);
+        document.documentElement.style.setProperty('--inputform2', color);
     
         const tabimg = document.querySelectorAll('.backimg');
         tabimg.forEach(img => {
@@ -104,6 +108,122 @@
     }
     
 
+    document.getElementById("submit-button").addEventListener("click", function (event) {
+        event.preventDefault(); // Empêche l'envoi du formulaire si erreurs
+    
+        const fields = [
+            { id: "nom", regex: /^[A-Z][a-zA-Z\s-]{1,49}$/, message: "Le nom doit commencer par une majuscule et ne contenir que des lettres." },
+            { id: "prenom", regex: /^[A-Z][a-zA-Z\s-]{1,49}$/, message: "Le prénom doit commencer par une majuscule et ne contenir que des lettres." },
+            { id: "date", customValidation: validateAge, message: "Vous devez avoir au moins 18 ans." },
+            { id: "adresse", regex: /^.{5,}$/, message: "L'adresse doit contenir au moins 5 caractères." },
+            { id: "ville", regex: /^[A-Za-z\s-]{2,50}$/, message: "La ville ne doit contenir que des lettres." },
+            { id: "code_postal", regex: /^[0-9]{5}$/, message: "Le code postal doit contenir exactement 5 chiffres." },
+            { id: "mail", regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "L'adresse e-mail n'est pas valide." },
+            { id: "tel", regex: /^[0-9]{10,15}$/, message: "Le numéro de téléphone doit contenir entre 10 et 15 chiffres." },
+            { id: "password", regex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, message: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial." },
+            { id: "passwordconfirme", customValidation: validatePasswordMatch, message: "Les mots de passe ne correspondent pas." }
+        ];
+    
+        let isValid = true;
+    
+        fields.forEach(field => {
+            const input = document.getElementById(field.id);
+            const errorElement = input.nextElementSibling;
+            const value = input.value.trim();
+    
+            if (!value) {
+                showError(input, errorElement, "Ce champ est obligatoire.");
+                isValid = false;
+                return;
+            }
+    
+            if (field.regex && !field.regex.test(value)) {
+                showError(input, errorElement, field.message);
+                isValid = false;
+                return;
+            }
+    
+            if (field.customValidation && !field.customValidation(value)) {
+                showError(input, errorElement, field.message);
+                isValid = false;
+                return;
+            }
+    
+            clearError(input, errorElement);
+        });
+    
+        if (isValid) {
+            sendData();
+        }
+    });
+    
+    function showError(input, errorElement, message) {
+        input.style.border = "1px solid red";
+        errorElement.style.color = "red";
+        errorElement.textContent = message;
+    }
+    
+    function clearError(input, errorElement) {
+        input.style.border = "";
+        errorElement.textContent = "";
+    }
+    
+    function validateAge(date) {
+        const birthDate = new Date(date);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        const dayDiff = today.getDate() - birthDate.getDate();
+    
+        return age > 18 || (age === 18 && (monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0)));
+    }
+    
+    function validatePasswordMatch() {
+        return document.getElementById("password").value === document.getElementById("passwordconfirme").value;
+    }
+    
+    function sendData() {
+        const formData = {
+            nom: document.getElementById("nom").value,
+            prenom: document.getElementById("prenom").value,
+            date: document.getElementById("date").value,
+            adresse: document.getElementById("adresse").value,
+            ville: document.getElementById("ville").value,
+            code_postal: document.getElementById("code_postal").value,
+            mail: document.getElementById("mail").value,
+            tel: document.getElementById("tel").value,
+            password: document.getElementById("password").value
+        };
+    
+        // fetch("/inscription", {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify(formData)
+        // })
+        // .then(response => response.json())
+        // .then(data => {
+        //     if (data.success) {
+        //         alert("Inscription réussie !");
+        //     } else {
+        //         alert("Erreur : " + data.message);
+        //     }
+        // })
+        // .catch(error => {
+        //     console.error("Erreur:", error);
+        //     alert("Une erreur est survenue.");
+        // });
+    }
+    
+
+    
+
+
+    const stripe = Stripe("pk_test_51R8lY82VNYYqRVbwC8zLGLalzMbUR9PzhJmL2lcgA3wRbDMdmYPfNMTH7OPMrTh8f7y7qo0wlbyerGVDRreQGgwH00ppKRstmD");
+
+
+    const elements = stripe.elements();
+    const cardElement = elements.create("card");
+    cardElement.mount("#card-element");
 
 
 

@@ -190,6 +190,7 @@ function loadContent(page) {
         if(page == "pics"){
             document.querySelector('#jspics').remove()
             const sc = document.createElement('script')
+            sc.type="module"
             sc.src = "/js/pics.js"
             sc.id = "jspics"
             document.body.appendChild(sc)

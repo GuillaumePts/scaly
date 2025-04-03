@@ -14,6 +14,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 2px;
+    z-index: 10;
 }
 
 #pics #produitimg{
@@ -43,7 +44,7 @@
 }
 
 .backimg{
-    position: absolute;
+    position: fixed;
     /* -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
     mask-image: radial-gradient(circle, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%); */
     width: auto;
@@ -51,7 +52,6 @@
     top: 0;
     left: 0;
     transition: opacity 0.2s ease-in-out;
-    
 }
 
 
@@ -65,6 +65,7 @@
     display: flex;
     justify-content: center;
     align-items: end;
+    box-shadow: 0px 0px 20px #00000040;
 }
 
 #pics #conf div{
@@ -137,31 +138,109 @@
     mix-blend-mode: multiply; /* Permet au flou de se fondre avec le fond */
     z-index: 0;
 }
+
+.fixed-image {
+    position: fixed;
+    top: 0; /* Aligner en haut */
+    left: 0; /* Aligner à gauche */
+    width: 100%; /* Taille personnalisée */
+    height: auto; /* Garde les proportions */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+}
+
+.inputform2{
+    position: relative;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    font-family: var(--font-fam-one);
+    font-weight: 500;
+    color: #000000;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px #0000003b;
+}
+
+
+
 #form{
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 50px 10px;
+    position: relative;
+    margin: 0 10px;
+    background-size: cover;
+    
 }
 
-.form{
-    width: 95%;
-    background-color: #fff;
+
+
+.formProduit{
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    gap: 50px;
-    padding: 70px 10px;
-
-}
-
-.form div{
+    align-items: center;
+    color: #fff;
     width: 100%;
+    gap: 20px;
+    padding: 50px 0;
+    max-width: 600px;
+    z-index: 21;
+}
+
+
+.iii{
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    gap: 25px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 20px;
+    mix-blend-mode: multiply;
+    padding: 25px 10px;
+    box-shadow: 0px 0px 20px #00000059;
+}
+
+.iii div{
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    justify-content: center;
+    gap: 10px;
+    width: 90%;
+}
+
+.iii div label{
+    font-family: var(--font-fam-one);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: #111;
+    width: 100%;
+    
+}
+
+#card-element {
+    width: 100%;
+    max-width: 400px; /* Ajuste selon ton design */
+    min-height: 400px; /* Permet d'afficher le champ correctement */
+    padding: 10px;
+    border: 1px solid #ccc; /* Optionnel pour voir la bordure */
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.StripeElement {
+    width: 100% !important;
+    height: auto !important;
 }
 
