@@ -225,7 +225,7 @@
         .then(data => {
             if (data.success && data.customerId) {
                 finload()
-                alert("Inscription réussie et client Stripe créé !");
+                goback()
                 // Tu peux maintenant continuer la suite de ton processus (par exemple rediriger vers la page de paiement)
             } else {
                 finload()
@@ -289,4 +289,102 @@
             document.querySelector('.overlayLoad').remove()
         },700);
     }
+
+    
+function goback(){
+    const script = document.createElement('script')
+    script.id ="clientjs"
+    script.src = "/js/client.js"
+    document.body.appendChild(script)
+
+    const link = document.createElement("link");
+    link.id = "cssclient";
+    link.rel = "stylesheet";
+    link.href = "/css/client.css";
+    document.head.appendChild(link);
+
+    document.querySelector('#divlock').style.display ="none"
+    document.querySelector('#unlock').style.display ="flex"
+
+    document.querySelector('#charging').style.display = "flex"
+
+    fetch("/api/dashboard", {
+        method: "GET",
+        credentials: "include"
+    })
+        .then(res => {
+            if (res.ok) {
+                return res.text(); // On récupère le HTML dans ce cas
+            } else {
+                return res.json(); // Sinon, on tente de récupérer un message d'erreur JSON
+            }
+        })
+        .then(data => {
+            
+            document.querySelector('#main-content').textContent = ''
+            
+            if (typeof data === "string") {
+                // Si on reçoit du texte, cela signifie probablement qu'on a une page HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, "text/html");
+    
+                // Ajoute chaque enfant du <body> à #main-content
+                Array.from(doc.body.children).forEach(child => {
+                    document.querySelector('#main-content').appendChild(child);
+                });
+
+                
+            } else {
+                // Si c'est un objet JSON, on gère l'erreur
+                document.querySelector('#charging').style.display = "none"
+                console.error(data.message);
+            }
+        })
+        .catch((err) => {
+            console.log("Erreur : ", err);
+        });
+    
+
+}
+
+function loadUnlock(){
+    document.querySelector('#charging').style.display = "flex"
+
+    fetch("/api/dashboard", {
+        method: "GET",
+        credentials: "include"
+    })
+        .then(res => {
+            if (res.ok) {
+                return res.text(); // On récupère le HTML dans ce cas
+            } else {
+                return res.json(); // Sinon, on tente de récupérer un message d'erreur JSON
+            }
+        })
+        .then(data => {
+            
+            document.querySelector('#main-content').textContent = ''
+            
+            if (typeof data === "string") {
+                // Si on reçoit du texte, cela signifie probablement qu'on a une page HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, "text/html");
+    
+                // Ajoute chaque enfant du <body> à #main-content
+                Array.from(doc.body.children).forEach(child => {
+                    document.querySelector('#main-content').appendChild(child);
+                });
+
+                
+            } else {
+                // Si c'est un objet JSON, on gère l'erreur
+                document.querySelector('#charging').style.display = "none"
+                console.error(data.message);
+            }
+        })
+        .catch((err) => {
+            console.log("Erreur : ", err);
+        });
+}
+
 })()

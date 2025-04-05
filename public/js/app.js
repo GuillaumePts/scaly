@@ -214,6 +214,68 @@ function loadContent(page) {
 
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function loadUnlock(){
+    if(document.querySelector('#clientjs')){
+        document.querySelector('#clientjs').remove()
+    }
+    if(document.querySelector('#cssclient')){
+        document.querySelector('#cssclient').remove()
+    }
+
+    const script = document.createElement('script')
+    script.id ="clientjs"
+    script.src = "/js/client.js"
+    document.body.appendChild(script)
+
+    const link = document.createElement("link");
+    link.id = "cssclient";
+    link.rel = "stylesheet";
+    link.href = "/css/client.css";
+    document.head.appendChild(link);
+
+    document.querySelector('#divlock').style.display ="none"
+    document.querySelector('#unlock').style.display ="flex"
+
+    document.querySelector('#charging').style.display = "flex"
+
+    fetch("/api/dashboard", {
+        method: "GET",
+        credentials: "include"
+    })
+        .then(res => {
+            if (res.ok) {
+                return res.text(); // On récupère le HTML dans ce cas
+            } else {
+                return res.json(); // Sinon, on tente de récupérer un message d'erreur JSON
+            }
+        })
+        .then(data => {
+            
+            document.querySelector('#main-content').textContent = ''
+            
+            if (typeof data === "string") {
+                // Si on reçoit du texte, cela signifie probablement qu'on a une page HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, "text/html");
+    
+                // Ajoute chaque enfant du <body> à #main-content
+                Array.from(doc.body.children).forEach(child => {
+                    document.querySelector('#main-content').appendChild(child);
+                });
+
+                
+            } else {
+                // Si c'est un objet JSON, on gère l'erreur
+                document.querySelector('#charging').style.display = "none"
+                console.error(data.message);
+            }
+        })
+        .catch((err) => {
+            console.log("Erreur : ", err);
+        });
+    
+}
+
 
 function animvisible() {
     const observer = new IntersectionObserver((entries) => {
@@ -436,44 +498,44 @@ function finload(){
 
 const tabPages = ['accueil', 'contact', 'pics', 'lock'];
 
-document.addEventListener("DOMContentLoaded", function () {
-    let touchStartX = 0;
-    let touchEndX = 0;
+// document.addEventListener("DOMContentLoaded", function () {
+//     let touchStartX = 0;
+//     let touchEndX = 0;
 
-    document.addEventListener("touchstart", function (e) {
-        touchStartX = e.touches[0].clientX;
-    });
+//     document.addEventListener("touchstart", function (e) {
+//         touchStartX = e.touches[0].clientX;
+//     });
 
-    document.addEventListener("touchend", function (e) {
-        touchEndX = e.changedTouches[0].clientX;
-        handleSwipe();
-    });
+//     document.addEventListener("touchend", function (e) {
+//         touchEndX = e.changedTouches[0].clientX;
+//         handleSwipe();
+//     });
 
-    function handleSwipe() {
-        let diff = touchEndX - touchStartX;
-        let currentIndex = tabPages.indexOf(actupage); // Trouver l'index de la page actuelle
+//     function handleSwipe() {
+//         let diff = touchEndX - touchStartX;
+//         let currentIndex = tabPages.indexOf(actupage); // Trouver l'index de la page actuelle
 
-        if (diff > 50) {
-            // Swipe de gauche à droite (page précédente)
-            if (currentIndex > 0) {
-                actupage = tabPages[currentIndex - 1];
-            } else {
-                // On revient à la dernière page si on est au début
-                actupage = tabPages[tabPages.length - 1];
-            }
-            loadContent(actupage);
-        } else if (diff < -50) {
-            // Swipe de droite à gauche (page suivante)
-            if (currentIndex < tabPages.length - 1) {
-                actupage = tabPages[currentIndex + 1];
-            } else {
-                // On revient à la première page si on est à la fin
-                actupage = tabPages[0];
-            }
-            loadContent(actupage);
-        }
-    }
-});
+//         if (diff > 50) {
+//             // Swipe de gauche à droite (page précédente)
+//             if (currentIndex > 0) {
+//                 actupage = tabPages[currentIndex - 1];
+//             } else {
+//                 // On revient à la dernière page si on est au début
+//                 actupage = tabPages[tabPages.length - 1];
+//             }
+//             loadContent(actupage);
+//         } else if (diff < -50) {
+//             // Swipe de droite à gauche (page suivante)
+//             if (currentIndex < tabPages.length - 1) {
+//                 actupage = tabPages[currentIndex + 1];
+//             } else {
+//                 // On revient à la première page si on est à la fin
+//                 actupage = tabPages[0];
+//             }
+//             loadContent(actupage);
+//         }
+//     }
+// });
 
 
 

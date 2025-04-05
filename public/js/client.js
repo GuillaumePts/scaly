@@ -56,11 +56,12 @@ function fillUserData() {
 
     fillField("email", window.clientData.email);
     fillField("isVerified", window.clientData.isVerified ? "Oui" : "Non");
+    fillField("paiement", window.clientData.paiement);
+    fillField("typePaiement", window.clientData.typePaiement);
+    fillField("price", window.clientData.price);
 
-    fillField("stripeCustomerId", window.clientData.stripeCustomerId);
-    fillField("stripeSubscriptionId", window.clientData.stripeSubscriptionId);
-    fillField("stripePaymentMethodId", window.clientData.stripePaymentMethodId);
 }
+
 
 // ⚡ Gestion du menu burger
 function setupMenu() {
@@ -70,6 +71,21 @@ function setupMenu() {
             document.querySelector("#sous-nav").classList.toggle("translate");
         });
     }
+
+    
+    document.getElementById("manage-billing").addEventListener("click", async () => {
+        const res = await fetch("/api/create-portal-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customerId: window.clientData.stripeCustomerId }) // récupéré du user connecté
+        });
+
+        const data = await res.json();
+        if (data.url) {
+        window.location.href = data.url;
+        }
+        console.log(window.clientData.stripeCustomerId)
+    });
 }
 
 // ⚡ Gestion de la pagination
@@ -84,8 +100,7 @@ function setupPagination() {
     });
 
     // Masquer certaines sections au démarrage
-    document.querySelector("#abonnement").style.display = "none";
-    document.querySelector("#paiement").style.display = "none";
+    document.querySelector("#general").style.display = "none";
     document.querySelector("#charging").style.display = "none";
     
     document.querySelector("#logout").addEventListener("click", async () => {
@@ -102,6 +117,8 @@ function setupPagination() {
         }
     });
 }
+
+
 
 // ⚡ Déconnexion
 

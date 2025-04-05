@@ -87,7 +87,24 @@ router.get("/user_client", async (req, res) => {
     }
 });
 
-
+// Exemple avec Express
+router.post("/create-portal-session", async (req, res) => {
+    const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+    const { customerId } = req.body;
+  
+    try {
+      const session = await stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: "http://192.168.1.69:9999/" // ton URL après modification
+      });
+  
+      res.json({ url: session.url });
+    } catch (error) {
+      console.error("Erreur portail Stripe :", error);
+      res.status(500).json({ error: "Impossible de créer une session de gestion." });
+    }
+  });
+  
 
 
 // Envoi d'un e-mail de vérification

@@ -15,9 +15,9 @@
 
     <div id="sous-nav" class="translate">
         <div>
-            <p id="gen" class="page">Général</p>
             <p id="sub" class="page">Abonnement</p>
-            <p id="buy" class="page">Paiement</p>
+            <p id="gen" class="page">Général</p>
+            
         </div>
         
         <div id="logout">
@@ -47,8 +47,28 @@
                 <p class="value" id="subscriptionDate">1</p>
             </div>
             <div>
+                <p class="param">Prélèvement</p>
+                <p class="value" id="typePaiement">1</p>
+            </div>
+            <div>
+                <p class="param">Prix</p>
+                <p class="value" id="price">1</p>
+            </div>
+            <div>
                 <p class="param">ID Scaly Pic's</p>
                 <p class="value" id="siteId">1</p>
+            </div>
+        </div>
+        <div class="cara">
+            <h2>Paiement</h2>
+            <div id="paiementfalse">
+                <p class="param">Validité</p>
+                <p class="value" id="paiement">1</p>
+            </div>
+            <button id="manage-billing">Gérer mon abonnement</button>
+            <div id="paiementTrue">
+                <p class="param">Validité</p>
+                <p class="value" id="paiement">1</p>
             </div>
         </div>
     </div>
@@ -95,23 +115,7 @@
         </div>
     </div>
     
-    <div id="paiement" class="pageback buy">
-        <div class="cara">
-            <h2>Information de paiement</h2>
-            <div>
-                <p class="param">ID Client Stripe</p>
-                <p class="value" id="stripeCustomerId">1</p>
-            </div>
-            <div>
-                <p class="param">ID Abonnement Stripe</p>
-                <p class="value" id="stripeSubscriptionId">1</p>
-            </div>
-            <div>
-                <p class="param">Moyen de paiement Stripe</p>
-                <p class="value" id="stripePaymentMethodId">1</p>
-            </div>
-        </div>
-    </div>
+    
     
 </div>
 

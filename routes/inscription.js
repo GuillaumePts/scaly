@@ -59,7 +59,7 @@ router.post("/inscription", async (req, res) => {
             address: `${adresse}, ${code_postal} ${ville}`,
             phoneNumber: tel,
             birthDate: new Date(date),
-            subscriptionStatus: "actif",
+            subscriptionStatus: "inactif",
             subscriptionProduct: "Pic's",
             subscriptionOption,
             siteId,

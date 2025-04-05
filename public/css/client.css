@@ -58,7 +58,7 @@
 #sous-nav div p{
     font-family: var(--font-fam-one);
     color: var(--color-font);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 600;
     letter-spacing: 2px;
 }
@@ -124,6 +124,17 @@
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: 2px;
+    position: relative;
+}
+
+.param::before{
+    content: '';
+    height: 2px;
+    background: linear-gradient(190deg, rgb(255 140 170) 0%, rgb(160 163 240) 88%);
+    width: 100%;
+    position: absolute;
+    bottom: -2px;
+    left: 0;
 }
 
 .value{
