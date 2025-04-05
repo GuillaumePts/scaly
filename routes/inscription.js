@@ -37,14 +37,17 @@ router.post("/inscription", async (req, res) => {
         const customer = await stripe.customers.create({
             email,
             name: `${prenom} ${nom}`,
-            phone: tel,
+            // Évite d'envoyer des informations non nécessaires pour tester
+            phone: tel, // Teste sans téléphone
+            // Assure-toi que l'adresse est bien formatée
             address: {
                 line1: adresse,
                 city: ville,
                 postal_code: code_postal,
-                country: "FR", // ou adapte si nécessaire
+                country: "FR",
             },
         });
+        
 
         // 🔠 Générer un identifiant unique (siteId)
         const siteId = `scalypics_${uuidv4().replace(/-/g, "").slice(0, 15)}`;
@@ -73,13 +76,41 @@ router.post("/inscription", async (req, res) => {
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
         res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
 
-        res.status(201).json({ success: true, message: "Inscription réussie et utilisateur connecté.", userId: newUser._id });
+        // 🛒 Créer une session Stripe Checkout
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: [
+                {
+                    price_data: {
+                        currency: "usd",  // ou la devise que tu utilises
+                        product_data: {
+                            name: subscriptionProduct,  // Utilise le produit lié à l'abonnement
+                        },
+                        unit_amount: 5000,  // Exemple : 50 USD
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: "payment",
+            success_url: `https://ton-site.com/success?session_id={CHECKOUT_SESSION_ID}`,  // Remplace par ton URL de succès
+            cancel_url: `https://ton-site.com/cancel`,  // Remplace par ton URL de cancellation
+            client_reference_id: newUser._id,  // Utilise l'ID utilisateur pour lier la session
+        });
+
+        // Renvoie l'URL de la session Stripe Checkout
+        res.status(201).json({
+            success: true,
+            message: "Inscription réussie et utilisateur connecté.",
+            checkoutUrl: session.url,  // Ajoute l'URL de la session dans la réponse
+            userId: newUser._id,
+        });
 
     } catch (error) {
         console.error("Erreur dans /inscription :", error);
         res.status(500).json({ success: false, message: "Erreur serveur." });
     }
 });
+
 
 router.post("/create-customer", async (req, res) => {
     const { email, userId } = req.body;

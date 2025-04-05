@@ -64,6 +64,16 @@ function fillUserData() {
     fillField("paiement", window.clientData.paiement);
     fillField("typePaiement", window.clientData.typePaiement);
     fillField("price", window.clientData.price);
+
+    if(window.clientData.subscriptionStatus === "inactif"){
+        document.querySelector('.itsok').style.display ="none"
+        document.querySelector('.itserr').style.display ="block"
+        document.querySelector('#subscriptionStatus').style.color ="red"
+    }else{
+        document.querySelector('.itsok').style.display ="block"
+        document.querySelector('.itserr').style.display ="none"
+        document.querySelector('#subscriptionStatus').style.color ="green"
+    }
 }
 
 

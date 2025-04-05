@@ -202,41 +202,27 @@
             subscriptionOption: document.querySelector("#colors span").textContent.trim()
         };
     
-        fetch("api/inscription", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData)
+        
+        fetch('/api/inscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData ),
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) { // On vérifie si l'inscription a bien réussi
-                return fetch("api/create-customer", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email: formData.email, userId: data.userId }) // Passer le userId
-                });
-            } else {
-                finload()
-                throw new Error(data.message); // En cas d'échec de l'inscription
-                
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.customerId) {
-                finload()
-                goback()
-                // Tu peux maintenant continuer la suite de ton processus (par exemple rediriger vers la page de paiement)
-            } else {
-                finload()
-                throw new Error("Erreur lors de la création du client Stripe.");
-            }
-        })
-        .catch(error => {
-            console.error("Erreur:", error);
-            finload()
-            alert("Une erreur est survenue : " + error.message);
-        });
+            .then(response => response.json())
+            .then(result => {
+                console.log('Résultat reçu du serveur :', result);
+                if (result.success) {
+                    console.log(result.checkoutUrl);
+                    // Redirige l'utilisateur vers Stripe Checkout
+                    window.open(result.checkoutUrl, "_blank")
+                } else {
+                    console.error('Erreur côté serveur :', result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la requête fetch :', error);
+            });
+        
     }
     
     

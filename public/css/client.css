@@ -63,6 +63,22 @@
     letter-spacing: 2px;
 }
 
+.itsok{
+    color: green; /* Évite les bugs sur certains navigateurs */
+    font-family: var(--font-fam-one);
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
+.itserr{
+    color: red; /* Évite les bugs sur certains navigateurs */
+    font-family: var(--font-fam-one);
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
 
 
 .pageback{

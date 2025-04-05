@@ -153,11 +153,13 @@ app.post('/contact-message',(req,res)=>{
 const authRoutes = require("./routes/auth.js");  // Assure-toi du bon chemin du fichier
 const clientRoutes = require("./routes/dashboard.js")
 const insRoutes = require("./routes/inscription.js")
+const webhookRoutes = require("./routes/paiement.js")
 
 // app.use(cors());
 app.use("/api", authRoutes); 
 app.use("/api", clientRoutes); 
 app.use("/api", insRoutes); 
+app.use("/api", webhookRoutes); 
 
 
 
