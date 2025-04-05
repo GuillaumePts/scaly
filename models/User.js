@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
     birthDate: { type: Date }, // id="age"
     
     // Informations liées à l'abonnement
-    subscriptionStatus: { type: String, default: "actif" }, // id="statut" (actif, inactif, suspendu...)
+    subscriptionStatus: { type: String, default: "inactif" }, // id="statut" (actif, inactif, suspendu...)
     subscriptionProduct: { type: String }, // id="produit" (ex: "Scaly Pro", "Scaly Basic")
     subscriptionOption: { type: String }, // id="option" (ex: "Mensuel", "Annuel", "Avec stockage...")
     subscriptionDate: { type: Date, default: Date.now }, // id="date"

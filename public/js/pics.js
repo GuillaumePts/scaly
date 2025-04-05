@@ -110,6 +110,7 @@
 
     document.getElementById("submit-button").addEventListener("click", function (event) {
         event.preventDefault(); // Empêche l'envoi du formulaire si erreurs
+        load()
     
         const fields = [
             { id: "nom", regex: /^[A-Z][a-zA-Z\s-]{1,49}$/, message: "Le nom doit commencer par une majuscule et ne contenir que des lettres." },
@@ -134,18 +135,21 @@
             if (!value) {
                 showError(input, errorElement, "Ce champ est obligatoire.");
                 isValid = false;
+
                 return;
             }
     
             if (field.regex && !field.regex.test(value)) {
                 showError(input, errorElement, field.message);
                 isValid = false;
+
                 return;
             }
     
             if (field.customValidation && !field.customValidation(value)) {
                 showError(input, errorElement, field.message);
                 isValid = false;
+
                 return;
             }
     
@@ -161,6 +165,7 @@
         input.style.border = "1px solid red";
         errorElement.style.color = "red";
         errorElement.textContent = message;
+        finload()
     }
     
     function clearError(input, errorElement) {
@@ -190,41 +195,98 @@
             adresse: document.getElementById("adresse").value,
             ville: document.getElementById("ville").value,
             code_postal: document.getElementById("code_postal").value,
-            mail: document.getElementById("mail").value,
+            email: document.getElementById("mail").value,
             tel: document.getElementById("tel").value,
-            password: document.getElementById("password").value
+            password: document.getElementById("password").value,
+            subscriptionProduct: "Pic's",
+            subscriptionOption: document.querySelector("#colors span").textContent.trim()
         };
     
-        // fetch("/inscription", {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify(formData)
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     if (data.success) {
-        //         alert("Inscription réussie !");
-        //     } else {
-        //         alert("Erreur : " + data.message);
-        //     }
-        // })
-        // .catch(error => {
-        //     console.error("Erreur:", error);
-        //     alert("Une erreur est survenue.");
-        // });
+        fetch("api/inscription", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) { // On vérifie si l'inscription a bien réussi
+                return fetch("api/create-customer", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: formData.email, userId: data.userId }) // Passer le userId
+                });
+            } else {
+                finload()
+                throw new Error(data.message); // En cas d'échec de l'inscription
+                
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.customerId) {
+                finload()
+                alert("Inscription réussie et client Stripe créé !");
+                // Tu peux maintenant continuer la suite de ton processus (par exemple rediriger vers la page de paiement)
+            } else {
+                finload()
+                throw new Error("Erreur lors de la création du client Stripe.");
+            }
+        })
+        .catch(error => {
+            console.error("Erreur:", error);
+            finload()
+            alert("Une erreur est survenue : " + error.message);
+        });
     }
     
-
     
-
-
-    const stripe = Stripe("pk_test_51R8lY82VNYYqRVbwC8zLGLalzMbUR9PzhJmL2lcgA3wRbDMdmYPfNMTH7OPMrTh8f7y7qo0wlbyerGVDRreQGgwH00ppKRstmD");
-
-
-    const elements = stripe.elements();
-    const cardElement = elements.create("card");
-    cardElement.mount("#card-element");
-
-
-
+    
+    function load(){
+        
+        const overlay = document.createElement('div');
+        overlay.classList.add('overlayLoad');
+        overlay.style.visibility="visible";
+        overlay.style.opacity="1"
+        console.log(overlay);
+    
+        // Ajout de l'overlay dans le body
+        document.body.appendChild(overlay);
+        const button=document.querySelector('.bubbly-button')
+        button.style.overflow='hidden'
+        const t = document.querySelector('#mooveAnim')
+        
+        t.style.zIndex="1"
+        t.style.opacity="1"
+        document.querySelector('#logonavbarre').style.opacity="0"
+        const div = document.createElement('div')
+        div.classList.add('loaderi')
+        
+        const img = document.createElement('img')
+        img.src="/logo/logocoupe.png"
+        img.style.width="auto"
+        img.style.height="58px"
+        img.style.borderRadius = "50px"
+        
+        const grad = document.createElement('div')
+        grad.classList.add('gradload')
+        grad.appendChild(img)
+        document.querySelector('#admin').appendChild(div)
+        document.querySelector('#admin').appendChild(grad)
+        
+    }
+    
+    function finload(){
+        document.querySelector('.loaderi').remove()
+        document.querySelector('.gradload').remove()
+        document.querySelector('#logonavbarre').style.opacity="1"
+        const button=document.querySelector('.bubbly-button')
+        button.style.overflow='visible'
+        button.classList.add('anima');
+        setTimeout(function(){
+            button.classList.remove('anima');
+            document.querySelector('.overlayLoad').style.visibility="hidden";
+            document.querySelector('.overlayLoad').style.opacity="0"
+            document.querySelector('.overlayLoad').remove()
+        },700);
+    }
 })()

@@ -227,20 +227,3 @@
     
 }
 
-#card-element {
-    width: 100%;
-    max-width: 400px; /* Ajuste selon ton design */
-    min-height: 400px; /* Permet d'afficher le champ correctement */
-    padding: 10px;
-    border: 1px solid #ccc; /* Optionnel pour voir la bordure */
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    
-}
-
-.StripeElement {
-    width: 100% !important;
-    height: auto !important;
-}
-
