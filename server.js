@@ -40,33 +40,10 @@ app.use(cookieParser())
 
 
 
-
-// async function connectDB() {
-//     try {
-//         const client = new MongoClient(process.env.MONGO_URI);
-//         await client.connect();
-//         console.log("🚀 Connecté à MongoDB Atlas !");
-//     } catch (error) {
-//         console.error("❌ Erreur de connexion :", error);
-//     }
-// }
-
-// connectDB();
-
-
 // Route principale qui renvoie le fichier HTML
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
-
-
-
-
-
-
-
-
-
 
 // Routes pour les différents contenus de la page
 app.get('/content/contact', (req, res) => {
@@ -170,6 +147,9 @@ app.post('/contact-message',(req,res)=>{
 // GESTION BACKEND ///////////////////////////////////
 /////////////////////////////////////////////////////
 // MONGODB////////////////////////////
+
+
+
 const authRoutes = require("./routes/auth.js");  // Assure-toi du bon chemin du fichier
 const clientRoutes = require("./routes/dashboard.js")
 const insRoutes = require("./routes/inscription.js")

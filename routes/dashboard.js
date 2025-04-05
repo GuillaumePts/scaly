@@ -8,25 +8,23 @@ const path = require('path');
 
 const router = express.Router();
 
-const authenticateUser = (req, res, next) => {
-    try {
-        // Vérifie si le token est présent dans les cookies
-        const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
-
-        if (!token) {
-            return res.status(401).json({ message: "Accès non autorisé. Aucun token trouvé." });
-        }
-
-        // Vérifie le JWT
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; // Stocke les infos de l'utilisateur dans req.user
-        next();
-    } catch (err) {
-        return res.status(401).json({ message: "Token invalide ou expiré." });
+function requireAuth(req, res, next) {
+    const token = req.cookies.token; // Récupérer le token JWT depuis les cookies
+    if (!token) {
+        return res.status(401).json({ message: "Non autorisé : Token manquant" });
     }
-};
+    
+    try {
+        // Vérifier et décoder le token JWT
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded; // Ajouter l'utilisateur décodé dans la requête
+        next(); // Passer au middleware suivant
+    } catch (err) {
+        return res.status(401).json({ message: "Non autorisé : Token invalide" });
+    }
+}
 
-router.get("/dashboard", authenticateUser , async (req, res) => {
+router.get("/dashboard", requireAuth , async (req, res) => {
     try {
         
         res.sendFile(path.join(__dirname, '../views/client.html'));
@@ -38,7 +36,7 @@ router.get("/dashboard", authenticateUser , async (req, res) => {
 });
 
 // Exemple de route de déconnexion
-router.get("/logout", (req, res) => {
+router.get("/logout",requireAuth, (req, res) => {
     // Supprimer le cookie du token
     res.clearCookie("token");
 

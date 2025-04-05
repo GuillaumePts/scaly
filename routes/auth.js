@@ -17,6 +17,38 @@ const transporter = nodemailer.createTransport({
 });
 
 
+function requireAuth(req, res, next) {
+    const token = req.cookies.token; // Récupérer le token JWT depuis les cookies
+    if (!token) {
+        return res.status(401).json({ message: "Non autorisé : Token manquant" });
+    }
+    
+    try {
+        // Vérifier et décoder le token JWT
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id; // Récupérer l'ID de l'utilisateur à partir du token
+
+        // Récupérer l'utilisateur complet depuis la base de données
+        User.findById(userId).then(user => {
+            if (!user) {
+                return res.status(404).json({ message: "Utilisateur introuvable" });
+            }
+
+            req.user = user; // Ajouter l'utilisateur complet dans la requête
+            next(); // Passer au middleware suivant
+        }).catch(err => {
+            console.log(err);
+            return res.status(500).json({ message: "Erreur serveur" });
+        });
+
+    } catch (err) {
+        return res.status(401).json({ message: "Non autorisé : Token invalide" });
+    }
+}
+
+
+
+
 router.post("/login", [
     body("email").isEmail(),
     body("password").isLength({ min: 1 })
@@ -55,31 +87,38 @@ router.post("/login", [
     
 });
 
-router.get("/user_client", async (req, res) => {
-    const token = req.cookies.token; // Le token est dans le cookie
+router.get("/user_client",requireAuth, async (req, res) => {
+    const token = req.cookies.token;
 
     if (!token) {
         return res.status(401).json({ message: "Utilisateur non authentifié" });
     }
 
     try {
-        // Vérifier le token JWT
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.id;
 
-        // Trouver l'utilisateur par son ID
         const user = await User.findById(userId);
 
         if (!user) {
             return res.status(404).json({ message: "Utilisateur introuvable" });
         }
 
-        // Retirer le mot de passe avant de renvoyer l'utilisateur
-        const { password, ...userWithoutPassword } = user.toObject();
+        const userObj = user.toObject();
 
-        res.json({
-            user: userWithoutPassword
-        });
+        // Champs à ne pas renvoyer côté client
+        const champsAExclure = [
+            "password",
+            "stripeSubscriptionId",
+            "stripeCustomerId",
+            "resetPasswordToken",
+            "resetPasswordExpires",
+            "roles", // si tu as des rôles admin, etc.
+        ];
+
+        champsAExclure.forEach(champ => delete userObj[champ]);
+
+        res.json({ user: userObj });
 
     } catch (err) {
         console.log(err);
@@ -87,25 +126,39 @@ router.get("/user_client", async (req, res) => {
     }
 });
 
-// Exemple avec Express
-router.post("/create-portal-session", async (req, res) => {
-    const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-    const { customerId } = req.body;
-  
-    try {
-      const session = await stripe.billingPortal.sessions.create({
-        customer: customerId,
-        return_url: "http://192.168.1.69:9999/" // ton URL après modification
-      });
-  
-      res.json({ url: session.url });
-    } catch (error) {
-      console.error("Erreur portail Stripe :", error);
-      res.status(500).json({ error: "Impossible de créer une session de gestion." });
-    }
-  });
-  
 
+// Exemple avec Express
+router.post("/create-portal-session", requireAuth, async (req, res) => {
+    const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
+
+    // Récupérer l'utilisateur depuis le middleware (req.user est défini dans requireAuth)
+    const user = req.user;
+    console.log("Utilisateur trouvé :", user);
+    if (!user.stripeCustomerId) {
+        console.log("Erreur : ID Stripe manquant pour cet utilisateur.");
+        return res.status(401).json({ error: "Stripe ID manquant." });
+    }
+
+    // Vérifier si l'utilisateur a un customerId Stripe
+    if (!user || !user.stripeCustomerId) {
+        return res.status(401).json({ error: "Utilisateur non authentifié ou Stripe ID manquant." });
+    }
+
+    try {
+        // Créer une session Stripe pour le portail de gestion de l'abonnement
+        const session = await stripe.billingPortal.sessions.create({
+            customer: user.stripeCustomerId,
+            return_url: "http://192.168.1.69:9999/" // URL de redirection après la gestion du paiement
+        });
+
+        // Renvoi de l'URL pour accéder au portail
+        res.json({ url: session.url });
+    } catch (error) {
+        console.error("Erreur portail Stripe :", error);
+        res.status(500).json({ error: "Impossible de créer une session de gestion." });
+    }
+});
 
 // Envoi d'un e-mail de vérification
 router.post("/send-verification", async (req, res) => {

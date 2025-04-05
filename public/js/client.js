@@ -4,6 +4,11 @@ async function fetchUserData() {
         const response = await fetch("/api/user_client", {
             credentials: "include"  // Assure-toi que le cookie est inclus dans la requête
         });
+
+        if (!response.ok) {
+            throw new Error("Erreur lors de la récupération des données utilisateur.");
+        }
+
         const data = await response.json();
         if (!data.user) throw new Error("Utilisateur non authentifié");
 
@@ -11,6 +16,7 @@ async function fetchUserData() {
         return data.user;
     } catch (error) {
         console.error("Erreur lors du chargement des données utilisateur :", error);
+        alert("Veuillez vous reconnecter."); // Redirection vers la page de connexion si l'utilisateur est déconnecté
     }
 }
 
@@ -45,7 +51,6 @@ function fillUserData() {
     fillField("subscriptionStatus", window.clientData.subscriptionStatus);
     fillField("subscriptionProduct", window.clientData.subscriptionProduct);
     fillField("subscriptionOption", window.clientData.subscriptionOption);
-    fillField("subscriptionDate", new Date(window.clientData.subscriptionDate).toLocaleDateString());
     fillField("siteId", window.clientData.siteId);
 
     fillField("lastName", window.clientData.lastName);
@@ -59,8 +64,8 @@ function fillUserData() {
     fillField("paiement", window.clientData.paiement);
     fillField("typePaiement", window.clientData.typePaiement);
     fillField("price", window.clientData.price);
-
 }
+
 
 
 // ⚡ Gestion du menu burger
@@ -72,20 +77,28 @@ function setupMenu() {
         });
     }
 
-    
-    document.getElementById("manage-billing").addEventListener("click", async () => {
-        const res = await fetch("/api/create-portal-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerId: window.clientData.stripeCustomerId }) // récupéré du user connecté
-        });
 
-        const data = await res.json();
-        if (data.url) {
-        window.location.href = data.url;
+    document.getElementById("manage-billing").addEventListener("click", async () => {
+        try {
+            const res = await fetch("/api/create-portal-session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include"  // Assure-toi d'inclure les cookies pour l'authentification
+            });
+    
+            const data = await res.json();
+            if (res.ok && data.url) {
+                window.location.href = data.url;
+            } else {
+                console.error("Erreur lors de la création de la session Stripe :", data.error || "Erreur inconnue");
+                alert("Impossible de rediriger vers le portail de gestion.");
+            }
+        } catch (error) {
+            console.error("Erreur lors de la création de la session Stripe :", error);
+            alert("Erreur de communication avec le serveur.");
         }
-        console.log(window.clientData.stripeCustomerId)
     });
+    
 }
 
 // ⚡ Gestion de la pagination
