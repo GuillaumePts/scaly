@@ -210,43 +210,68 @@
         })
             .then(response => response.json())
             .then(result => {
-                console.log('Résultat reçu du serveur :', result);
+                finload()
                 if (result.success) {
-                    // Redirige l'utilisateur vers Stripe Checkout
-                    window.open(result.checkoutUrl, "_blank")
+                    console.log('ok');
+                    console.log(result);
+                    document.querySelector('#msgInscription').classList.add('good')
+                    document.querySelector('#msgInscription').textContent = result.message
+                    setTimeout(() => {
+                        document.querySelector('#msgInscription').textContent = ""
+                        document.querySelector('#msgInscription').classList.remove('notgood')
+                        backouvert()
+                    }, 3000);
+                    
                 } else {
-                    console.error('Erreur côté serveur :', result.message);
+                    console.log('pasok');
+                    console.log(result);
+                    document.querySelector('#msgInscription').classList.add('notgood')
+                    document.querySelector('#msgInscription').textContent = result.message
+                    setTimeout(() => {
+                        document.querySelector('#msgInscription').textContent = ""
+                        document.querySelector('#msgInscription').classList.remove('good')
+                        
+                    }, 3000);
                 }
             })
             .catch(error => {
-                console.error('Erreur lors de la requête fetch :', error);
+                console.log(error);
+                document.querySelector('#msgInscription').classList.add('notgood')
+                    document.querySelector('#msgInscription').textContent = "Oops, une erreur est survenu de notre coté"
+                    setTimeout(() => {
+                        document.querySelector('#msgInscription').textContent = ""
+                        document.querySelector('#msgInscription').classList.remove('notgood')
+                        
+                    }, 5000);
             });
         
     }
     
 
-    window.addEventListener("message", (event) => {
-        if (event.data.stripeSuccess) {
-          console.log("🎉 Paiement validé !");
+    // window.addEventListener("message", (event) => {
+    //     if (event.data.stripeSuccess) {
+    //       console.log("🎉 Paiement validé !");
           
-          // Tu peux déclencher une requête vers le back-end pour activer l'abonnement :
-          fetch("api/stripe/confirmation", {
-            method: "POST",
-            credentials: "include", // important pour envoyer le cookie JWT
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              console.log("✅ Abonnement activé côté serveur");
-              goback()
-            }
-          });
+    //       // Tu peux déclencher une requête vers le back-end pour activer l'abonnement :
+    //       fetch("api/stripe/confirmation", {
+    //         method: "POST",
+    //         credentials: "include", // important pour envoyer le cookie JWT
+    //       })
+    //       .then(res => res.json())
+    //       .then(data => {
+    //         if (data.success) {
+    //             finload()
+    //           console.log("✅ Abonnement activé côté serveur");
+    //           goback()
+    //         }
+    //       });
           
-        } else {
-          console.log("❌ Paiement annulé.");
-          goback()
-        }
-      });
+    //     } else {
+    //         finload()
+    //       console.log("❌ Paiement annulé.");
+    //       goback()
+    //     }
+    //   });
       
     
     function load(){
@@ -297,8 +322,17 @@
             document.querySelector('.overlayLoad').remove()
         },700);
     }
+function backouvert(){
 
+    document.querySelector('#divlock').style.display ="none"
+    document.querySelector('#unlock').style.display ="flex"
+
+    document.querySelector('#infogeneral').style.display ="none"
+    document.querySelector('#paiementform').style.display ="flex"
+}
     
+
+
 function goback(){
     const script = document.createElement('script')
     script.id ="clientjs"
@@ -357,6 +391,24 @@ function goback(){
 
 function loadUnlock(){
     document.querySelector('#charging').style.display = "flex"
+
+    if(document.querySelector('#clientjs')){
+        document.querySelector('#clientjs').remove()
+    }
+    if(document.querySelector('#cssclient')){
+        document.querySelector('#cssclient').remove()
+    }
+
+    const script = document.createElement('script')
+    script.id ="clientjs"
+    script.src = "/js/client.js"
+    document.body.appendChild(script)
+
+    const link = document.createElement("link");
+    link.id = "cssclient";
+    link.rel = "stylesheet";
+    link.href = "/css/client.css";
+    document.head.appendChild(link);
 
     fetch("/api/dashboard", {
         method: "GET",

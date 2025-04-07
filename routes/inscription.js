@@ -7,7 +7,6 @@ const User = require("../models/User"); // Ajuste le chemin si besoin
 const router = express.Router();
 
 router.post("/inscription", async (req, res) => {
-    console.log("req.body :", req.body);
 
     const {
         nom,
@@ -76,38 +75,16 @@ router.post("/inscription", async (req, res) => {
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
         res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
 
-        // 🛒 Créer une session Stripe Checkout
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ["card"],
-            line_items: [
-                {
-                    price_data: {
-                        currency: "usd",  // ou la devise que tu utilises
-                        product_data: {
-                            name: subscriptionProduct,  // Utilise le produit lié à l'abonnement
-                        },
-                        unit_amount: 5000,  // Exemple : 50 USD
-                    },
-                    quantity: 1,
-                },
-            ],
-            mode: "payment",
-            success_url: `https://ad33-37-65-30-41.ngrok-free.app/api/success`,  // Remplace par ton URL de succès
-            cancel_url: `https://ad33-37-65-30-41.ngrok-free.app/api/cancel`,  // Remplace par ton URL de cancellation
-            client_reference_id: newUser._id.toString(),  // Utilise l'ID utilisateur pour lier la session
-        });
-
-        // Renvoie l'URL de la session Stripe Checkout
+        // ✅ Réponse sans Stripe
         res.status(201).json({
             success: true,
-            message: "Inscription réussie et utilisateur connecté.",
-            checkoutUrl: session.url,  // Ajoute l'URL de la session dans la réponse
+            message: "Votre compte à bien été crée !",
             userId: newUser._id,
         });
 
     } catch (error) {
         console.error("Erreur dans /inscription :", error);
-        res.status(500).json({ success: false, message: "Erreur serveur." });
+        res.status(500).json({ success: false, message: "Oops, une erreur est survenu de notre coté" });
     }
 });
 
@@ -124,6 +101,44 @@ router.post("/create-customer", async (req, res) => {
         res.status(500).json({ success: false, error: error.message || "Erreur lors de la création du client Stripe." });
     }
 });
+
+router.post("/stripe/start-checkout", async (req, res) => {
+    const { userId, subscriptionProduct } = req.body;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
+        }
+
+        // Création de la session Stripe
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: [
+                {
+                    price_data: {
+                        currency: "eur",
+                        product_data: {
+                            name: subscriptionProduct,
+                        },
+                        unit_amount: 5000, // Exemple 50€
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: "payment",
+            success_url: `https://ad33-37-65-30-41.ngrok-free.app/api/success`,
+            cancel_url: `https://ad33-37-65-30-41.ngrok-free.app/api/cancel`,
+            client_reference_id: user._id.toString(),
+        });
+
+        res.status(200).json({ success: true, checkoutUrl: session.url });
+    } catch (err) {
+        console.error("Erreur lors de la création de la session Stripe :", err);
+        res.status(500).json({ success: false, message: "Erreur serveur." });
+    }
+});
+
 
 
 module.exports = router;

@@ -227,3 +227,19 @@
     
 }
 
+#msgInscription{
+    font-family: var(--font-fam-one);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    width: 100%;
+    min-height: 30px;
+}
+
+.good{
+    color: var(--green-);
+}
+
+.notgood{
+    color: var(--red-);
+}

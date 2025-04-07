@@ -8,10 +8,10 @@
     --url-img-contact : url("/imgcontact/illustration-contact.jpg");
     --color-button : #ffffff;
     --color-primaire : #ffffff;
-    --red : #c13434;
+    --red : rgb(255 0 67);
     --back-folder:#ffffffa8;
     --before-color: #fff;
-    
+    --green : rgb(129 185 189)
 }
 
 *{
