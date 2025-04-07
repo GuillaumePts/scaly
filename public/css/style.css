@@ -464,6 +464,7 @@ main{
 }
 
 
+
 .gradload{
     position: absolute;
     z-index: 4;
@@ -483,7 +484,7 @@ main{
     padding: 5px;
     border-radius: 50%;
     box-sizing: border-box;
-    background: var(--back-color);
+    background: #ffffff;
     display: grid;
     filter: blur(5px) contrast(15) hue-rotate(250deg);
     mix-blend-mode: darken;
@@ -624,6 +625,7 @@ background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 
       background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
     }
   }
+
 
 
 

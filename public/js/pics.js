@@ -212,7 +212,6 @@
             .then(result => {
                 console.log('Résultat reçu du serveur :', result);
                 if (result.success) {
-                    console.log(result.checkoutUrl);
                     // Redirige l'utilisateur vers Stripe Checkout
                     window.open(result.checkoutUrl, "_blank")
                 } else {
@@ -225,7 +224,30 @@
         
     }
     
-    
+
+    window.addEventListener("message", (event) => {
+        if (event.data.stripeSuccess) {
+          console.log("🎉 Paiement validé !");
+          
+          // Tu peux déclencher une requête vers le back-end pour activer l'abonnement :
+          fetch("api/stripe/confirmation", {
+            method: "POST",
+            credentials: "include", // important pour envoyer le cookie JWT
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              console.log("✅ Abonnement activé côté serveur");
+              goback()
+            }
+          });
+          
+        } else {
+          console.log("❌ Paiement annulé.");
+          goback()
+        }
+      });
+      
     
     function load(){
         

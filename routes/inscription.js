@@ -92,9 +92,9 @@ router.post("/inscription", async (req, res) => {
                 },
             ],
             mode: "payment",
-            success_url: `https://ton-site.com/success?session_id={CHECKOUT_SESSION_ID}`,  // Remplace par ton URL de succès
-            cancel_url: `https://ton-site.com/cancel`,  // Remplace par ton URL de cancellation
-            client_reference_id: newUser._id,  // Utilise l'ID utilisateur pour lier la session
+            success_url: `https://ad33-37-65-30-41.ngrok-free.app/api/success`,  // Remplace par ton URL de succès
+            cancel_url: `https://ad33-37-65-30-41.ngrok-free.app/api/cancel`,  // Remplace par ton URL de cancellation
+            client_reference_id: newUser._id.toString(),  // Utilise l'ID utilisateur pour lier la session
         });
 
         // Renvoie l'URL de la session Stripe Checkout
