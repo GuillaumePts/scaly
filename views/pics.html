@@ -15,16 +15,50 @@
     <img id="produitimg" class="translate" src="/imgPc/portfolio2.png" alt="photo du produit scaly p'ics">
     
     <div id="conf">
-
+        <div class="background-button" id="formulaire">
+            <div class="buttonform">Procéder au paiement</div>
+        </div>
     </div>
 </div>
 
 <div id="form">
+
     <div class="blur-background"></div>
-    <div id="paiementform">
-        <button>Acheter</button>
+
+
+    <div id="paiementformSuccess" class="formProduit">
+
+        <div id="successAnim" style="width: 150px; height: 150px;"></div>
+        
+        <p  class="good msgInscription">Votre compte à bien été créé !</p>
+
+        <div class="background-button" id="buy">
+            <div class="buttonform">Procéder au paiement</div>
+        </div>
+
+        <div class="conteneurimgformproduit">
+            <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
+        </div>
+
     </div>
-    <div id="infogeneral" class="formProduit">
+
+    <div id="paiementformEchec" class="formProduit">
+
+        <div id="echecAnim" style="width: 150px; height: 150px; transform: scale(1.4);"></div>
+
+        <p class="notgood msgInscription">Oops ! une erreur est survenu de notre coté</p>
+
+        <div class="background-button" id="retour">
+            <div class="buttonform">Réessayer</div>
+        </div>
+
+        <div class="conteneurimgformproduit">
+            <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
+        </div>
+    </div>
+
+
+    <div id="infogeneral" class="formProduit" style="display: none;">
         <form class="iii translate">
             <div>
                 <label for="nom">Nom :</label>
@@ -79,7 +113,7 @@
             <span class="background-button">
                 <button id="submit-button" class="buttonform">Valider</button>
             </span>
-            <p id="msgInscription"></p>
+            
         </form>
     </div>
 

@@ -8,10 +8,10 @@
     --url-img-contact : url("/imgcontact/illustration-contact.jpg");
     --color-button : #ffffff;
     --color-primaire : #ffffff;
-    --red : rgb(255 0 67);
+    --red : #f10d0d;
     --back-folder:#ffffffa8;
     --before-color: #fff;
-    --green : rgb(129 185 189)
+    --green : #00c6a1;
 }
 
 *{
@@ -885,8 +885,9 @@ footer div:nth-child(4){
     border-radius: 50px;
     background-color: #000;
     color: rgb(255, 255, 255);
-    margin: 1px;
+    margin: 2px;
     font-family: var(--font-fam-one);
+    letter-spacing: 1px;
 }
 
 

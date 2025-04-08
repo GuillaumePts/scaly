@@ -227,19 +227,43 @@
     
 }
 
-#msgInscription{
+.msgInscription{
     font-family: var(--font-fam-one);
     font-size: 1rem;
     font-weight: 500;
     letter-spacing: 1px;
     width: 100%;
     min-height: 30px;
+    text-align: center;
 }
 
 .good{
-    color: var(--green-);
+    color: var(--green);
 }
 
 .notgood{
-    color: var(--red-);
+    color: var(--red);
+}
+
+#paiementformSuccess{
+    background-color: #fff;
+    padding: 100px 10px;
+    position: relative;
+    border-radius: 10px;
+    display: none;
+}
+
+#paiementformEchec{
+    background-color: #fff;
+    padding: 100px 10px;
+    position: relative;
+    border-radius: 10px;
+    display: none;
+}
+
+
+.conteneurimgformproduit{
+    position: absolute;
+    top: 10px;
+    left: 10px;
 }

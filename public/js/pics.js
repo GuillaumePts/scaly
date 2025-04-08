@@ -106,60 +106,67 @@
             img.style.display = (img.id === name) ? "block" : "none";
         });
     }
-    
 
-    document.getElementById("submit-button").addEventListener("click", function (event) {
-        event.preventDefault(); // Empêche l'envoi du formulaire si erreurs
-        load()
-    
-        const fields = [
-            { id: "nom", regex: /^[A-Z][a-zA-Z\s-]{1,49}$/, message: "Le nom doit commencer par une majuscule et ne contenir que des lettres." },
-            { id: "prenom", regex: /^[A-Z][a-zA-Z\s-]{1,49}$/, message: "Le prénom doit commencer par une majuscule et ne contenir que des lettres." },
-            { id: "date", customValidation: validateAge, message: "Vous devez avoir au moins 18 ans." },
-            { id: "adresse", regex: /^.{5,}$/, message: "L'adresse doit contenir au moins 5 caractères." },
-            { id: "ville", regex: /^[A-Za-z\s-]{2,50}$/, message: "La ville ne doit contenir que des lettres." },
-            { id: "code_postal", regex: /^[0-9]{5}$/, message: "Le code postal doit contenir exactement 5 chiffres." },
-            { id: "mail", regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "L'adresse e-mail n'est pas valide." },
-            { id: "tel", regex: /^[0-9]{10,15}$/, message: "Le numéro de téléphone doit contenir entre 10 et 15 chiffres." },
-            { id: "password", regex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, message: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial." },
-            { id: "passwordconfirme", customValidation: validatePasswordMatch, message: "Les mots de passe ne correspondent pas." }
-        ];
-    
-        let isValid = true;
-    
-        fields.forEach(field => {
-            const input = document.getElementById(field.id);
-            const errorElement = input.nextElementSibling;
-            const value = input.value.trim();
-    
-            if (!value) {
-                showError(input, errorElement, "Ce champ est obligatoire.");
-                isValid = false;
+    document.querySelector('#formulaire').addEventListener('click',()=>{
+        document.querySelector('#infogeneral').style.display="flex"
+        document.querySelector('#infogeneral').scrollIntoView({ behavior: "smooth" })
 
-                return;
+        document.getElementById("submit-button").addEventListener("click", function (event) {
+            event.preventDefault(); // Empêche l'envoi du formulaire si erreurs
+            load()
+        
+            const fields = [
+                { id: "nom", regex: /^[A-Z][a-zA-Z\s-]{1,49}$/, message: "Le nom doit commencer par une majuscule et ne contenir que des lettres." },
+                { id: "prenom", regex: /^[A-Z][a-zA-Z\s-]{1,49}$/, message: "Le prénom doit commencer par une majuscule et ne contenir que des lettres." },
+                { id: "date", customValidation: validateAge, message: "Vous devez avoir au moins 18 ans." },
+                { id: "adresse", regex: /^.{5,}$/, message: "L'adresse doit contenir au moins 5 caractères." },
+                { id: "ville", regex: /^[A-Za-z\s-]{2,50}$/, message: "La ville ne doit contenir que des lettres." },
+                { id: "code_postal", regex: /^[0-9]{5}$/, message: "Le code postal doit contenir exactement 5 chiffres." },
+                { id: "mail", regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "L'adresse e-mail n'est pas valide." },
+                { id: "tel", regex: /^[0-9]{10,15}$/, message: "Le numéro de téléphone doit contenir entre 10 et 15 chiffres." },
+                { id: "password", regex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, message: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial." },
+                { id: "passwordconfirme", customValidation: validatePasswordMatch, message: "Les mots de passe ne correspondent pas." }
+            ];
+        
+            let isValid = true;
+        
+            fields.forEach(field => {
+                const input = document.getElementById(field.id);
+                const errorElement = input.nextElementSibling;
+                const value = input.value.trim();
+        
+                if (!value) {
+                    showError(input, errorElement, "Ce champ est obligatoire.");
+                    isValid = false;
+    
+                    return;
+                }
+        
+                if (field.regex && !field.regex.test(value)) {
+                    showError(input, errorElement, field.message);
+                    isValid = false;
+    
+                    return;
+                }
+        
+                if (field.customValidation && !field.customValidation(value)) {
+                    showError(input, errorElement, field.message);
+                    isValid = false;
+    
+                    return;
+                }
+        
+                clearError(input, errorElement);
+            });
+        
+            if (isValid) {
+                sendData();
             }
-    
-            if (field.regex && !field.regex.test(value)) {
-                showError(input, errorElement, field.message);
-                isValid = false;
-
-                return;
-            }
-    
-            if (field.customValidation && !field.customValidation(value)) {
-                showError(input, errorElement, field.message);
-                isValid = false;
-
-                return;
-            }
-    
-            clearError(input, errorElement);
         });
+    })
     
-        if (isValid) {
-            sendData();
-        }
-    });
+
+    
     
     function showError(input, errorElement, message) {
         input.style.border = "1px solid red";
@@ -210,39 +217,91 @@
         })
             .then(response => response.json())
             .then(result => {
+                
+                document.querySelector('#infogeneral').style.display = "none"
                 finload()
                 if (result.success) {
-                    console.log('ok');
-                    console.log(result);
-                    document.querySelector('#msgInscription').classList.add('good')
-                    document.querySelector('#msgInscription').textContent = result.message
-                    setTimeout(() => {
-                        document.querySelector('#msgInscription').textContent = ""
-                        document.querySelector('#msgInscription').classList.remove('notgood')
-                        backouvert()
-                    }, 3000);
+                    backouvert()
+                    document.querySelector('#paiementformSuccess').style.display = "flex"
                     
-                } else {
-                    console.log('pasok');
-                    console.log(result);
-                    document.querySelector('#msgInscription').classList.add('notgood')
-                    document.querySelector('#msgInscription').textContent = result.message
+                    document.querySelector('.msgInscription').textContent = result.message
+                    const animation = lottie.loadAnimation({
+                        container: document.getElementById('successAnim'),
+                        renderer: 'svg',
+                        loop: false,
+                        path: 'https://lottie.host/d99f75f6-8318-40ba-bd21-ac606447461d/2jYXatUDsD.json'
+                    });
+
+                    animation.addEventListener('enterFrame', (e) => {
+                        if (e.currentTime >= 35) {
+                        animation.pause();
+                        }
+                    });
+
                     setTimeout(() => {
-                        document.querySelector('#msgInscription').textContent = ""
-                        document.querySelector('#msgInscription').classList.remove('good')
+                        animation.play();
+                    }, 750);
+
+                    document.querySelector('#buy').addEventListener('click',()=>{
                         
-                    }, 3000);
+                        console.log("je paie");
+                    })
+
+                    
+                    
+
+                } else {
+                    document.querySelector('#paiementformEchec').style.display = "flex"
+                    document.querySelector('.msgInscription').textContent = result.message
+                      const animation2 = lottie.loadAnimation({
+                        container: document.getElementById('echecAnim'),
+                        renderer: 'svg',
+                        loop: false,
+                        
+                        path: 'https://lottie.host/69f97ca7-5f47-4f94-8d08-a53df1ac6abb/F4eaq13Ok1.json'
+                    });
+
+                    animation2.addEventListener('enterFrame', (e) => {
+                        if (e.currentTime >= 21) {
+                        animation2.pause();
+                        }
+                    });
+
+                    setTimeout(() => {
+                        animation2.play();
+                    }, 750);
+
+                    
+                    document.querySelector('#retour').addEventListener('click',()=>{
+                        
+                        document.getElementById('echecAnim').textContent=""
+                        document.querySelector('#paiementformEchec').style.display = "none"
+                        document.querySelector('#infogeneral').style.display = "flex"
+                    })
                 }
             })
             .catch(error => {
                 console.log(error);
-                document.querySelector('#msgInscription').classList.add('notgood')
-                    document.querySelector('#msgInscription').textContent = "Oops, une erreur est survenu de notre coté"
-                    setTimeout(() => {
-                        document.querySelector('#msgInscription').textContent = ""
-                        document.querySelector('#msgInscription').classList.remove('notgood')
+                document.querySelector('#infogeneral').style.display = "none"
+                document.querySelector('#paiementformEchec').style.display = "flex"
+                    document.querySelector('.msgInscription').textContent = "Oops, une erreur est survenu de notre coté"
+                      const animation2 = lottie.loadAnimation({
+                        container: document.getElementById('echecAnim'),
+                        renderer: 'svg',
+                        loop: false,
                         
-                    }, 5000);
+                        path: 'https://lottie.host/69f97ca7-5f47-4f94-8d08-a53df1ac6abb/F4eaq13Ok1.json'
+                    });
+
+                    animation2.addEventListener('enterFrame', (e) => {
+                        if (e.currentTime >= 21) {
+                        animation2.pause();
+                        }
+                    });
+
+                    setTimeout(() => {
+                        animation2.play();
+                    }, 750);
             });
         
     }
@@ -322,13 +381,13 @@
             document.querySelector('.overlayLoad').remove()
         },700);
     }
+
+
 function backouvert(){
 
     document.querySelector('#divlock').style.display ="none"
     document.querySelector('#unlock').style.display ="flex"
 
-    document.querySelector('#infogeneral').style.display ="none"
-    document.querySelector('#paiementform').style.display ="flex"
 }
     
 
@@ -446,5 +505,8 @@ function loadUnlock(){
             console.log("Erreur : ", err);
         });
 }
+
+
+
 
 })()
