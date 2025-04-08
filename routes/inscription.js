@@ -102,42 +102,7 @@ router.post("/create-customer", async (req, res) => {
     }
 });
 
-router.post("/stripe/start-checkout", async (req, res) => {
-    const { userId, subscriptionProduct } = req.body;
 
-    try {
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
-        }
-
-        // Création de la session Stripe
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ["card"],
-            line_items: [
-                {
-                    price_data: {
-                        currency: "eur",
-                        product_data: {
-                            name: subscriptionProduct,
-                        },
-                        unit_amount: 5000, // Exemple 50€
-                    },
-                    quantity: 1,
-                },
-            ],
-            mode: "payment",
-            success_url: `https://ad33-37-65-30-41.ngrok-free.app/api/success`,
-            cancel_url: `https://ad33-37-65-30-41.ngrok-free.app/api/cancel`,
-            client_reference_id: user._id.toString(),
-        });
-
-        res.status(200).json({ success: true, checkoutUrl: session.url });
-    } catch (err) {
-        console.error("Erreur lors de la création de la session Stripe :", err);
-        res.status(500).json({ success: false, message: "Erreur serveur." });
-    }
-});
 
 
 

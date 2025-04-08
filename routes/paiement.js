@@ -6,6 +6,7 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const User = require("../models/User"); // ou le chemin vers ton UserSchema
 
 
+
 // Body parser brut pour Stripe
 router.post(
     "/webhook-stripe",

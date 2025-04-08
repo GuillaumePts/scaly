@@ -66,13 +66,78 @@ function fillUserData() {
     fillField("price", window.clientData.price);
 
     if(window.clientData.subscriptionStatus === "inactif"){
-        document.querySelector('.itsok').style.display ="none"
+
         document.querySelector('.itserr').style.display ="block"
-        document.querySelector('#subscriptionStatus').style.color ="red"
+        document.querySelector('#subscriptionStatus').style.textTransform ="uppercase"
+        document.querySelector('#subscriptionStatus').style.color ="var(--red)"
+        const buy = document.createElement('div')
+        buy.classList.add('background-button')
+        buy.id = "rebuy"
+        buy.style.width ="auto"
+        const button = document.createElement('button')
+        button.classList.add('buttonform')
+        button.textContent="Payer"
+        buy.appendChild(button)
+        document.querySelector('#abonnementGestion').appendChild(buy)
+        buy.addEventListener('click',async()=>{
+            load()
+                        try {
+                            const response = await fetch("/api/stripe/start-checkout", {
+                              method: "POST",
+                              credentials: "include", // important pour le cookie JWT
+                            });
+                        
+                            const data = await response.json();
+                        
+                            if (data.url) {
+                              // Option 2 : ouvrir Stripe dans une nouvelle fenêtre (comme tu voulais)
+                              window.open(data.url, "_blank");
+                        
+                              // Tu attends la réponse via le postMessage que tu as déjà mis en place
+                            } else {
+                              document.querySelector('.itserr').textContent ="Oops ! un problème est survenu."
+                              finload();
+                            }
+                          } catch (err) {
+                            document.querySelector('.itserr').textContent ="Oops ! un problème est survenu."
+                            finload();
+                          }
+
+                          window.addEventListener("message", (event) => {
+                            if (event.data.stripeSuccess) {
+                              console.log("🎉 Paiement validé !");
+                              
+                              // Tu peux déclencher une requête vers le back-end pour activer l'abonnement :
+                              fetch("api/stripe/confirmation", {
+                                method: "POST",
+                                credentials: "include", // important pour envoyer le cookie JWT
+                              })
+                              .then(res => res.json())
+                              .then(data => {
+                                if (data.success) {
+                                    
+                                    console.log("✅ Abonnement activé côté serveur");
+                                    fetchUserData().then(()=>{
+                                        fillUserData()
+                                        finload()
+                                    })
+                                }
+                              });
+                              
+                            } else {
+                                finload()
+                              console.log("❌ Paiement annulé.");
+                              document.querySelector('.itserr').textContent ="Le paiement à échoué."
+                            }
+                          });
+        })
     }else{
-        document.querySelector('.itsok').style.display ="block"
+        if(document.querySelector('#rebuy')){
+            document.querySelector('#rebuy').remove()
+        }
         document.querySelector('.itserr').style.display ="none"
-        document.querySelector('#subscriptionStatus').style.color ="green"
+        document.querySelector('#subscriptionStatus').style.color ="var(--green)"
+        document.querySelector('#subscriptionStatus').style.textTransform ="uppercase"
     }
 }
 

@@ -242,9 +242,54 @@
                         animation.play();
                     }, 750);
 
-                    document.querySelector('#buy').addEventListener('click',()=>{
+                    document.querySelector('#buyyy').addEventListener('click',async ()=>{
+                        load()
+                        try {
+                            const response = await fetch("/api/stripe/start-checkout", {
+                              method: "POST",
+                              credentials: "include", // important pour le cookie JWT
+                            });
                         
-                        console.log("je paie");
+                            const data = await response.json();
+                        
+                            if (data.url) {
+                              // Option 2 : ouvrir Stripe dans une nouvelle fenêtre (comme tu voulais)
+                              window.open(data.url, "_blank");
+                        
+                              // Tu attends la réponse via le postMessage que tu as déjà mis en place
+                            } else {
+                              console.error("❌ Erreur : Pas d'URL reçue");
+                              finload();
+                            }
+                          } catch (err) {
+                            console.error("Erreur lors du lancement de Stripe :", err);
+                            finload();
+                          }
+
+                          window.addEventListener("message", (event) => {
+                            if (event.data.stripeSuccess) {
+                              console.log("🎉 Paiement validé !");
+                              
+                              // Tu peux déclencher une requête vers le back-end pour activer l'abonnement :
+                              fetch("api/stripe/confirmation", {
+                                method: "POST",
+                                credentials: "include", // important pour envoyer le cookie JWT
+                              })
+                              .then(res => res.json())
+                              .then(data => {
+                                if (data.success) {
+                                    finload()
+                                  console.log("✅ Abonnement activé côté serveur");
+                                  goback()
+                                }
+                              });
+                              
+                            } else {
+                                finload()
+                              console.log("❌ Paiement annulé.");
+                              goback()
+                            }
+                          });
                     })
 
                     
@@ -307,30 +352,7 @@
     }
     
 
-    // window.addEventListener("message", (event) => {
-    //     if (event.data.stripeSuccess) {
-    //       console.log("🎉 Paiement validé !");
-          
-    //       // Tu peux déclencher une requête vers le back-end pour activer l'abonnement :
-    //       fetch("api/stripe/confirmation", {
-    //         method: "POST",
-    //         credentials: "include", // important pour envoyer le cookie JWT
-    //       })
-    //       .then(res => res.json())
-    //       .then(data => {
-    //         if (data.success) {
-    //             finload()
-    //           console.log("✅ Abonnement activé côté serveur");
-    //           goback()
-    //         }
-    //       });
-          
-    //     } else {
-    //         finload()
-    //       console.log("❌ Paiement annulé.");
-    //       goback()
-    //     }
-    //   });
+    
       
     
     function load(){
