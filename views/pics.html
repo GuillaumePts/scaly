@@ -5,22 +5,36 @@
     <img class="backimg" id="Vert" style="display: none;" src="/Vert/Vertback.jpg" alt="fond d'écran Vert">
     <img class="backimg" id="Rose" style="display: none;" src="/Rose/Roseback.jpg" alt="fond d'écran Rose">
 
-    <div id="contentselect">
+    
 
-        <button id="colors"><span>Blanc</span></button>
-        <button id="devices"><span>Portable</span></button>
-    </div>
-
+    <div id="place"></div>
 
     <img id="produitimg" class="translate" src="/imgPc/portfolio2.png" alt="photo du produit scaly p'ics">
     
     <div id="conf">
-        <div id="">
-            <h2>Pic's</h2>
-            <h3>White</h3>
+
+        <div id="choice">
+            <div id="colorsChoice">
+                <div id="Blanc" class="colorBubble"></div>
+                <div id="Noir" class="colorBubble"></div>
+                <div id="Rose" class="colorBubble"></div>
+                <div id="Vert" class="colorBubble"></div>
+            </div>
+            <select name="selectPack" id="selectPack">
+                <option value="Starter">Starter</option>
+                <option value="Pro">Pro</option>
+                <option value="Unlimited">Unlimited</option>
+            </select>
         </div>
-        <div>
-            <p id="price">10.<span>99</span>/mois</p>
+        
+
+        <div id="titleProduit">
+            <h2>Pic's</h2>
+            <h3 id="colorResult">White</h3>
+        </div>
+        <div id="contentpricee">
+            <p id="price">€14.<span>99</span>/<span>mois</span></p>
+            <p id="pack">Pro</p>
         </div>
         <div class="barre"></div>
         <ul>
@@ -42,7 +56,7 @@
         </ul>
 
         <div class="background-button" id="formulaire">
-            <div class="buttonform">Valider</div>
+            <div class="buttonform">Choisir</div>
         </div>
     </div>
 </div>
