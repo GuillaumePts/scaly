@@ -49,8 +49,8 @@ function fillUserData() {
     };
 
     fillField("subscriptionStatus", window.clientData.subscriptionStatus);
-    fillField("subscriptionProduct", window.clientData.subscriptionProduct);
-    fillField("subscriptionOption", window.clientData.subscriptionOption);
+    fillField("subscriptionStock", window.clientData.subscriptionStock);
+    fillField("subscriptionColor", window.clientData.subscriptionColor);
     fillField("siteId", window.clientData.siteId);
 
     fillField("lastName", window.clientData.lastName);
@@ -63,7 +63,7 @@ function fillUserData() {
     fillField("isVerified", window.clientData.isVerified ? "Oui" : "Non");
     fillField("paiement", window.clientData.paiement);
     fillField("typePaiement", window.clientData.typePaiement);
-    fillField("price", window.clientData.price);
+    fillField("price", `${window.clientData.price}€`);
 
     if(window.clientData.subscriptionStatus === "inactif"){
 

@@ -69,6 +69,10 @@
             document.querySelector('#selectPack').style.color = "#666"
             document.querySelector('#selectPack').style.border = "2px solid #666"
             document.querySelector('.barre').style.backgroundColor = "#666"
+            document.querySelector('#formulaire').style.textShadow = "0px 0px 10px #fff, 0px 0px 20px #000000"
+            document.querySelector('#formulaire').style.color ="#fff"
+            document.querySelector('#formulaire').style.backgroundColor = color
+            document.querySelector('#formulaire').style.boxShadow = `0px 0px 10px ${neon}`
         }else{
             document.querySelector('#conf').style.color ="#fff"
             document.querySelector('#colorResult').style.textShadow = `0px 0px 10px ${neon}`
@@ -77,6 +81,10 @@
             document.querySelector('#pack').style.textShadow = `0px 0px 10px ${neon}`
             document.querySelector('#pack').style.color = "#fff"
             document.querySelector('.barre').style.backgroundColor = "#fff"
+            document.querySelector('#formulaire').style.textShadow = `0px 0px 10px ${neon}`
+            document.querySelector('#formulaire').style.color ="#fff"
+            document.querySelector('#formulaire').style.boxShadow = `0px 0px 10px ${neon}`
+            document.querySelector('#formulaire').style.backgroundColor = color
         }
         // document.querySelector('#form').style.backgroundColor = color;
         // document.querySelector('#form').style.backgroundImage = `url(/${name}/${name}back.jpg)`;

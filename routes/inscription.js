@@ -89,8 +89,8 @@ router.post("/inscription", async (req, res) => {
             birthDate: new Date(date),
             subscriptionStatus: "inactif",
             subscriptionProduct: subscriptionProduct || "Pic's", // valeur par défaut
-            subscriptionColor,
-            subscriptionStock,
+            subscriptionColor: subscriptionColor,
+            subscriptionStock: subscriptionStock,
             subscriptionDate: Date.now(),
             siteId,
             stripeCustomerId: customer.id,
@@ -98,6 +98,41 @@ router.post("/inscription", async (req, res) => {
         });
 
         await newUser.save();
+
+        // 📬 Envoyer un email de bienvenue
+            const nodemailer = require("nodemailer");
+
+            const transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: process.env.GMAIL_USER,
+                    pass: process.env.GMAIL_PASS,
+                },
+            });
+
+            const mailOptions = {
+                from: `"Scaly Pic’s" <${process.env.GMAIL_USER}>`,
+                to: email,
+                subject: "Bienvenue sur Scaly Pic’s 📸",
+                html: `
+                    <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:20px;border:1px solid #ddd;border-radius:8px;">
+                        <h2 style="color:#ff0043;">Bienvenue ${prenom} 👋</h2>
+                        <p>Merci de vous être inscrit à <strong>Scaly Pic’s</strong> !</p>
+                        <p>Nous sommes ravis de vous compter parmi nos utilisateurs. Vous avez choisi le pack <strong>${subscriptionStock} couleur ${subscriptionColor}</strong></p>
+                        <p>Il ne vous reste plus qu'à lancer votre web app !</p>
+                        <p style="margin-top:30px;">À très vite sur Scaly Pic’s 💫</p>
+                        <p style="color:#666;font-size:14px;">— L’équipe Scaly Pic’s</p>
+                    </div>
+                `
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error("Erreur d’envoi d’email :", error);
+                } else {
+                    console.log("Email envoyé :", info.response);
+                }
+            });
 
         // 🧠 Connexion automatique après inscription
         const jwt = require("jsonwebtoken");
