@@ -13,13 +13,14 @@ const UserSchema = new mongoose.Schema({
     
     // Informations liées à l'abonnement
     subscriptionStatus: { type: String, default: "Inactif" }, // id="statut" (actif, inactif, suspendu...)
-    subscriptionProduct: { type: String }, // id="produit" (ex: "Scaly Pro", "Scaly Basic")
-    subscriptionOption: { type: String }, // id="option" (ex: "Mensuel", "Annuel", "Avec stockage...")
-    subscriptionDate: { type: Date, default: '' }, // id="date"
+    subscriptionProduct: { type: String, required: true}, // id="produit" (ex: "Scaly Pro", "Scaly Basic")
+    subscriptionColor: { type: String, required: true },
+    subscriptionStock: { type: String, required: true },// id="option" (ex: "Mensuel", "Annuel", "Avec stockage...")
+    subscriptionDate: { type: Date, default: Date.now },// id="date"
     // NEW
     paiement: { type: Boolean, default: false},
     typePaiement: { type: String, default: "Mensuel" },
-    price: { type: String, default: "10.49€" },
+    price: { type: Number, required: true},
     // Identifiant unique pour Scaly Pic’s
     siteId: { type: String, required: true, unique: true, minlength: 15 }, // id="idweb"
 

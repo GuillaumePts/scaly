@@ -14,6 +14,19 @@
 
     document.querySelector('#selectPack').addEventListener('change',()=>{
         document.querySelector('#pack').textContent = document.querySelector('#selectPack').value
+        if(document.querySelector('#selectPack').value === "Starter"){
+            document.querySelector('#prixpack').textContent = "7"
+            document.querySelector('#stockagePack').textContent = "5go de Stockage"
+        }else if(document.querySelector('#selectPack').value === "Pro"){
+            document.querySelector('#prixpack').textContent = "14"
+            document.querySelector('#stockagePack').textContent = "25go de Stockage"
+        }else if(document.querySelector('#selectPack').value === "Unlimited"){
+            document.querySelector('#prixpack').textContent = "29"
+            document.querySelector('#stockagePack').textContent = "Stockage Illimité"
+        }else{
+            document.querySelector('#prixpack').textContent = "14"
+            document.querySelector('#stockagePack').textContent = "25go de Stockage"
+        }
     })
 
     setupProduit()
@@ -43,6 +56,7 @@
 
     function choiceColor(name, color, neon) {
 
+        document.querySelector('#colorSelect').value = name
         document.querySelector('#conf').style.backgroundColor = color;
         document.querySelector('#colorResult').textContent = name
         
@@ -54,6 +68,7 @@
             document.querySelector('#pack').style.color = "#fff"
             document.querySelector('#selectPack').style.color = "#666"
             document.querySelector('#selectPack').style.border = "2px solid #666"
+            document.querySelector('.barre').style.backgroundColor = "#666"
         }else{
             document.querySelector('#conf').style.color ="#fff"
             document.querySelector('#colorResult').style.textShadow = `0px 0px 10px ${neon}`
@@ -61,6 +76,7 @@
             document.querySelector('#selectPack').style.border = "2px solid #fff"
             document.querySelector('#pack').style.textShadow = `0px 0px 10px ${neon}`
             document.querySelector('#pack').style.color = "#fff"
+            document.querySelector('.barre').style.backgroundColor = "#fff"
         }
         // document.querySelector('#form').style.backgroundColor = color;
         // document.querySelector('#form').style.backgroundImage = `url(/${name}/${name}back.jpg)`;
@@ -173,7 +189,9 @@
             tel: document.getElementById("tel").value,
             password: document.getElementById("password").value,
             subscriptionProduct: "Pic's",
-            subscriptionOption: document.querySelector("#colors span").textContent.trim()
+            subscriptionColor: document.querySelector("#colorSelect").value.trim(),
+            subscriptionStock: document.querySelector('#selectPack').value.trim()
+            
         };
     
         

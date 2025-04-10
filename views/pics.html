@@ -14,6 +14,7 @@
     <div id="conf">
 
         <div id="choice">
+            <input type="text" id="colorSelect" value="Blanc">
             <div id="colorsChoice">
                 <div id="Blanc" class="colorBubble"></div>
                 <div id="Noir" class="colorBubble"></div>
@@ -22,7 +23,7 @@
             </div>
             <select name="selectPack" id="selectPack">
                 <option value="Starter">Starter</option>
-                <option value="Pro">Pro</option>
+                <option value="Pro" selected>Pro</option>
                 <option value="Unlimited">Unlimited</option>
             </select>
         </div>
@@ -33,14 +34,18 @@
             <h3 id="colorResult">White</h3>
         </div>
         <div id="contentpricee">
-            <p id="price">€14.<span>99</span>/<span>mois</span></p>
+            <div id="price">
+                <p class="bse-price" id="prixpack">14</p>
+                <span>.99</span>
+                <p class="bse-price">/</p>
+                <span>mois</span>
+            </div>
+            <div class="barre"></div>
             <p id="pack">Pro</p>
+            <p id="stockagePack">25<span>go</span> de Stockage</p>
         </div>
-        <div class="barre"></div>
+        
         <ul>
-            <li>
-                <p>* Stockage illimité</p>
-            </li>
             <li>
                 <p>* Photo en 2k, meilleure qualité que sur les réseaux sociaux</p>
             </li>

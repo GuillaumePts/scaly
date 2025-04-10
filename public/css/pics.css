@@ -26,7 +26,7 @@
     width: 70%;
     height: auto;
     position: absolute;
-    top: 110px;
+    top: 90px;
     left: 50%;
     transform: translateX(-50%);
     
@@ -87,6 +87,7 @@
     align-items: center;
     gap: 20px;
     padding: 30px 0;
+    position: relative;
 }
 
 #selectPack{
@@ -99,6 +100,17 @@
     font-size: 1.2rem;
     font-family: var(--font-fam-one);
     color: #666;
+}
+
+#colorSelect{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 0;
+    width: 0;
+    z-index: -1;
+    opacity: 0;
+    overflow: hidden;
 }
 
 #colorsChoice{
@@ -161,16 +173,40 @@
     flex-direction: column;
     position: relative;
     width: 100%;
+    gap: 15px;
+}
+
+
+#stockagePack{
+    font-weight: 400;
+    letter-spacing: 2px;
+    font-size: 1.2rem;
+    font-family: var(--font-fam-one);
+}
+
+#stockagePack span{
+    font-size: 0.9rem;
+    transform: translateY(3px);
 }
 
 #price{
     width: 100%;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+.barre{
+    height: 2px;
+    width: 200px;
+    background-color: #666;
+}
+
+.bse-price{
     font-weight: 400;
     letter-spacing: 3px;
     font-size: 3.3rem;
     font-family: var(--font-fam-one);
-    text-decoration: underline;
 }
 
 #pack{

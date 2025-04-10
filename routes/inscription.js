@@ -7,7 +7,6 @@ const User = require("../models/User"); // Ajuste le chemin si besoin
 const router = express.Router();
 
 router.post("/inscription", async (req, res) => {
-
     const {
         nom,
         prenom,
@@ -18,9 +17,39 @@ router.post("/inscription", async (req, res) => {
         date,
         ville,
         code_postal,
-        subscriptionOption,
-        subscriptionProduct
+        subscriptionProduct,
+        subscriptionColor,
+        subscriptionStock,
     } = req.body;
+
+    let prixxx;
+
+    // Validation des champs
+    if (!nom || !prenom || !email || !password || !adresse || !tel || !date || !ville || !code_postal) {
+        return res.status(400).json({ success: false, message: "Tous les champs sont requis." });
+    }
+
+    // Vérification du format de l'email
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ success: false, message: "L'email est invalide." });
+    }
+
+    // Validation des données d'abonnement
+    if (!["Starter", "Pro", "Unlimited"].includes(subscriptionStock)) {
+        return res.status(400).json({ success: false, message: "Le pack sélectionné est invalide." });
+    }
+
+    // Prix selon l'abonnement
+    if (subscriptionStock === "Starter") {
+        prixxx = 7.99;
+    } else if (subscriptionStock === "Pro") {
+        prixxx = 14.99;
+    } else if (subscriptionStock === "Unlimited") {
+        prixxx = 29.99;
+    } else {
+        prixxx = 14.99;
+    }
 
     try {
         // 🔒 Vérifier si l'utilisateur existe déjà
@@ -36,9 +65,7 @@ router.post("/inscription", async (req, res) => {
         const customer = await stripe.customers.create({
             email,
             name: `${prenom} ${nom}`,
-            // Évite d'envoyer des informations non nécessaires pour tester
-            phone: tel, // Teste sans téléphone
-            // Assure-toi que l'adresse est bien formatée
+            phone: tel,
             address: {
                 line1: adresse,
                 city: ville,
@@ -46,7 +73,6 @@ router.post("/inscription", async (req, res) => {
                 country: "FR",
             },
         });
-        
 
         // 🔠 Générer un identifiant unique (siteId)
         const siteId = `scalypics_${uuidv4().replace(/-/g, "").slice(0, 15)}`;
@@ -57,15 +83,18 @@ router.post("/inscription", async (req, res) => {
             lastName: nom,
             email,
             password: hashedPassword,
-            isVerified: true, // pour l'instant pas de vérif mail
+            isVerified: true, // pour l'instant pas de vérification par mail
             address: `${adresse}, ${code_postal} ${ville}`,
             phoneNumber: tel,
             birthDate: new Date(date),
             subscriptionStatus: "inactif",
-            subscriptionProduct: "Pic's",
-            subscriptionOption,
+            subscriptionProduct: subscriptionProduct || "Pic's", // valeur par défaut
+            subscriptionColor,
+            subscriptionStock,
+            subscriptionDate: Date.now(),
             siteId,
             stripeCustomerId: customer.id,
+            price: prixxx,
         });
 
         await newUser.save();
@@ -78,13 +107,12 @@ router.post("/inscription", async (req, res) => {
         // ✅ Réponse sans Stripe
         res.status(201).json({
             success: true,
-            message: "Votre compte à bien été crée !",
+            message: "Votre compte a bien été créé !",
             userId: newUser._id,
         });
-
     } catch (error) {
         console.error("Erreur dans /inscription :", error);
-        res.status(500).json({ success: false, message: "Oops, une erreur est survenu de notre coté" });
+        res.status(500).json({ success: false, message: "Oops, une erreur est survenue de notre côté." });
     }
 });
 
