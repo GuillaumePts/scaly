@@ -56,8 +56,8 @@ router.post("/stripe/start-checkout", authMiddleware, async (req, res) => {
               },
           ],
           mode: "payment",
-          success_url: `https://7d21-37-65-30-41.ngrok-free.app/api/success`,
-          cancel_url: `https://7d21-37-65-30-41.ngrok-free.app/api/cancel`,
+          success_url: `https://scaly.onrender.com/api/success`,
+          cancel_url: `https://scaly.onrender.com/api/cancel`,
           client_reference_id: user._id.toString(),
       });
 
