@@ -16,7 +16,8 @@ const UserSchema = new mongoose.Schema({
     subscriptionProduct: { type: String, required: true}, // id="produit" (ex: "Scaly Pro", "Scaly Basic")
     subscriptionColor: { type: String, required: true },
     subscriptionStock: { type: String, required: true },// id="option" (ex: "Mensuel", "Annuel", "Avec stockage...")
-    subscriptionDate: { type: Date, default: Date.now },// id="date"
+    subscriptionDate: { type: Date, default: Date.now },
+    http: { type: String },// id="date"
     // NEW
     paiement: { type: Boolean, default: false},
     typePaiement: { type: String, default: "Mensuel" },

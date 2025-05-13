@@ -65,6 +65,23 @@ function fillUserData() {
     fillField("typePaiement", window.clientData.typePaiement);
     fillField("price", `${window.clientData.price}€`);
 
+    if(window.clientData.http){
+        fillField("http", `${window.clientData.http}`);
+        
+    }else{
+        const divbutton = document.createElement('div')
+        divbutton.classList.add("background-button")
+        const button = document.createElement('button')
+        button.classList.add('buttonform')
+        divbutton.appendChild(button)
+        button.textContent = "Publier votre Pic's"
+
+        document.querySelector('#setuphttp').appendChild(divbutton)
+        divbutton.addEventListener('click',()=>{
+            buildPics()
+        })
+    }
+
     if(window.clientData.subscriptionStatus === "inactif"){
 
         document.querySelector('.itserr').style.display ="block"
@@ -216,3 +233,62 @@ function setupPagination() {
     await fetchUserData();
     await loadDashboard();
 })();
+
+
+function buildPics(){
+    load()
+
+    setTimeout(() => {
+        finload()
+    }, 2000);
+}
+
+
+function load(){
+        
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlayLoad');
+    overlay.style.visibility="visible";
+    overlay.style.opacity="1"
+    console.log(overlay);
+
+    // Ajout de l'overlay dans le body
+    document.body.appendChild(overlay);
+    const button=document.querySelector('.bubbly-button')
+    button.style.overflow='hidden'
+    const t = document.querySelector('#mooveAnim')
+    
+    t.style.zIndex="1"
+    t.style.opacity="1"
+    document.querySelector('#logonavbarre').style.opacity="0"
+    const div = document.createElement('div')
+    div.classList.add('loaderi')
+    
+    const img = document.createElement('img')
+    img.src="/logo/logocoupe.png"
+    img.style.width="auto"
+    img.style.height="58px"
+    img.style.borderRadius = "50px"
+    
+    const grad = document.createElement('div')
+    grad.classList.add('gradload')
+    grad.appendChild(img)
+    document.querySelector('#admin').appendChild(div)
+    document.querySelector('#admin').appendChild(grad)
+    
+}
+
+function finload(){
+    document.querySelector('.loaderi').remove()
+    document.querySelector('.gradload').remove()
+    document.querySelector('#logonavbarre').style.opacity="1"
+    const button=document.querySelector('.bubbly-button')
+    button.style.overflow='visible'
+    button.classList.add('anima');
+    setTimeout(function(){
+        button.classList.remove('anima');
+        document.querySelector('.overlayLoad').style.visibility="hidden";
+        document.querySelector('.overlayLoad').style.opacity="0"
+        document.querySelector('.overlayLoad').remove()
+    },700);
+}
