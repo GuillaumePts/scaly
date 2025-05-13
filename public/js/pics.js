@@ -13,19 +13,33 @@
     
 
     document.querySelector('#selectPack').addEventListener('change',()=>{
+
         document.querySelector('#pack').textContent = document.querySelector('#selectPack').value
+
         if(document.querySelector('#selectPack').value === "Starter"){
-            document.querySelector('#prixpack').textContent = "7"
-            document.querySelector('#stockagePack').textContent = "5go de Stockage"
+            document.querySelector('#prixpack').textContent = "5"
+            document.querySelector('#customchoice').textContent = "" 
+            document.querySelector('#stockagePack').textContent = "1go de Stockage"
+
         }else if(document.querySelector('#selectPack').value === "Pro"){
-            document.querySelector('#prixpack').textContent = "14"
-            document.querySelector('#stockagePack').textContent = "25go de Stockage"
+            
+            document.querySelector('#prixpack').textContent = "10"
+            document.querySelector('#stockagePack').textContent = "5go de Stockage"
+            document.querySelector('#customchoice').textContent = "* Gestion de paiment"
+            
+
         }else if(document.querySelector('#selectPack').value === "Unlimited"){
+
             document.querySelector('#prixpack').textContent = "29"
             document.querySelector('#stockagePack').textContent = "Stockage Illimité"
+            document.querySelector('#customchoice').textContent = "* Gestion de paiment"
+
         }else{
-            document.querySelector('#prixpack').textContent = "14"
-            document.querySelector('#stockagePack').textContent = "25go de Stockage"
+
+            document.querySelector('#prixpack').textContent = "9"
+            document.querySelector('#stockagePack').textContent = "5go de Stockage"
+            document.querySelector('#customchoice').textContent = "* Gestion de paiment"
+
         }
     })
 
@@ -35,8 +49,8 @@
         const obj = {
             Blanc: ['#eee', '#fff'],
             Noir: ['#000', '#fff'],
-            Vert: ['#a9d1ba', '#00ff97'],
-            Rose: ['#ffd0d6', '#ff0021']
+            // Vert: ['#a9d1ba', '#00ff97'],
+            // Rose: ['#ffd0d6', '#ff0021']
         };
         preloadImages(obj);
 

@@ -98,6 +98,10 @@
     color: #666;
 }
 
+#selectPack option{
+    color: #666;
+}
+
 #colorSelect{
     position: absolute;
     top: 0;
@@ -216,7 +220,7 @@
 #price span{
     font-weight: 400;
     letter-spacing: 0px;
-    font-size: 2rem;
+    font-size: 1.2rem;
     font-family: var(--font-fam-one);
 }
 
