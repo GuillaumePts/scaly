@@ -86,6 +86,45 @@ body{
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
+.overlayLoad::before {
+  content: '';
+  position: absolute;
+  inset: -50%; /* agrandi pour que la rotation ne coupe pas l'effet */
+  z-index: -1;
+  background: linear-gradient(130deg, rgba(255, 255, 255, 0.185), rgba(0,0,0,0.25)),
+              repeating-radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 40%);
+  animation: fogCombined 3s ease-in-out infinite, fogLightPulse 5s ease-in-out infinite;
+  opacity: 0.5;
+  filter: blur(60px) brightness(0.5); /* base plus lumineuse */
+  mix-blend-mode: screen;
+  transform-origin: center;
+}
+
+
+@keyframes fogCombined {
+  0% {
+    transform: rotate(0deg) scale(1.05) translate(0, 0);
+  }
+  100% {
+    transform: rotate(360deg) scale(1.05) translate(0, 0);
+  }
+}
+
+@keyframes fogLightPulse {
+  0% {
+    filter: blur(60px) brightness(1.2);
+  }
+  50% {
+    filter: blur(75px) brightness(1.45);
+  }
+  100% {
+    filter: blur(60px) brightness(1.2);
+  }
+}
+
+
+
+
 .loadoverlay {
     z-index: 1000000000000000000000000000000000;
     position: fixed;
@@ -1330,6 +1369,16 @@ footer div:nth-child(4){
     overflow: hidden;
 }
 
+
+.msgoverlay{
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: var(--font-fam-one);
+    color: #eee;
+    width: 100%;
+    text-align: center;
+    margin: 0 10px;
+}
 
 
 @media (min-width: 800px){

@@ -25,8 +25,7 @@ function generateEnvFile({ prenom, nom, email, siteId, pack }, targetDir) {
   const JWT_SECRET_CLIENT = generateSecretKey(24);
   const LIMIT_STARTER = getLimitFromPack(pack);
 
-  const envContent = `
-JWT_SECRET=${JWT_SECRET}
+  const envContent = `JWT_SECRET=${JWT_SECRET}
 JWT_SECRET_CLIENT=${JWT_SECRET_CLIENT}
 MAIL=${email}
 GMAIL_USER=scaly.bot.contact@gmail.com
@@ -34,14 +33,32 @@ GMAIL_PASS=dhdj nbts lyjz ycus
 PRENOM_PRO=${prenom}
 NOM_PRO=${nom}
 ID_PICS=${siteId}
-LIMIT_STARTER=${LIMIT_STARTER}
-`.trim();
+LIMIT_STARTER=${LIMIT_STARTER}`;
 
   fs.writeFileSync(path.join(targetDir, ".env"), envContent);
   console.log(`✅ .env généré pour ${prenom} ${nom}`);
 }
 
+function installerDependencies(dossierClient) {
+  return new Promise((resolve, reject) => {
+    console.log(`📦 Installation des dépendances dans ${dossierClient}...`);
 
+    const install = spawn("npm", ["install", "--no-save"], {
+      cwd: path.resolve(dossierClient),
+      stdio: "inherit", // Permet de suivre les logs d'installation
+      shell: true
+    });
+
+    install.on("exit", (code) => {
+      if (code === 0) {
+        console.log("✅ Dépendances installées.");
+        resolve();
+      } else {
+        reject(new Error(`❌ npm install a échoué avec le code ${code}`));
+      }
+    });
+  });
+}
 
 router.post("/build-site", async (req, res) => {
   const { nom, prenom, email, siteId, color, pack } = req.body;
@@ -64,34 +81,17 @@ router.post("/build-site", async (req, res) => {
     await git.clone(repoUrl, targetDir);
     console.log("✅ Clonage terminé.");
 
-    // ✅ Étape ajoutée : suppression du dossier .git
     const gitDir = path.join(targetDir, ".git");
     if (fs.existsSync(gitDir)) {
       fs.rmSync(gitDir, { recursive: true, force: true });
       console.log("🗑️ Dossier .git supprimé.");
     }
 
-    // Étape 2 : Générer le fichier .env
     generateEnvFile({ prenom, nom, email, siteId, pack }, targetDir);
 
-    // Étape 3 : Répondre immédiatement
-    res.json({ success: true, message: "Site en cours de création." });
+    await installerDependencies(targetDir);
 
-    // Étape 4 : Lancer npm install en tâche de fond
-    console.log("📦 Installation des dépendances en tâche de fond...");
-    const npm = spawn("npm", ["install"], { cwd: targetDir, shell: true });
-
-    npm.stdout.on("data", data => process.stdout.write(data));
-    npm.stderr.on("data", data => process.stderr.write(data));
-
-    npm.on("close", code => {
-      if (code !== 0) {
-        console.error("❌ npm install échoué (code", code, ")");
-        return;
-      }
-      console.log("✅ Dépendances installées.");
-      // Optionnel : lancer PM2 ou autre ici
-    });
+    res.json({ success: true, message: "Votre produit est prêt ! 🚀" });
 
   } catch (err) {
     console.error("❌ Erreur :", err.message);

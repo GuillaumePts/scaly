@@ -237,46 +237,56 @@ function setupPagination() {
 
 
 async function buildPics() {
-  load(); // J’imagine que c’est une animation ou un spinner
+  load(); // Animation initiale
 
   const nom = window.clientData.lastName;
   const prenom = window.clientData.firstName;
   const email = window.clientData.email;
-  const siteId = window.clientData.siteId;      // par exemple : 'starter', 'pro', 'unlimited'
-  const color = window.clientData.subscriptionColor;      // exemple : 'dark-minimal'
-  const pack = window.clientData.subscriptionStock; // nom personnalisé du site
+  const siteId = window.clientData.siteId;
+  const color = window.clientData.subscriptionColor;
+  const pack = window.clientData.subscriptionStock;
 
   try {
+    // Affichage étape 1
+    document.querySelector('.msgoverlay').textContent = "Initialisation de votre produit Pic's...";
+
     const res = await fetch("/api/build-site", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        nom,
-        prenom,
-        email,
-        siteId,
-        color,
-        pack
-      })
+      body: JSON.stringify({ nom, prenom, email, siteId, color, pack })
     });
+
+    // Affichage étape 2 pendant que la réponse n'arrive pas
+    document.querySelector('.msgoverlay').textContent = "Installation des dépendances, cela peut prendre quelques instants...";
 
     const result = await res.json();
 
     if (res.ok) {
-      console.log("✅ Site en cours de création :", result);
-      finload()
-      // Tu peux rediriger, afficher un message de succès, etc.
+      document.querySelector('.msgoverlay').textContent = result.message;
+      setTimeout(() => {
+        finload();
+        // Redirection éventuelle
+        // window.location.href = "/dashboard";
+      }, 2000);
     } else {
-        finload()
-      console.error("❌ Erreur lors de la création du site :", result.message);
+      document.querySelector('.msgoverlay').textContent = result.message;
+      setTimeout(() => {
+        finload();
+      }, 4000);
     }
+
   } catch (error) {
-    finload()
-    console.error("🚨 Erreur réseau ou serveur :", error);
+    console.error("❌ Erreur réseau ou serveur :", error);
+    document.querySelector('.msgoverlay').textContent = "Oops ! Une erreur est survenue lors de la création du site.";
+    setTimeout(() => {
+      finload();
+    }, 4000);
   }
 }
+
+
 
 function load(){
         
@@ -284,7 +294,13 @@ function load(){
     overlay.classList.add('overlayLoad');
     overlay.style.visibility="visible";
     overlay.style.opacity="1"
-    console.log(overlay);
+    
+
+    const msgoverlay = document.createElement('p')
+    msgoverlay.classList.add('msgoverlay')
+    msgoverlay.textContent = "Construction de votre produit Pic's"
+
+    overlay.appendChild(msgoverlay)
 
     // Ajout de l'overlay dans le body
     document.body.appendChild(overlay);
