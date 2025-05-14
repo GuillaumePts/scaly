@@ -41,6 +41,8 @@ LIMIT_STARTER=${LIMIT_STARTER}
   console.log(`✅ .env généré pour ${prenom} ${nom}`);
 }
 
+
+
 router.post("/build-site", async (req, res) => {
   const { nom, prenom, email, siteId, color, pack } = req.body;
 
@@ -62,6 +64,13 @@ router.post("/build-site", async (req, res) => {
     await git.clone(repoUrl, targetDir);
     console.log("✅ Clonage terminé.");
 
+    // ✅ Étape ajoutée : suppression du dossier .git
+    const gitDir = path.join(targetDir, ".git");
+    if (fs.existsSync(gitDir)) {
+      fs.rmSync(gitDir, { recursive: true, force: true });
+      console.log("🗑️ Dossier .git supprimé.");
+    }
+
     // Étape 2 : Générer le fichier .env
     generateEnvFile({ prenom, nom, email, siteId, pack }, targetDir);
 
@@ -81,7 +90,7 @@ router.post("/build-site", async (req, res) => {
         return;
       }
       console.log("✅ Dépendances installées.");
-      // Optionnel : lancer PM2 ou un autre processus ici
+      // Optionnel : lancer PM2 ou autre ici
     });
 
   } catch (err) {
