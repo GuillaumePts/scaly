@@ -71,6 +71,7 @@ function fillUserData() {
     }else{
         const divbutton = document.createElement('div')
         divbutton.classList.add("background-button")
+        divbutton.style.width = "auto"
         const button = document.createElement('button')
         button.classList.add('buttonform')
         divbutton.appendChild(button)
@@ -265,11 +266,14 @@ async function buildPics() {
 
     if (res.ok) {
       console.log("✅ Site en cours de création :", result);
+      finload()
       // Tu peux rediriger, afficher un message de succès, etc.
     } else {
+        finload()
       console.error("❌ Erreur lors de la création du site :", result.message);
     }
   } catch (error) {
+    finload()
     console.error("🚨 Erreur réseau ou serveur :", error);
   }
 }

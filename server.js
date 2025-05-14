@@ -32,7 +32,8 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 app.use(cors({
-    origin: "http://192.168.1.69:9999", // Remplace par ton IP ou domaine exact
+    origin: "*", // à restreindre si nécessaire
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true // Autorise les cookies
 }));
 
