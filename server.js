@@ -155,6 +155,8 @@ const clientRoutes = require("./routes/dashboard.js")
 const insRoutes = require("./routes/inscription.js")
 const webhookRoutes = require("./routes/paiement.js")
 const stripeRoutes = require("./routes/stripe.js")
+const buildSiteRoute = require("./routes/buildSite");
+
 
 // app.use(cors());
 app.use("/api", authRoutes); 
@@ -162,6 +164,7 @@ app.use("/api", clientRoutes);
 app.use("/api", insRoutes); 
 app.use("/api", webhookRoutes); 
 app.use("/api", stripeRoutes); 
+app.use("/api", buildSiteRoute);
 
 
 // Démarrer le serveur

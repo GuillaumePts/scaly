@@ -235,14 +235,44 @@ function setupPagination() {
 })();
 
 
-function buildPics(){
-    load()
+async function buildPics() {
+  load(); // J’imagine que c’est une animation ou un spinner
 
-    setTimeout(() => {
-        finload()
-    }, 2000);
+  const nom = window.clientData.lastName;
+  const prenom = window.clientData.firstName;
+  const email = window.clientData.email;
+  const siteId = window.clientData.siteId;      // par exemple : 'starter', 'pro', 'unlimited'
+  const color = window.clientData.subscriptionColor;      // exemple : 'dark-minimal'
+  const pack = window.clientData.subscriptionStock; // nom personnalisé du site
+
+  try {
+    const res = await fetch("/api/build-site", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        nom,
+        prenom,
+        email,
+        siteId,
+        color,
+        pack
+      })
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      console.log("✅ Site en cours de création :", result);
+      // Tu peux rediriger, afficher un message de succès, etc.
+    } else {
+      console.error("❌ Erreur lors de la création du site :", result.message);
+    }
+  } catch (error) {
+    console.error("🚨 Erreur réseau ou serveur :", error);
+  }
 }
-
 
 function load(){
         
