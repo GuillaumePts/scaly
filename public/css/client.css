@@ -132,26 +132,47 @@
 }
 
 .param {
-    background: linear-gradient(190deg, rgb(255 140 170) 0%, rgb(160 163 240) 88%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block; /* Évite les bugs sur certains navigateurs */
+    color: #eee;
     font-family: var(--font-fam-one);
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: 2px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+
+}
+
+.param::after{
+    border-radius: 50px;
+    content: '';
+    background: linear-gradient(var(--deg-), rgb(255 0 67) 0%, rgb(0 7 185) 88%);
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2; 
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+
 }
 
 .param::before{
     content: '';
-    height: 2px;
-    background: linear-gradient(190deg, rgb(255 140 170) 0%, rgb(160 163 240) 88%);
-    width: 100%;
     position: absolute;
-    bottom: -2px;
+    background: linear-gradient(var(--deg-), rgb(255 0 67) 0%, rgb(0 7 185) 88%);
+    filter: blur(10px); /* Intensifie l'effet lumineux */
+    border-radius: 60px; /* Doit être un peu plus grand pour bien entourer l'élément */
+    bottom: 0;
     left: 0;
+    width: 100%;
+    height: 10px;
 }
+
 
 .value{
     color: #fff; /* Évite les bugs sur certains navigateurs */

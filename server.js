@@ -167,6 +167,11 @@ app.use("/api", webhookRoutes);
 app.use("/api", stripeRoutes); 
 app.use("/api", buildSiteRoute);
 
+// const createClientRouter = require('./routes/createClientRouter');
+// const clientPath = path.join(__dirname, 'clients', 'scalypics_d0b91a8c3b7b405');
+// const clientRouter = createClientRouter(clientPath);
+// app.use('/scalypics_d0b91a8c3b7b405', clientRouter);
+
 
 // Démarrer le serveur
 app.listen(port, () => {

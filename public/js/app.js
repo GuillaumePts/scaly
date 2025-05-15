@@ -77,7 +77,7 @@ setInterval(() => {
 
     // Incrémentez l'angle
     countdeg = (countdeg + 1) % 360;
-}, 1000);
+}, 50);
 
 
 
