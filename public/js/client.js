@@ -69,18 +69,22 @@ function fillUserData() {
         fillField("http", `${window.clientData.http}`);
         
     }else{
-        const divbutton = document.createElement('div')
-        divbutton.classList.add("background-button")
-        divbutton.style.width = "auto"
-        const button = document.createElement('button')
-        button.classList.add('buttonform')
-        divbutton.appendChild(button)
-        button.textContent = "Publier votre Pic's"
+        if(!document.querySelector('#BuildPics')){
+            const divbutton = document.createElement('div')
+            divbutton.classList.add("background-button")
+            divbutton.id = "BuildPics"
+            divbutton.style.width = "auto"
+            const button = document.createElement('button')
+            button.classList.add('buttonform')
+            divbutton.appendChild(button)
+            button.textContent = "Publier votre Pic's"
 
-        document.querySelector('#setuphttp').appendChild(divbutton)
-        divbutton.addEventListener('click',()=>{
-            buildPics()
-        })
+            document.querySelector('#setuphttp').appendChild(divbutton)
+            divbutton.addEventListener('click',()=>{
+                buildPics()
+            })
+        }
+        
     }
 
     if(window.clientData.subscriptionStatus === "inactif"){
@@ -94,7 +98,7 @@ function fillUserData() {
         buy.style.width ="auto"
         const button = document.createElement('button')
         button.classList.add('buttonform')
-        button.textContent="Payer"
+        button.textContent="Activer l'abonnement"
         buy.appendChild(button)
         document.querySelector('#abonnementGestion').appendChild(buy)
         buy.addEventListener('click',async()=>{
@@ -270,6 +274,11 @@ async function buildPics() {
         // Redirection éventuelle
         // window.location.href = "/dashboard";
       }, 2000);
+    }else if(res.status === 402 && result.code === "PAYMENT_REQUIRED"){
+        document.querySelector('.msgoverlay').textContent = result.message
+        setTimeout(() => {
+        finload();
+      }, 4000)
     } else {
       document.querySelector('.msgoverlay').textContent = result.message;
       setTimeout(() => {

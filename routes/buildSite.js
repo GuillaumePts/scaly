@@ -40,6 +40,9 @@ function generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir) {
   console.log(`✅ config.json généré pour ${prenom} ${nom}`);
 }
 
+
+const User = require("../models/Users"); // adapte le chemin si besoin
+
 router.post("/build-site", async (req, res) => {
   const { nom, prenom, email, siteId, color, pack } = req.body;
 
@@ -48,6 +51,16 @@ router.post("/build-site", async (req, res) => {
   }
 
   try {
+    // 🔒 Vérifier l'abonnement en BDD
+    const user = await User.findOne({ email, siteId });
+    if (!user || user.subscriptionStatus !== "actif") {
+      return res.status(402).json({ // 402 = Payment Required
+        success: false,
+        code: "PAYMENT_REQUIRED",
+        message: "Votre produit Pic’s n’a pas pu être créé en raison d’un problème de paiement."
+      });
+    }
+
     console.log("🔧 Création du site pour :", email);
 
     const cleanedColor = color.toLowerCase();
@@ -61,21 +74,18 @@ router.post("/build-site", async (req, res) => {
     await git.clone(repoUrl, targetDir);
     console.log("✅ Clonage terminé.");
 
-    // Suppression du dossier .git
     const gitDir = path.join(targetDir, ".git");
     if (fs.existsSync(gitDir)) {
       fs.rmSync(gitDir, { recursive: true, force: true });
       console.log("🗑️ Dossier .git supprimé.");
     }
 
-    // Suppression du fichier server.js s’il existe
     const serverFile = path.join(targetDir, "server.js");
     if (fs.existsSync(serverFile)) {
       fs.unlinkSync(serverFile);
       console.log("🗑️ Fichier server.js supprimé.");
     }
 
-    // Génération du config.json
     generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir);
 
     res.json({ success: true, message: "Votre produit est prêt ! 🚀" });
@@ -85,5 +95,6 @@ router.post("/build-site", async (req, res) => {
     res.status(500).json({ success: false, message: "Erreur lors de la création du site." });
   }
 });
+
 
 module.exports = router;
