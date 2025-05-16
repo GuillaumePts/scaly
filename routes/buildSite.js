@@ -3,7 +3,6 @@ const router = express.Router();
 const simpleGit = require("simple-git");
 const path = require("path");
 const fs = require("fs");
-const { spawn } = require("child_process");
 const crypto = require("crypto");
 require("dotenv").config();
 
@@ -20,44 +19,25 @@ function getLimitFromPack(pack) {
   return limits[pack] || limits["starter"];
 }
 
-function generateEnvFile({ prenom, nom, email, siteId, pack }, targetDir) {
-  const JWT_SECRET = generateSecretKey(32);
-  const JWT_SECRET_CLIENT = generateSecretKey(24);
-  const LIMIT_STARTER = getLimitFromPack(pack);
+function generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir) {
+  const config = {
+    JWT_SECRET: generateSecretKey(32),
+    JWT_SECRET_CLIENT: generateSecretKey(24),
+    MAIL: email,
+    GMAIL_USER: "scaly.bot.contact@gmail.com",
+    GMAIL_PASS: "dhdj nbts lyjz ycus",
+    PRENOM_PRO: prenom,
+    NOM_PRO: nom,
+    ID_PICS: siteId,
+    LIMIT_STARTER: getLimitFromPack(pack)
+  };
 
-  const envContent = `JWT_SECRET=${JWT_SECRET}
-JWT_SECRET_CLIENT=${JWT_SECRET_CLIENT}
-MAIL=${email}
-GMAIL_USER=scaly.bot.contact@gmail.com
-GMAIL_PASS=dhdj nbts lyjz ycus
-PRENOM_PRO=${prenom}
-NOM_PRO=${nom}
-ID_PICS=${siteId}
-LIMIT_STARTER=${LIMIT_STARTER}`;
-
-  fs.writeFileSync(path.join(targetDir, ".env"), envContent);
-  console.log(`✅ .env généré pour ${prenom} ${nom}`);
-}
-
-function installerDependencies(dossierClient) {
-  return new Promise((resolve, reject) => {
-    console.log(`📦 Installation des dépendances dans ${dossierClient}...`);
-
-    const install = spawn("npm", ["install", "--no-save"], {
-      cwd: path.resolve(dossierClient),
-      stdio: "inherit", // Permet de suivre les logs d'installation
-      shell: true
-    });
-
-    install.on("exit", (code) => {
-      if (code === 0) {
-        console.log("✅ Dépendances installées.");
-        resolve();
-      } else {
-        reject(new Error(`❌ npm install a échoué avec le code ${code}`));
-      }
-    });
-  });
+  fs.writeFileSync(
+    path.join(targetDir, "config.json"),
+    JSON.stringify(config, null, 2),
+    "utf8"
+  );
+  console.log(`✅ config.json généré pour ${prenom} ${nom}`);
 }
 
 router.post("/build-site", async (req, res) => {
@@ -87,9 +67,7 @@ router.post("/build-site", async (req, res) => {
       console.log("🗑️ Dossier .git supprimé.");
     }
 
-    generateEnvFile({ prenom, nom, email, siteId, pack }, targetDir);
-
-    await installerDependencies(targetDir);
+    generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir);
 
     res.json({ success: true, message: "Votre produit est prêt ! 🚀" });
 

@@ -9,8 +9,7 @@ const sharp = require("sharp");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
 const nodemailer = require("nodemailer");
-
-
+const config = require(path.join(baseDir, 'config.json'));
 const mongoose = require('mongoose');
 
 module.exports = function createClientRouter(baseDir) {
@@ -23,27 +22,7 @@ module.exports = function createClientRouter(baseDir) {
   const User = require(path.join(baseDir, 'models', 'User.js'));
 
 
-  async function connect() {
-  try {
-      // Connexion à MongoDB sans les options obsolètes
-      await mongoose.connect(process.env.MONGO_URI);
-      console.log("🚀 Connecté à MongoDB");
 
-  } catch (err) {
-      console.error('Erreur de connexion à MongoDB:', err);
-  }
-}
-
-// Appel de la fonction pour se connecter
-connect();
-
-  // Tu peux adapter les chemins ici avec path.join(baseDir, ...)
-  // Par exemple : const ticketPath = path.join(baseDir, 'ticket', 'ticket.json');
-
-  // Ton code actuel ici...
-  // Remplace app.get(...) par router.get(...), etc.
-
-  
   const authenticateJWT = (req, res, next) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');  // Le token est envoyé dans l'en-tête "Authorization"
   
@@ -51,7 +30,7 @@ connect();
       return res.status(403).send({ message: 'Accès interdit. Token requis.' });
     }
   
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    jwt.verify(token, config.JWT_SECRET, (err, user) => {
       if (err) {
         return res.status(403).send({ message: 'Token invalide.' });
       }
@@ -64,10 +43,7 @@ connect();
   
   router.use(cookieParser());
   const { v4: uuidv4 } = require('uuid'); 
-  
-  // const sqlite3 = require('sqlite3').verbose();
-  // const db = new sqlite3.Database('/db.sqlite');
-  
+
   // Utiliser le dossier 'public' pour les fichiers statiques
   router.use(express.static(path.join(baseDir, 'public')));
   
@@ -111,7 +87,7 @@ connect();
   }
   
   const storageLimits = {
-    Starter: parseInt(process.env.LIMIT_STARTER),
+    Starter: parseInt(config.LIMIT_STARTER),
     // Pro: parseInt(process.env.LIMIT_PRO),
     // Unlimited: Infinity,
   };
@@ -119,7 +95,7 @@ connect();
   
   
   const checkStorageLimit = (req, res, next) => {
-    const limit = process.env.LIMIT_STARTER;
+    const limit = config.LIMIT_STARTER;
   
     if (!limit) {
       return res.status(500).json({ error: "Aucune limite de stockage définie" });
@@ -329,23 +305,23 @@ connect();
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_PASS
+            user: config.GMAIL_USER,
+            pass: config.GMAIL_PASS
         }
     });
   
     // Mail de confirmation pour l'utilisateur
     const mailToUser = {
-        from: `"Scaly" <${process.env.GMAIL_USER}>`,
+        from: `"Scaly" <${config.GMAIL_USER}>`,
         to: email,
         subject: 'Confirmation de votre message',
-        text: `Bonjour ${nom},\n\n votre message a bien été envoyé à ${process.env.PRENOM_PRO} ${process.env.NOM_PRO}.\n\nCordialement,\nScaly.`
+        text: `Bonjour ${nom},\n\n votre message a bien été envoyé à ${config.PRENOM_PRO} ${config.NOM_PRO}.\n\nCordialement,\nScaly.`
     };
   
     // Mail pour le propriétaire du site
     const mailToOwner = {
-        from: `"Scaly" <${process.env.GMAIL_USER}>`,
-        to: process.env.MAIL,
+        from: `"Scaly" <${config.GMAIL_USER}>`,
+        to: config.MAIL,
         subject: 'Nouveau message reçu',
         text: `Vous avez reçu un nouveau message de la part de ${nom} (${email}) :\n\n${message}`
     };
@@ -376,8 +352,8 @@ connect();
   // GESTION BACKEND ///////////////////////////////////
   /////////////////////////////////////////////////////
   
-  const password = process.env.PASS_WORD;
-  const id = process.env.ID;
+  const password = config.PASS_WORD;
+  const id = config.ID;
   const multer = require('multer');
   const storage = multer.memoryStorage();
   const upload = multer({ storage: storage });
@@ -387,14 +363,14 @@ connect();
   
   function verifierTokenClient(req, res, next) {
     console.log('Cookies reçus →', req.cookies); // 👈 ajoute ça
-    console.log("SECRET utilisé pour décoder :", process.env.JWT_SECRET_CLIENT);
+    console.log("SECRET utilisé pour décoder :", config.JWT_SECRET_CLIENT);
     const token = req.cookies.token;
     if (!token) {
       console.warn('Aucun token client trouvé');
       return res.status(403).send('Accès refusé');
     }
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_CLIENT);
+      const decoded = jwt.verify(token, config.JWT_SECRET_CLIENT);
       if (decoded.role !== 'client') throw new Error('Role invalide');
       req.user = decoded;
       next();
@@ -430,54 +406,75 @@ connect();
   
   
   
-  router.post('/connexion', (req, res) => {
-    const { id, pass } = req.body;
-  
-    if (id && pass) {
-      // Admin
-      if (id === process.env.ID && pass === process.env.PASS_WORD) {
-        const token = jwt.sign({ role: 'admin', id }, process.env.JWT_SECRET, {
+app.post('/connexion', async (req, res) => {
+  const { id, pass } = req.body;
+
+  if (!id || !pass) {
+    return res.status(400).send({ message: 'Requête incomplète' });
+  }
+
+  const currentSiteId = config.ID_PICS;
+
+  try {
+    // Vérifie d'abord si c'est un propriétaire
+    const admin = await User.findOne({ email: id });
+
+    if (admin && admin.siteId === currentSiteId) {
+      const validPassword = await bcrypt.compare(pass, admin.password);
+      if (validPassword) {
+        const token = jwt.sign({ role: 'admin', id }, config.JWT_SECRET, {
           expiresIn: '1h'
         });
-  
+
         res.cookie('token', token, {
           httpOnly: true,
-          secure: false, // Mets à false si tu testes en local sans HTTPS
+          secure: false, // mets à true en prod
           sameSite: 'strict',
           maxAge: 3600000
         });
-  
+
         return fs.readFile(path.join(baseDir, '/backoffice.html'), 'utf8', (err, html) => {
           if (err) return res.status(500).send({ message: 'Erreur serveur' });
           res.status(200).send({ html, message: 'Connexion réussie', session: 'admin' });
         });
-  
-      // Client ticket
-    } else if (tickets.ticket && tickets.ticket.idl === id && tickets.ticket.key === pass) {
-      const token = jwt.sign({ role: 'client', id }, process.env.JWT_SECRET_CLIENT, {
+      }
+    }
+
+    // Si pas admin → on vérifie si c’est un client avec un ticket JSON
+    const ticketsPath = path.join(baseDir, 'ticket', 'ticket.json');
+    if (!fs.existsSync(ticketsPath)) {
+      return res.status(401).send({ message: 'Identifiants invalides' });
+    }
+
+    const data = fs.readFileSync(ticketsPath, 'utf8');
+    const tickets = JSON.parse(data);
+
+    if (tickets.ticket && tickets.ticket.idl === id && tickets.ticket.key === pass) {
+      const token = jwt.sign({ role: 'client', id }, config.JWT_SECRET_CLIENT, {
         expiresIn: '1h'
       });
-    
+
       res.cookie('token', token, {
         httpOnly: true,
-        secure: false, // à mettre à false en local
+        secure: false,
         sameSite: 'strict',
         maxAge: 3600000
       });
-    
+
       return fs.readFile(path.join(baseDir, '/views/ticket.html'), 'utf8', (err, html) => {
         if (err) return res.status(500).send({ message: 'Erreur serveur' });
         res.status(200).send({ html, message: 'Connexion réussie', session: 'client' });
       });
-    
-  
-      } else {
-        return res.status(401).send({ message: 'Identifiants invalides' });
-      }
-    } else {
-      res.status(400).send({ message: 'Requête incomplète' });
     }
-  });
+
+    // Aucun match
+    return res.status(401).send({ message: 'Identifiants invalides' });
+
+  } catch (err) {
+    console.error('Erreur lors de la connexion :', err);
+    return res.status(500).send({ message: 'Erreur serveur' });
+  }
+});
   
   
   
@@ -501,7 +498,7 @@ connect();
         return res.redirect(redirection);
       }
   
-      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      jwt.verify(token, config.JWT_SECRET, (err, decoded) => {
         if (err) {
           console.warn('Token invalide ou expiré');
           return res.redirect(redirection);
@@ -512,6 +509,7 @@ connect();
       });
     };
   }
+
   
   router.post('/update-locked', verifierSessionOuRediriger('/'), (req, res) => {
     const { locked } = req.body;
@@ -549,7 +547,7 @@ connect();
     const folderPath = path.join(baseDir, 'public', 'portfolio', 'photo');
     const used = getFolderSize(folderPath); // fonction vue plus haut
   
-    const limit = parseInt(process.env.LIMIT_STARTER); // en octets
+    const limit = parseInt(config.LIMIT_STARTER); // en octets
   
     const percent = Math.min((used / limit) * 100, 100);
   
@@ -2266,14 +2264,14 @@ connect();
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_PASS
+            user: config.GMAIL_USER,
+            pass: config.GMAIL_PASS
         }
     });
   
     // Mail au client final
     const mailOptionsClientFinal = {
-        from: `"Scaly" <${process.env.GMAIL_USER}>`,
+        from: `"Scaly" <${config.GMAIL_USER}>`,
         to: mail,
         subject: 'Vos photos sont prêtes !',
         html: `
@@ -2284,15 +2282,15 @@ connect();
                 <li><strong>ID :</strong> ${idl}</li>
                 <li><strong>Clé :</strong> ${key}</li>
             </ul>
-            <p>En cas de problème, vous pouvez contacter votre photographe à cette adresse : <a href="mailto:${process.env.MAIL}">${process.env.MAIL}</a></p>
+            <p>En cas de problème, vous pouvez contacter votre photographe à cette adresse : <a href="mailto:${config.MAIL}">${config.MAIL}</a></p>
             <p>Bonne consultation,<br/><em>L'équipe Scaly Pic’s</em></p>
         `
     };
   
     // Mail au client pro (ton client)
     const mailOptionsClientPro = {
-        from: `"Scaly" <${process.env.GMAIL_USER}>`,
-        to: process.env.MAIL,
+        from: `"Scaly" <${config.GMAIL_USER}>`,
+        to: config.MAIL,
         subject: 'Ticket créé avec succès',
         html: `
             <p>Bonjour,</p>
@@ -2309,8 +2307,8 @@ connect();
         if (err) {
             // Si erreur, informer le client pro
             const failNotice = {
-                from: `"Scaly" <${process.env.GMAIL_USER}>`,
-                to: process.env.MAIL,
+                from: `"Scaly" <${config.GMAIL_USER}>`,
+                to: config.MAIL,
                 subject: '[ERREUR] Ticket créé mais mail non envoyé au client',
                 html: `
                     <p>Bonjour,</p>
@@ -2574,16 +2572,16 @@ connect();
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS
+        user: config.GMAIL_USER,
+        pass: config.GMAIL_PASS
       }
     });
   
     const mailOptions = {
-      from: process.env.GMAIL_USER,
-      to: process.env.MAIL,
+      from: config.GMAIL_USER,
+      to: config.MAIL,
       subject: 'Téléchargement de photos terminé par votre client',
-      text: `Bonjour ${process.env.PRENOM_PRO},\n\nNous vous informons que votre client a terminé le téléchargement de ses photos.\n\nCordialement,\nL'équipe Scaly`
+      text: `Bonjour ${config.PRENOM_PRO},\n\nNous vous informons que votre client a terminé le téléchargement de ses photos.\n\nCordialement,\nL'équipe Scaly`
     };
   
     transporter.sendMail(mailOptions, (error, info) => {
