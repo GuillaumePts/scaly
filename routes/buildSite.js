@@ -61,12 +61,21 @@ router.post("/build-site", async (req, res) => {
     await git.clone(repoUrl, targetDir);
     console.log("✅ Clonage terminé.");
 
+    // Suppression du dossier .git
     const gitDir = path.join(targetDir, ".git");
     if (fs.existsSync(gitDir)) {
       fs.rmSync(gitDir, { recursive: true, force: true });
       console.log("🗑️ Dossier .git supprimé.");
     }
 
+    // Suppression du fichier server.js s’il existe
+    const serverFile = path.join(targetDir, "server.js");
+    if (fs.existsSync(serverFile)) {
+      fs.unlinkSync(serverFile);
+      console.log("🗑️ Fichier server.js supprimé.");
+    }
+
+    // Génération du config.json
     generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir);
 
     res.json({ success: true, message: "Votre produit est prêt ! 🚀" });

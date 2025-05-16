@@ -15,6 +15,22 @@ const { MongoClient } = require("mongodb");
 const mongoose = require('mongoose');
 const crypto = require("crypto");
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const vhost = require('vhost');
+
+const createClientRouter = require("./routes/serverClientRouter");
+const clientsDir = path.join(__dirname, "clients");
+
+// Monter les sous-domaines clients AVANT
+fs.readdirSync(clientsDir).forEach(folder => {
+  const clientPath = path.join(clientsDir, folder);
+  if (fs.statSync(clientPath).isDirectory()) {
+    console.log(`Montage du router client pour le sous-domaine : ${folder}.localhost`);
+    const clientRouter = createClientRouter(clientPath);
+    app.use(vhost(`${folder}.localhost`, clientRouter));
+  }
+});
+
+
 
 // const sqlite3 = require('sqlite3').verbose();
 // const db = new sqlite3.Database('/db.sqlite');
@@ -63,7 +79,9 @@ app.get('/content/lock', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/lock.html'));
 });
 
-const User = require("./models/User");
+const User = require("./models/Users");
+
+
 
 async function connect() {
   try {
@@ -167,10 +185,7 @@ app.use("/api", webhookRoutes);
 app.use("/api", stripeRoutes); 
 app.use("/api", buildSiteRoute);
 
-// const createClientRouter = require('./routes/createClientRouter');
-// const clientPath = path.join(__dirname, 'clients', 'scalypics_d0b91a8c3b7b405');
-// const clientRouter = createClientRouter(clientPath);
-// app.use('/scalypics_d0b91a8c3b7b405', clientRouter);
+
 
 
 // Démarrer le serveur

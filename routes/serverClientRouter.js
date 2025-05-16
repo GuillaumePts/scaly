@@ -1,25 +1,29 @@
 // routes/createClientRouter.js
-const express = require("express");
-const path = require("path");
-const fs = require("fs");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const multer = require("multer");
-const sharp = require("sharp");
-const cookieParser = require("cookie-parser");
-const compression = require("compression");
-const nodemailer = require("nodemailer");
-const config = require(path.join(baseDir, 'config.json'));
-const mongoose = require('mongoose');
+
+
+
+
+
 
 module.exports = function createClientRouter(baseDir) {
+  const express = require("express");
+  const compression = require("compression");
   const router = express.Router();
-  router.use(express.json());
-  router.use(express.urlencoded({ extended: true }));
-  router.use(cookieParser());
+  const path = require("path");
+  const fs = require("fs");
+  const jwt = require("jsonwebtoken");
+  const bcrypt = require("bcrypt");
+  const cookieParser = require("cookie-parser");
+
+  const configPath = path.join(baseDir, 'config.json');
+  const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+
   router.use(compression());
+  router.use(express.static(baseDir));
 
   const User = require(path.join(baseDir, 'models', 'User.js'));
+
+
 
 
 
@@ -406,7 +410,7 @@ module.exports = function createClientRouter(baseDir) {
   
   
   
-app.post('/connexion', async (req, res) => {
+router.post('/connexion', async (req, res) => {
   const { id, pass } = req.body;
 
   if (!id || !pass) {

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User"); // Ton modèle mongoose
+const User = require("../models/Users"); // Ton modèle mongoose
 const jwt = require("jsonwebtoken");
 const path = require('path');
 const Stripe = require("stripe");
@@ -56,8 +56,10 @@ router.post("/stripe/start-checkout", authMiddleware, async (req, res) => {
               },
           ],
           mode: "payment",
-          success_url: `https://scaly.onrender.com/api/success`,
-          cancel_url: `https://scaly.onrender.com/api/cancel`,
+        //   success_url: `https://scaly.onrender.com/api/success`,
+        //   cancel_url: `https://scaly.onrender.com/api/cancel`,
+          success_url: `http://192.168.1.69:9999/api/success`,
+          cancel_url: `http://192.168.1.69:9999/api/cancel`,
           client_reference_id: user._id.toString(),
       });
 

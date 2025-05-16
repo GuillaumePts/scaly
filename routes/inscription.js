@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const User = require("../models/User"); // Ajuste le chemin si besoin
+const User = require("../models/Users"); // Ajuste le chemin si besoin
 
 const router = express.Router();
 
