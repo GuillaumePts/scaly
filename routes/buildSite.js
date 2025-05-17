@@ -54,7 +54,7 @@ router.post("/build-site", async (req, res) => {
     // 🔒 Vérifier l'abonnement en BDD
     const user = await User.findOne({ email, siteId });
     if (!user || user.subscriptionStatus !== "actif") {
-      return res.status(402).json({ // 402 = Payment Required
+      return res.status(402).json({
         success: false,
         code: "PAYMENT_REQUIRED",
         message: "Votre produit Pic’s n’a pas pu être créé en raison d’un problème de paiement."
@@ -74,18 +74,38 @@ router.post("/build-site", async (req, res) => {
     await git.clone(repoUrl, targetDir);
     console.log("✅ Clonage terminé.");
 
+    // Suppression du dossier .git
     const gitDir = path.join(targetDir, ".git");
     if (fs.existsSync(gitDir)) {
       fs.rmSync(gitDir, { recursive: true, force: true });
       console.log("🗑️ Dossier .git supprimé.");
     }
 
+    // Suppression de server.js
     const serverFile = path.join(targetDir, "server.js");
     if (fs.existsSync(serverFile)) {
       fs.unlinkSync(serverFile);
       console.log("🗑️ Fichier server.js supprimé.");
     }
 
+    // Suppression du dossier models
+    const modelsDir = path.join(targetDir, "models");
+    if (fs.existsSync(modelsDir)) {
+      fs.rmSync(modelsDir, { recursive: true, force: true });
+      console.log("🗑️ Dossier models supprimé.");
+    }
+
+    // Suppression des fichiers package.json, package-lock.json, .gitignore
+    const filesToRemove = ["package.json", "package-lock.json", ".gitignore"];
+    for (const file of filesToRemove) {
+      const filePath = path.join(targetDir, file);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log(`🗑️ Fichier ${file} supprimé.`);
+      }
+    }
+
+    // Génération du config.json
     generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir);
 
     res.json({ success: true, message: "Votre produit est prêt ! 🚀" });

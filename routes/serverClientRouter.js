@@ -21,7 +21,8 @@ module.exports = function createClientRouter(baseDir) {
   router.use(compression());
   router.use(express.static(baseDir));
 
-  const User = require(path.join(__dirname, 'models', 'User.js'));
+const User = require('../models/User');
+
 
 
 
