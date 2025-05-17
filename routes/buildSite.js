@@ -108,7 +108,13 @@ router.post("/build-site", async (req, res) => {
     // Génération du config.json
     generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir);
 
-    res.json({ success: true, message: "Votre produit est prêt ! 🚀" });
+    const siteUrl = `http://${siteId}.localhost:9999/`;
+    await User.updateOne(
+      { email, siteId },
+      { $set: { http: siteUrl } }
+    );
+
+    res.json({ success: true, message: "Votre produit est prêt ! 🚀", url: siteUrl  });
 
   } catch (err) {
     console.error("❌ Erreur :", err.message);

@@ -67,6 +67,7 @@ function fillUserData() {
 
     if(window.clientData.http){
         fillField("http", `${window.clientData.http}`);
+        document.querySelector('#http').href = window.clientData.http
         
     }else{
         if(!document.querySelector('#BuildPics')){
@@ -268,12 +269,13 @@ async function buildPics() {
     const result = await res.json();
 
     if (res.ok) {
+
       document.querySelector('.msgoverlay').textContent = result.message;
+      lienHttp(result)
       setTimeout(() => {
         finload();
-        // Redirection éventuelle
-        // window.location.href = "/dashboard";
       }, 2000);
+
     }else if(res.status === 402 && result.code === "PAYMENT_REQUIRED"){
         document.querySelector('.msgoverlay').textContent = result.message
         setTimeout(() => {
@@ -295,6 +297,21 @@ async function buildPics() {
   }
 }
 
+
+function lienHttp(res){
+  if(res.success && res.url){
+    const a = document.querySelector('#http');
+    if (a) {
+      const fullUrl = res.url.startsWith('http') ? res.url : `http://${res.url}`;
+      a.href = fullUrl;
+      a.textContent = fullUrl;
+
+      if(document.querySelector('#BuildPics')){
+        document.querySelector('#BuildPics').remove();
+      }
+    }
+  }
+}
 
 
 function load(){

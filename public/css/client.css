@@ -182,6 +182,14 @@
     letter-spacing: 2px;
 }
 
+#http{
+    color: var(--green); /* Évite les bugs sur certains navigateurs */
+    font-family: var(--font-fam-one);
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0px;
+}
+
 
 .translate{
     transform: translateX(100%);
