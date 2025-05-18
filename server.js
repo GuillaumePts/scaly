@@ -16,6 +16,8 @@ const mongoose = require('mongoose');
 const crypto = require("crypto");
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const vhost = require('vhost');
+require("./deleteExpiredAccounts.js");
+
 
 const createClientRouter = require("./routes/serverClientRouter");
 const clientsDir = path.join(__dirname, "clients");
@@ -175,6 +177,7 @@ const insRoutes = require("./routes/inscription.js")
 const webhookRoutes = require("./routes/paiement.js")
 const stripeRoutes = require("./routes/stripe.js")
 const buildSiteRoute = require("./routes/buildSite");
+const deleteAccount =  require("./routes/delete-account.js")
 
 
 // app.use(cors());
@@ -184,6 +187,7 @@ app.use("/api", insRoutes);
 app.use("/api", webhookRoutes); 
 app.use("/api", stripeRoutes); 
 app.use("/api", buildSiteRoute);
+app.use("/api", deleteAccount);
 
 
 

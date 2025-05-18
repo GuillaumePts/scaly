@@ -903,19 +903,7 @@
 
 
 
-.button-close-subfolder {
-    background-color: #c13434;
-    border: none;
-    text-align: center;
-    padding: 12px 20px;
-    border-radius: 50px;
-    color: rgb(255, 255, 255);
-    margin: 1px;
-    font-family: var(--font-fam-one);
-}
-.button-close-subfolder:hover {
-    background-color: #a82828;
-}
+
 
 
 

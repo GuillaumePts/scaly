@@ -1,4 +1,7 @@
 // ⚡ Fonction pour récupérer les données utilisateur
+
+// #d67211
+
 async function fetchUserData() {
     try {
         const response = await fetch("/api/user_client", {
@@ -154,13 +157,20 @@ function fillUserData() {
                             }
                           });
         })
-    }else{
+    }else if(window.clientData.subscriptionStatus === "actif"){
         if(document.querySelector('#rebuy')){
             document.querySelector('#rebuy').remove()
         }
         document.querySelector('.itserr').style.display ="none"
         document.querySelector('#subscriptionStatus').style.color ="var(--green)"
         document.querySelector('#subscriptionStatus').style.textTransform ="uppercase"
+    }else{
+       if(document.querySelector('#rebuy')){
+            document.querySelector('#rebuy').remove()
+        }
+        document.querySelector('.itserr').style.display ="none"
+        document.querySelector('#subscriptionStatus').style.color ="#d67211"
+        // document.querySelector('#subscriptionStatus').style.textTransform ="uppercase"
     }
 }
 
@@ -174,6 +184,132 @@ function setupMenu() {
             document.querySelector("#sous-nav").classList.toggle("translate");
         });
     }
+
+    document.querySelector('#deletedCompte').addEventListener('click',()=>{
+        const overlay = document.createElement('div')
+        overlay.classList.add('overlaybackend')
+        document.body.appendChild(overlay)
+
+        const p = document.createElement('p')
+        p.classList.add('pOverlayBack')
+        p.textContent = "Vous êtes sur le point de supprimer définitivement votre compte ainsi que votre site Pic’s associé. Cette action entraînera également l’arrêt de votre abonnement. Êtes-vous certain de vouloir continuer ?"
+
+        const remarque = document.createElement('p')
+        remarque.classList.add('remarque')
+        const span = document.createElement('span')
+        span.textContent = "Remarque : "
+        span.style.textDecoration = "underline"
+        remarque.appendChild(span);
+        remarque.appendChild(document.createTextNode(
+          "Vous pouvez choisir une suppression immédiate (perte instantanée de l'accès et des données) ou une suppression différée, qui prendra effet à la fin de votre période d'abonnement pour garantir un mois complet d'utilisation."
+        ));
+
+        const deleteNow = document.createElement('button')
+        deleteNow.textContent = "Suppression immédiate"
+        deleteNow.classList.add('button-close-subfolder')
+
+        deleteNow.addEventListener('click', async () => {
+          load()
+            try {
+              const res = await fetch('/api/delete-account', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                credentials: 'include', // pour envoyer les cookies avec le token
+                body: JSON.stringify({ immediate: true })
+              });
+
+              const result = await res.json();
+
+              if (res.ok) {
+                document.querySelector('.msgoverlay').textContent = "Votre compte à bien été supprimé et votre compte résilié"
+                finload()
+                setTimeout(() => {
+                  window.location.href = '/';
+                }, 2000);
+                 // rediriger vers la page d'accueil après suppression
+              } else {
+                document.querySelector('.msgoverlay').textContent = 'Erreur lors de la suppression.'
+                setTimeout(() => {
+                  finload()
+                }, 4000);
+              }
+            } catch (err) {
+                document.querySelector('.msgoverlay').textContent = 'Erreur lors de la suppression.'
+                setTimeout(() => {
+                  finload()
+                }, 4000);
+            }
+        });
+
+
+
+        
+
+
+        const bk = document.createElement('div')
+        bk.classList.add('background-button')
+        const annuler = document.createElement('button')
+        annuler.classList.add('buttonform')
+        annuler.textContent = "Annuler"
+        bk.appendChild(annuler)
+        annuler.addEventListener('click',()=>{
+          document.querySelector('.overlaybackend').remove()
+        })
+
+        overlay.appendChild(p)
+        overlay.appendChild(remarque)
+        overlay.appendChild(deleteNow)
+
+        if(!window.clientData.deletionDate){
+            const deleteDifere = document.createElement('button')
+            deleteDifere.textContent = "Suppression diféré"
+            deleteDifere.classList.add('button-close-subfolder')
+
+            overlay.appendChild(deleteDifere)
+
+            deleteDifere.addEventListener('click', async () => {
+              load()
+              try {
+                const res = await fetch('/api/delete-account', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  credentials: 'include', // Nécessaire pour envoyer le cookie contenant le token
+                  body: JSON.stringify({ immediate: false }) // 👈 suppression différée
+                });
+
+                const result = await res.json();
+
+                if (res.ok) {
+
+                  document.querySelector('.msgoverlay').textContent = result.message
+                  document.querySelector('.overlaybackend').remove()
+                  setTimeout(() => {
+                    finload()
+                  }, 4000);
+                } else {
+
+                  document.querySelector('.msgoverlay').textContent = result.message
+                  setTimeout(() => {
+                    finload()
+                  }, 4000);
+                }
+              } catch (err) {
+
+                document.querySelector('.msgoverlay').textContent = "Une erreur est survenue. Veuillez réessayer."
+                  setTimeout(() => {
+                    finload()
+                  }, 4000);
+              }
+            });
+        }
+
+        overlay.appendChild(bk)
+
+    })
 
 
     document.getElementById("manage-billing").addEventListener("click", async () => {
@@ -207,6 +343,7 @@ function setupPagination() {
         page.addEventListener("click", () => {
             pages.forEach(p => document.querySelector(`.${p.id}`).style.display = "none");
             document.querySelector(`.${page.id}`).style.display = "flex";
+            document.querySelector("#sous-nav").classList.toggle("translate");
         });
     });
 
@@ -243,7 +380,7 @@ function setupPagination() {
 
 async function buildPics() {
   load(); // Animation initiale
-
+  document.querySelector('.msgoverlay').textContent = "Construction de votre produit Pic's"
   const nom = window.clientData.lastName;
   const prenom = window.clientData.firstName;
   const email = window.clientData.email;
@@ -368,3 +505,5 @@ function finload(){
         document.querySelector('.overlayLoad').remove()
     },700);
 }
+
+
