@@ -157,6 +157,24 @@
     outline: none;
 }
 
+.code-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.code-input{
+    width: 20px;
+    height: 30px;
+    border: none;
+    background-color: #fff;
+    text-align: center;
+    font-family: var(--font-fam-one);
+    color: #000000;
+    font-size: 1rem;
+
+}
 
 .form-subfolder-creat{
     display: flex;

@@ -182,6 +182,9 @@ const manageBilling = require("./routes/manageBilling.js")
 const updateUser = require("./routes/update-user.js")
 const verifyPassword = require("./routes/verify-password.js")
 const changePassword = require("./routes/change-password.js")
+const verificationRoutes = require("./routes/send-verification-code.js");
+
+
 
 
 // app.use(cors());
@@ -196,6 +199,7 @@ app.use("/api", manageBilling)
 app.use("/api", updateUser)
 app.use("/api", verifyPassword)
 app.use("/api", changePassword)
+app.use("/api", verificationRoutes);
 
 
 

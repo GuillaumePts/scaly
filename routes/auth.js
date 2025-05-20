@@ -69,7 +69,7 @@ router.post("/login", [
         if (!user.isVerified) return res.status(403).json({ message: "Veuillez vérifier votre e-mail." });
 
         // Générer un token JWT
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        const token = jwt.sign({ id: user._id , email: user.email}, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         // Stocker le token en HttpOnly cookie
         res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });

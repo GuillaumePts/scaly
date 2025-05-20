@@ -526,27 +526,180 @@ function setupMenu() {
 
 
   document.getElementById("manage-billinge").addEventListener("click", async () => {
-    load();
 
-    try {
-      const res = await fetch("/api/create-portal-session", {
+
+
+
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0px';
+    overlay.style.left = '0px';
+    overlay.style.width = '100%';
+    overlay.style.height = '100vh';
+    overlay.style.zIndex = '100';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+
+    const form = document.createElement('div');
+    form.className = 'form-subfolder-creat';
+
+    const p = document.createElement('p')
+    p.classList.add('pOverlayBack')
+    p.style.color = "#fff"
+    p.textContent = "Entrez le code de vérification envoyé à votre adresse e-mail";
+
+    const codeContainer = document.createElement('div');
+    codeContainer.className = 'code-container';
+
+    const codeInputs = [];
+    for (let i = 0; i < 6; i++) {
+      const input = document.createElement('input');
+      input.className = 'code-input';
+      input.setAttribute('type', 'text');
+      input.setAttribute('maxlength', '1');
+      input.setAttribute('inputmode', 'numeric'); // ou "text" si lettres autorisées
+      codeContainer.appendChild(input);
+      codeInputs.push(input);
+    }
+
+    // Gestion focus automatique
+    codeInputs.forEach((input, idx) => {
+      input.addEventListener('input', () => {
+        if (input.value.length === 1 && idx < codeInputs.length - 1) {
+          codeInputs[idx + 1].focus();
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && input.value === '' && idx > 0) {
+          codeInputs[idx - 1].focus();
+        }
+      });
+    });
+
+
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.justifyContent = 'center';
+    buttonContainer.style.alignItems = 'center';
+    buttonContainer.style.gap = '25px';
+
+    const createBtnNew = document.createElement('button');
+    createBtnNew.className = 'buttonform';
+    createBtnNew.textContent = 'Valider';
+
+    const backgroundBtnDiv = document.createElement('div');
+    backgroundBtnDiv.className = 'background-button';
+
+    backgroundBtnDiv.appendChild(createBtnNew)
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'button-close-subfolder';
+    cancelBtn.textContent = 'Annuler';
+
+    // Assemble les éléments
+    // backgroundBtnDiv.appendChild(createBtn);
+    buttonContainer.appendChild(backgroundBtnDiv);
+    buttonContainer.appendChild(cancelBtn);
+
+    const pErr = document.createElement('p')
+    pErr.classList.add('errform')
+    pErr.style.color = '#ff5151'
+
+
+    form.appendChild(p);
+    form.appendChild(codeContainer);
+    form.appendChild(pErr)
+    form.appendChild(buttonContainer);
+
+    createBtnNew.addEventListener("click", async () => {
+      load()
+      const code = codeInputs.map(input => input.value).join("");
+
+      if (code.length !== 6) {
+        finload()
+        pErr.textContent = "Le code est incomplet.";
+        return;
+      }
+
+      const res = await fetch("/api/verify-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ code })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        finload()
+        pErr.textContent = data.error || "Erreur de vérification.";
+        return;
+      }
+
+      // Code OK => on ouvre Stripe
+      const stripeRes = await fetch("/api/create-portal-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include"
       });
 
-      const data = await res.json();
-      if (res.ok && data.url) {
-        finload();
-        window.open(data.url, "_blank"); // ⭐ Ouvre Stripe dans une nouvelle fenêtre
+      const stripeData = await stripeRes.json();
+      if (stripeRes.ok && stripeData.url) {
+        finload()
+        window.open(stripeData.url, "_blank");
+        overlay.remove();
       } else {
-        finload();
-        alert("Impossible de rediriger vers le portail de gestion.");
+        finload()
+        pErr.textContent = "Erreur lors de l’ouverture du portail Stripe.";
       }
-    } catch (error) {
-      finload();
-      alert("Erreur de communication avec le serveur.");
+    });
+
+
+    overlay.appendChild(form);
+
+    cancelBtn.addEventListener('click', () => {
+      overlay.remove();
+    });
+    // Ajoute au DOM
+    document.body.appendChild(overlay);
+
+    const response = await fetch("/api/send-verification-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include"
+    });
+
+    if (!response.ok) {
+
+      pErr.textContent = "Erreur lors de l'envoi du code de vérification."
+      return;
     }
+
+
+    // try {
+    //   const res = await fetch("/api/create-portal-session", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     credentials: "include"
+    //   });
+
+    //   const data = await res.json();
+    //   if (res.ok && data.url) {
+    //     finload();
+    //     window.open(data.url, "_blank"); // ⭐ Ouvre Stripe dans une nouvelle fenêtre
+    //   } else {
+    //     finload();
+    //     alert("Impossible de rediriger vers le portail de gestion.");
+    //   }
+    // } catch (error) {
+    //   finload();
+    //   alert("Erreur de communication avec le serveur.");
+    // }
   });
 
 
