@@ -3,367 +3,586 @@
 // #d67211
 
 async function fetchUserData() {
-    try {
-        const response = await fetch("/api/user_client", {
-            credentials: "include"  // Assure-toi que le cookie est inclus dans la requête
-        });
+  try {
+    const response = await fetch("/api/user_client", {
+      credentials: "include"  // Assure-toi que le cookie est inclus dans la requête
+    });
 
-        if (!response.ok) {
-            throw new Error("Erreur lors de la récupération des données utilisateur.");
-        }
-
-        const data = await response.json();
-        if (!data.user) throw new Error("Utilisateur non authentifié");
-
-        window.clientData = data.user;
-        return data.user;
-    } catch (error) {
-        console.error("Erreur lors du chargement des données utilisateur :", error);
-        alert("Veuillez vous reconnecter."); // Redirection vers la page de connexion si l'utilisateur est déconnecté
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération des données utilisateur.");
     }
+
+    const data = await response.json();
+    if (!data.user) throw new Error("Utilisateur non authentifié");
+
+    window.clientData = data.user;
+    return data.user;
+  } catch (error) {
+    console.error("Erreur lors du chargement des données utilisateur :", error);
+    alert("Veuillez vous reconnecter."); // Redirection vers la page de connexion si l'utilisateur est déconnecté
+  }
 }
 
 
 // ⚡ Fonction pour charger le tableau de bord
 async function loadDashboard() {
-    try {
-        const response = await fetch("/api/dashboard", { credentials: "include" });
-        const data = await response.text(); // On attend la réponse complète en HTML
+  try {
+    const response = await fetch("/api/dashboard", { credentials: "include" });
+    const data = await response.text(); // On attend la réponse complète en HTML
 
-        document.querySelector("#main-content").innerHTML = data;
+    document.querySelector("#main-content").innerHTML = data;
 
-        // Ajout des événements une fois le contenu chargé
-        setupMenu();
-        fillUserData();
-        setupPagination();
+    // Ajout des événements une fois le contenu chargé
+    setupMenu();
+    fillUserData();
+    setupPagination();
 
-    } catch (error) {
-        console.error("Erreur lors du chargement du dashboard :", error);
-    }
+  } catch (error) {
+    console.error("Erreur lors du chargement du dashboard :", error);
+  }
 }
 
 // ⚡ Remplissage des champs utilisateur
 function fillUserData() {
-    if (!window.clientData) return;
+  if (!window.clientData) return;
 
-    const fillField = (id, value) => {
-        const element = document.getElementById(id);
-        if (element) element.textContent = value || "Non renseigné";
-    };
+  const fillField = (id, value) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value || "Non renseigné";
+  };
 
-    fillField("subscriptionStatus", window.clientData.subscriptionStatus);
-    fillField("subscriptionStock", window.clientData.subscriptionStock);
-    fillField("subscriptionColor", window.clientData.subscriptionColor);
-    fillField("siteId", window.clientData.siteId);
+  fillField("subscriptionStatus", window.clientData.subscriptionStatus);
+  fillField("subscriptionStock", window.clientData.subscriptionStock);
+  fillField("subscriptionColor", window.clientData.subscriptionColor);
+  fillField("siteId", window.clientData.siteId);
 
-    fillField("lastName", window.clientData.lastName);
-    fillField("firstName", window.clientData.firstName);
-    fillField("birthDate", window.clientData.birthDate ? new Date(window.clientData.birthDate).toLocaleDateString() : "Non renseigné");
-    fillField("address", window.clientData.address);
-    fillField("phoneNumber", window.clientData.phoneNumber);
+  fillField("lastName", window.clientData.lastName);
+  fillField("firstName", window.clientData.firstName);
+  fillField("birthDate", window.clientData.birthDate ? new Date(window.clientData.birthDate).toLocaleDateString() : "Non renseigné");
+  fillField("address", window.clientData.address);
+  fillField("phoneNumber", window.clientData.phoneNumber);
 
-    fillField("email", window.clientData.email);
-    fillField("isVerified", window.clientData.isVerified ? "Oui" : "Non");
-    fillField("paiement", window.clientData.paiement);
-    fillField("typePaiement", window.clientData.typePaiement);
-    fillField("price", `${window.clientData.price}€`);
+  fillField("email", window.clientData.email);
+  fillField("isVerified", window.clientData.isVerified ? "Oui" : "Non");
+  fillField("paiement", window.clientData.paiement);
+  fillField("typePaiement", window.clientData.typePaiement);
+  fillField("price", `${window.clientData.price}€`);
 
-    if(window.clientData.http){
-        fillField("http", `${window.clientData.http}`);
-        document.querySelector('#http').href = window.clientData.http
-        
-    }else{
-        if(!document.querySelector('#BuildPics')){
-            const divbutton = document.createElement('div')
-            divbutton.classList.add("background-button")
-            divbutton.id = "BuildPics"
-            divbutton.style.width = "auto"
-            const button = document.createElement('button')
-            button.classList.add('buttonform')
-            divbutton.appendChild(button)
-            button.textContent = "Publier votre Pic's"
+  if (window.clientData.http) {
+    fillField("http", `${window.clientData.http}`);
+    document.querySelector('#http').href = window.clientData.http
 
-            document.querySelector('#setuphttp').appendChild(divbutton)
-            divbutton.addEventListener('click',()=>{
-                buildPics()
-            })
-        }
-        
+  } else {
+    if (!document.querySelector('#BuildPics')) {
+      const divbutton = document.createElement('div')
+      divbutton.classList.add("background-button")
+      divbutton.id = "BuildPics"
+      divbutton.style.width = "auto"
+      const button = document.createElement('button')
+      button.classList.add('buttonform')
+      divbutton.appendChild(button)
+      button.textContent = "Publier votre Pic's"
+
+      document.querySelector('#setuphttp').appendChild(divbutton)
+      divbutton.addEventListener('click', () => {
+        buildPics()
+      })
     }
 
-    if(window.clientData.subscriptionStatus === "inactif"){
+  }
 
-        document.querySelector('.itserr').style.display ="block"
-        document.querySelector('#subscriptionStatus').style.textTransform ="uppercase"
-        document.querySelector('#subscriptionStatus').style.color ="var(--red)"
-        const buy = document.createElement('div')
-        buy.classList.add('background-button')
-        buy.id = "rebuy"
-        buy.style.width ="auto"
-        const button = document.createElement('button')
-        button.classList.add('buttonform')
-        button.textContent="Activer l'abonnement"
-        buy.appendChild(button)
-        document.querySelector('#abonnementGestion').appendChild(buy)
-        buy.addEventListener('click',async()=>{
-            load()
-                        try {
-                            const response = await fetch("/api/stripe/start-checkout", {
-                              method: "POST",
-                              credentials: "include", // important pour le cookie JWT
-                            });
-                        
-                            const data = await response.json();
-                        
-                            if (data.url) {
-                              // Option 2 : ouvrir Stripe dans une nouvelle fenêtre (comme tu voulais)
-                              window.open(data.url, "_blank");
-                        
-                              // Tu attends la réponse via le postMessage que tu as déjà mis en place
-                            } else {
-                              document.querySelector('.itserr').textContent ="Oops ! un problème est survenu."
-                              finload();
-                            }
-                          } catch (err) {
-                            document.querySelector('.itserr').textContent ="Oops ! un problème est survenu."
-                            finload();
-                          }
+  if (window.clientData.subscriptionStatus === "inactif") {
 
-                          window.addEventListener("message", (event) => {
-                            if (event.data.stripeSuccess) {
-                              console.log("🎉 Paiement validé !");
-                              
-                              // Tu peux déclencher une requête vers le back-end pour activer l'abonnement :
-                              fetch("api/stripe/confirmation", {
-                                method: "POST",
-                                credentials: "include", // important pour envoyer le cookie JWT
-                              })
-                              .then(res => res.json())
-                              .then(data => {
-                                if (data.success) {
-                                    
-                                    console.log("✅ Abonnement activé côté serveur");
-                                    fetchUserData().then(()=>{
-                                        fillUserData()
-                                        finload()
-                                    })
-                                }
-                              });
-                              
-                            } else {
-                                finload()
-                              console.log("❌ Paiement annulé.");
-                              document.querySelector('.itserr').textContent ="Le paiement à échoué."
-                            }
-                          });
-        })
-    }else if(window.clientData.subscriptionStatus === "actif"){
-        if(document.querySelector('#rebuy')){
-            document.querySelector('#rebuy').remove()
+    document.querySelector('.itserr').style.display = "block"
+    document.querySelector('#subscriptionStatus').style.textTransform = "uppercase"
+    document.querySelector('#subscriptionStatus').style.color = "var(--red)"
+    const buy = document.createElement('div')
+    buy.classList.add('background-button')
+    buy.id = "rebuy"
+    buy.style.width = "auto"
+    const button = document.createElement('button')
+    button.classList.add('buttonform')
+    button.textContent = "Activer l'abonnement"
+    buy.appendChild(button)
+    document.querySelector('#abonnementGestion').appendChild(buy)
+    buy.addEventListener('click', async () => {
+      load()
+      try {
+        const response = await fetch("/api/stripe/start-checkout", {
+          method: "POST",
+          credentials: "include", // important pour le cookie JWT
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+          // Option 2 : ouvrir Stripe dans une nouvelle fenêtre (comme tu voulais)
+          window.open(data.url, "_blank");
+
+          // Tu attends la réponse via le postMessage que tu as déjà mis en place
+        } else {
+          document.querySelector('.itserr').textContent = "Oops ! un problème est survenu."
+          finload();
         }
-        document.querySelector('.itserr').style.display ="none"
-        document.querySelector('#subscriptionStatus').style.color ="var(--green)"
-        document.querySelector('#subscriptionStatus').style.textTransform ="uppercase"
-    }else{
-       if(document.querySelector('#rebuy')){
-            document.querySelector('#rebuy').remove()
+      } catch (err) {
+        document.querySelector('.itserr').textContent = "Oops ! un problème est survenu."
+        finload();
+      }
+
+      window.addEventListener("message", (event) => {
+        if (event.data.stripeSuccess) {
+          console.log("🎉 Paiement validé !");
+
+          // Tu peux déclencher une requête vers le back-end pour activer l'abonnement :
+          fetch("api/stripe/confirmation", {
+            method: "POST",
+            credentials: "include", // important pour envoyer le cookie JWT
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+
+                console.log("✅ Abonnement activé côté serveur");
+                fetchUserData().then(() => {
+                  fillUserData()
+                  finload()
+                })
+              }
+            });
+
+        } else {
+          finload()
+          console.log("❌ Paiement annulé.");
+          document.querySelector('.itserr').textContent = "Le paiement à échoué."
         }
-        document.querySelector('.itserr').style.display ="none"
-        document.querySelector('#subscriptionStatus').style.color ="#d67211"
-        // document.querySelector('#subscriptionStatus').style.textTransform ="uppercase"
+      });
+    })
+  } else if (window.clientData.subscriptionStatus === "actif") {
+    if (document.querySelector('#rebuy')) {
+      document.querySelector('#rebuy').remove()
     }
+    document.querySelector('.itserr').style.display = "none"
+    document.querySelector('#subscriptionStatus').style.color = "var(--green)"
+    document.querySelector('#subscriptionStatus').style.textTransform = "uppercase"
+  } else {
+    if (document.querySelector('#rebuy')) {
+      document.querySelector('#rebuy').remove()
+    }
+    document.querySelector('.itserr').style.display = "none"
+    document.querySelector('#subscriptionStatus').style.color = "#d67211"
+    // document.querySelector('#subscriptionStatus').style.textTransform ="uppercase"
+  }
 }
 
 
 
 // ⚡ Gestion du menu burger
 function setupMenu() {
-    const menu = document.querySelector("#burger");
-    if (menu) {
-        menu.addEventListener("click", () => {
-            document.querySelector("#sous-nav").classList.toggle("translate");
-        });
-    }
+  const menu = document.querySelector("#burger");
+  if (menu) {
+    menu.addEventListener("click", () => {
+      document.querySelector("#sous-nav").classList.toggle("translate");
+    });
+  }
 
-    document.querySelector('#deletedCompte').addEventListener('click',()=>{
-        const overlay = document.createElement('div')
-        overlay.classList.add('overlaybackend')
-        document.body.appendChild(overlay)
+  document.querySelector('#editPassword').addEventListener('click', () => {
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0px';
+    overlay.style.left = '0px';
+    overlay.style.width = '100%';
+    overlay.style.height = '100vh';
+    overlay.style.zIndex = '100';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
 
-        const p = document.createElement('p')
-        p.classList.add('pOverlayBack')
-        p.textContent = "Vous êtes sur le point de supprimer définitivement votre compte ainsi que votre site Pic’s associé. Cette action entraînera également l’arrêt de votre abonnement. Êtes-vous certain de vouloir continuer ?"
+    const form = document.createElement('div');
+    form.className = 'form-subfolder-creat';
 
-        const remarque = document.createElement('p')
-        remarque.classList.add('remarque')
-        const span = document.createElement('span')
-        span.textContent = "Remarque : "
-        span.style.textDecoration = "underline"
-        remarque.appendChild(span);
-        remarque.appendChild(document.createTextNode(
-          "Vous pouvez choisir une suppression immédiate (perte instantanée de l'accès et des données) ou une suppression différée, qui prendra effet à la fin de votre période d'abonnement pour garantir un mois complet d'utilisation."
-        ));
+    const p = document.createElement('p')
+    p.classList.add('pOverlayBack')
+    p.style.color = "#fff"
+    p.textContent = "Votre ancien mot de passe :"
 
-        const deleteNow = document.createElement('button')
-        deleteNow.textContent = "Suppression immédiate"
-        deleteNow.classList.add('button-close-subfolder')
+    const input = document.createElement('input');
+    input.className = 'input-subfolder';
+    input.placeholder = '***';
 
-        deleteNow.addEventListener('click', async () => {
-          load()
-            try {
-              const res = await fetch('/api/delete-account', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                credentials: 'include', // pour envoyer les cookies avec le token
-                body: JSON.stringify({ immediate: true })
-              });
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.justifyContent = 'center';
+    buttonContainer.style.alignItems = 'center';
+    buttonContainer.style.gap = '25px';
 
-              const result = await res.json();
+    const backgroundBtnDiv = document.createElement('div');
+    backgroundBtnDiv.className = 'background-button';
 
-              if (res.ok) {
-                document.querySelector('.msgoverlay').textContent = "Votre compte à bien été supprimé et votre compte résilié"
-                finload()
-                setTimeout(() => {
-                  window.location.href = '/';
-                }, 2000);
-                 // rediriger vers la page d'accueil après suppression
-              } else {
-                document.querySelector('.msgoverlay').textContent = 'Erreur lors de la suppression.'
-                setTimeout(() => {
-                  finload()
-                }, 4000);
-              }
-            } catch (err) {
-                document.querySelector('.msgoverlay').textContent = 'Erreur lors de la suppression.'
-                setTimeout(() => {
-                  finload()
-                }, 4000);
-            }
-        });
+    const createBtn = document.createElement('button');
+    createBtn.className = 'buttonform';
+    createBtn.textContent = 'Valider';
+
+    createBtn.addEventListener('click', () => {
+      const password = input.value.trim();
 
 
-
-        
-
-
-        const bk = document.createElement('div')
-        bk.classList.add('background-button')
-        const annuler = document.createElement('button')
-        annuler.classList.add('buttonform')
-        annuler.textContent = "Annuler"
-        bk.appendChild(annuler)
-        annuler.addEventListener('click',()=>{
-          document.querySelector('.overlaybackend').remove()
+      fetch('/api/verify-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include', // inclut les cookies (ex: token de session)
+        body: JSON.stringify({ currentPassword: password })
+      })
+        .then(response => response.json())
+        .then(data => {
+          // Tu gères la réponse ici
+          console.log(data);
         })
+        .catch(error => {
+          console.error('Erreur lors de la vérification du mot de passe :', error);
+        });
+    });
 
-        overlay.appendChild(p)
-        overlay.appendChild(remarque)
-        overlay.appendChild(deleteNow)
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'button-close-subfolder';
+    cancelBtn.textContent = 'Annuler';
 
-        if(!window.clientData.deletionDate){
-            const deleteDifere = document.createElement('button')
-            deleteDifere.textContent = "Suppression diféré"
-            deleteDifere.classList.add('button-close-subfolder')
+    // Assemble les éléments
+    backgroundBtnDiv.appendChild(createBtn);
+    buttonContainer.appendChild(backgroundBtnDiv);
+    buttonContainer.appendChild(cancelBtn);
 
-            overlay.appendChild(deleteDifere)
+    form.appendChild(p)
+    form.appendChild(input);
+    form.appendChild(buttonContainer);
 
-            deleteDifere.addEventListener('click', async () => {
-              load()
-              try {
-                const res = await fetch('/api/delete-account', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  credentials: 'include', // Nécessaire pour envoyer le cookie contenant le token
-                  body: JSON.stringify({ immediate: false }) // 👈 suppression différée
-                });
+    overlay.appendChild(form);
 
-                const result = await res.json();
+    cancelBtn.addEventListener('click', () => {
+      overlay.remove();
+    });
+    // Ajoute au DOM
+    document.body.appendChild(overlay);
 
-                if (res.ok) {
+  })
 
-                  document.querySelector('.msgoverlay').textContent = result.message
-                  document.querySelector('.overlaybackend').remove()
-                  setTimeout(() => {
-                    finload()
-                  }, 4000);
-                } else {
+  document.querySelector('#deletedCompte').addEventListener('click', () => {
+    const overlay = document.createElement('div')
+    overlay.classList.add('overlaybackend')
+    document.body.appendChild(overlay)
 
-                  document.querySelector('.msgoverlay').textContent = result.message
-                  setTimeout(() => {
-                    finload()
-                  }, 4000);
-                }
-              } catch (err) {
+    const p = document.createElement('p')
+    p.classList.add('pOverlayBack')
+    p.textContent = "Vous êtes sur le point de supprimer définitivement votre compte ainsi que votre site Pic’s associé. Cette action entraînera également l’arrêt de votre abonnement. Êtes-vous certain de vouloir continuer ?"
 
-                document.querySelector('.msgoverlay').textContent = "Une erreur est survenue. Veuillez réessayer."
-                  setTimeout(() => {
-                    finload()
-                  }, 4000);
-              }
-            });
+    const remarque = document.createElement('p')
+    remarque.classList.add('remarque')
+    const span = document.createElement('span')
+    span.textContent = "Remarque : "
+    span.style.textDecoration = "underline"
+    remarque.appendChild(span);
+    remarque.appendChild(document.createTextNode(
+      "Vous pouvez choisir une suppression immédiate (perte instantanée de l'accès et des données) ou une suppression différée, qui prendra effet à la fin de votre période d'abonnement pour garantir un mois complet d'utilisation."
+    ));
+
+    const deleteNow = document.createElement('button')
+    deleteNow.textContent = "Suppression immédiate"
+    deleteNow.classList.add('button-close-subfolder')
+
+    deleteNow.addEventListener('click', async () => {
+      load()
+      try {
+        const res = await fetch('/api/delete-account', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include', // pour envoyer les cookies avec le token
+          body: JSON.stringify({ immediate: true })
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          document.querySelector('.msgoverlay').textContent = "Votre compte à bien été supprimé et votre compte résilié"
+          finload()
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+          // rediriger vers la page d'accueil après suppression
+        } else {
+          document.querySelector('.msgoverlay').textContent = 'Erreur lors de la suppression.'
+          setTimeout(() => {
+            finload()
+          }, 4000);
         }
+      } catch (err) {
+        document.querySelector('.msgoverlay').textContent = 'Erreur lors de la suppression.'
+        setTimeout(() => {
+          finload()
+        }, 4000);
+      }
+    });
 
-        overlay.appendChild(bk)
 
+
+
+
+
+    const bk = document.createElement('div')
+    bk.classList.add('background-button')
+    const annuler = document.createElement('button')
+    annuler.classList.add('buttonform')
+    annuler.textContent = "Annuler"
+    bk.appendChild(annuler)
+    annuler.addEventListener('click', () => {
+      document.querySelector('.overlaybackend').remove()
     })
 
+    overlay.appendChild(p)
+    overlay.appendChild(remarque)
+    overlay.appendChild(deleteNow)
 
-    document.getElementById("manage-billing").addEventListener("click", async () => {
+    if (!window.clientData.deletionDate) {
+      const deleteDifere = document.createElement('button')
+      deleteDifere.textContent = "Suppression diféré"
+      deleteDifere.classList.add('button-close-subfolder')
+
+      overlay.appendChild(deleteDifere)
+
+      deleteDifere.addEventListener('click', async () => {
+        load()
         try {
-            const res = await fetch("/api/create-portal-session", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include"  // Assure-toi d'inclure les cookies pour l'authentification
-            });
-    
-            const data = await res.json();
-            if (res.ok && data.url) {
-                window.location.href = data.url;
-            } else {
-                console.error("Erreur lors de la création de la session Stripe :", data.error || "Erreur inconnue");
-                alert("Impossible de rediriger vers le portail de gestion.");
-            }
-        } catch (error) {
-            console.error("Erreur lors de la création de la session Stripe :", error);
-            alert("Erreur de communication avec le serveur.");
+          const res = await fetch('/api/delete-account', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include', // Nécessaire pour envoyer le cookie contenant le token
+            body: JSON.stringify({ immediate: false }) // 👈 suppression différée
+          });
+
+          const result = await res.json();
+
+          if (res.ok) {
+
+            document.querySelector('.msgoverlay').textContent = result.message
+            document.querySelector('.overlaybackend').remove()
+            setTimeout(() => {
+              finload()
+            }, 4000);
+          } else {
+
+            document.querySelector('.msgoverlay').textContent = result.message
+            setTimeout(() => {
+              finload()
+            }, 4000);
+          }
+        } catch (err) {
+
+          document.querySelector('.msgoverlay').textContent = "Une erreur est survenue. Veuillez réessayer."
+          setTimeout(() => {
+            finload()
+          }, 4000);
         }
-    });
-    
+      });
+    }
+
+    overlay.appendChild(bk)
+
+  })
+
+
+  document.getElementById("manage-billinge").addEventListener("click", async () => {
+    load();
+
+    try {
+      const res = await fetch("/api/create-portal-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        finload();
+        window.open(data.url, "_blank"); // ⭐ Ouvre Stripe dans une nouvelle fenêtre
+      } else {
+        finload();
+        alert("Impossible de rediriger vers le portail de gestion.");
+      }
+    } catch (error) {
+      finload();
+      alert("Erreur de communication avec le serveur.");
+    }
+  });
+
+
 }
 
 // ⚡ Gestion de la pagination
 function setupPagination() {
-    const pages = document.querySelectorAll(".page");
+  const pages = document.querySelectorAll(".page");
 
-    pages.forEach(page => {
-        page.addEventListener("click", () => {
-            pages.forEach(p => document.querySelector(`.${p.id}`).style.display = "none");
-            document.querySelector(`.${page.id}`).style.display = "flex";
-            document.querySelector("#sous-nav").classList.toggle("translate");
-        });
-    });
+  pages.forEach(page => {
+    page.addEventListener("click", () => {
+      pages.forEach(p => document.querySelector(`.${p.id}`).style.display = "none");
+      document.querySelector(`.${page.id}`).style.display = "flex";
+      document.querySelector("#sous-nav").classList.toggle("translate");
 
-    // Masquer certaines sections au démarrage
-    document.querySelector("#general").style.display = "none";
-    document.querySelector("#charging").style.display = "none";
-    
-    document.querySelector("#logout").addEventListener("click", async () => {
-        try {
-            const response = await fetch("/api/logout", { credentials: "include" });
-            const data = await response.json();
-            if (data.message === "Déconnexion réussie") {
-                document.querySelector("#divlock").style.display = "flex";
-                document.querySelector("#unlock").style.display = "none";
-                window.location.href = "/";
+
+      if (page.id == "gen") {
+        document.querySelectorAll('.editUser').forEach(button => {
+
+          button.addEventListener('click', () => {
+            const wrapper = button.closest('.param')?.parentElement;
+            const valueElement = wrapper?.querySelector('.value');
+
+
+
+            if (valueElement) {
+
+
+              const fieldId = valueElement.id;
+              console.log("Tu veux éditer :", fieldId);
+
+              const currentValue = window.clientData[fieldId];
+              let input;
+
+              if (fieldId === 'birthDate' && currentValue) {
+                // On prépare la valeur ISO pour input date (format YYYY-MM-DD)
+                const date = new Date(currentValue);
+                if (!isNaN(date)) {
+                  const year = date.getFullYear();
+                  const month = String(date.getMonth() + 1).padStart(2, '0');
+                  const day = String(date.getDate()).padStart(2, '0');
+                  const isoDate = `${year}-${month}-${day}`;
+
+                  input = document.createElement('input');
+                  input.type = 'date';
+                  input.className = 'input-subfolder';
+                  input.value = isoDate;
+                } else {
+                  // En cas de date invalide, on prend un input text par défaut
+                  input = document.createElement('input');
+                  input.className = 'input-subfolder';
+                  input.value = '';
+                }
+              } else {
+                // Pour les autres champs, input text simple
+                input = document.createElement('input');
+                input.className = 'input-subfolder';
+                input.value = currentValue || '';
+              }
+
+
+
+
+              const overlay = document.createElement('div');
+              overlay.style.position = 'fixed';
+              overlay.style.top = '0px';
+              overlay.style.left = '0px';
+              overlay.style.width = '100%';
+              overlay.style.height = '100vh';
+              overlay.style.zIndex = '100';
+              overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+              overlay.style.display = 'flex';
+              overlay.style.flexDirection = 'column';
+              overlay.style.justifyContent = 'center';
+              overlay.style.alignItems = 'center';
+
+              const form = document.createElement('div');
+              form.className = 'form-subfolder-creat';
+
+
+              const buttonContainer = document.createElement('div');
+              buttonContainer.style.display = 'flex';
+              buttonContainer.style.justifyContent = 'center';
+              buttonContainer.style.alignItems = 'center';
+              buttonContainer.style.gap = '25px';
+
+              const backgroundBtnDiv = document.createElement('div');
+              backgroundBtnDiv.className = 'background-button';
+
+              const createBtn = document.createElement('button');
+              createBtn.className = 'buttonform';
+              createBtn.textContent = 'Modifier';
+
+              createBtn.addEventListener('click', () => {
+                const newValue = input.value.trim();
+
+                // Validation spéciale numéro de téléphone côté client
+                if (fieldId === 'phoneNumber') {
+                  const phoneRegex = /^\d{10}$/;
+                  if (!phoneRegex.test(newValue)) {
+                    input.style.color = 'red';
+                    input.addEventListener('input', () => {
+                      const currentValue = input.value.trim();
+                      if (!phoneRegex.test(currentValue)) {
+                        input.style.color = 'red';
+                      } else {
+                        input.style.color = '#000';
+                      }
+                    });
+                    return; // On bloque la suite (pas d'envoi)
+                  }
+                }
+
+
+                overlay.remove();
+                sendFieldUpdate(fieldId, newValue);
+              });
+
+              const cancelBtn = document.createElement('button');
+              cancelBtn.className = 'button-close-subfolder';
+              cancelBtn.textContent = 'Annuler';
+
+              // Assemble les éléments
+              backgroundBtnDiv.appendChild(createBtn);
+              buttonContainer.appendChild(backgroundBtnDiv);
+              buttonContainer.appendChild(cancelBtn);
+
+
+              form.appendChild(input);
+              form.appendChild(buttonContainer);
+
+              overlay.appendChild(form);
+
+              cancelBtn.addEventListener('click', () => {
+                overlay.remove();
+              });
+              // Ajoute au DOM
+              document.body.appendChild(overlay);
             }
-        } catch (error) {
-            console.error("Erreur de déconnexion :", error);
-        }
+
+          });
+
+        });
+      }
+
     });
+  });
+
+  // Masquer certaines sections au démarrage
+  document.querySelector("#general").style.display = "none";
+  document.querySelector("#charging").style.display = "none";
+
+  document.querySelector("#logout").addEventListener("click", async () => {
+    try {
+      const response = await fetch("/api/logout", { credentials: "include" });
+      const data = await response.json();
+      if (data.message === "Déconnexion réussie") {
+        document.querySelector("#divlock").style.display = "flex";
+        document.querySelector("#unlock").style.display = "none";
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.error("Erreur de déconnexion :", error);
+    }
+  });
 }
 
 
@@ -373,8 +592,8 @@ function setupPagination() {
 
 // ⚡ Initialisation : charger les données et afficher le dashboard
 (async () => {
-    await fetchUserData();
-    await loadDashboard();
+  await fetchUserData();
+  await loadDashboard();
 })();
 
 
@@ -413,9 +632,9 @@ async function buildPics() {
         finload();
       }, 2000);
 
-    }else if(res.status === 402 && result.code === "PAYMENT_REQUIRED"){
-        document.querySelector('.msgoverlay').textContent = result.message
-        setTimeout(() => {
+    } else if (res.status === 402 && result.code === "PAYMENT_REQUIRED") {
+      document.querySelector('.msgoverlay').textContent = result.message
+      setTimeout(() => {
         finload();
       }, 4000)
     } else {
@@ -435,15 +654,15 @@ async function buildPics() {
 }
 
 
-function lienHttp(res){
-  if(res.success && res.url){
+function lienHttp(res) {
+  if (res.success && res.url) {
     const a = document.querySelector('#http');
     if (a) {
       const fullUrl = res.url.startsWith('http') ? res.url : `http://${res.url}`;
       a.href = fullUrl;
       a.textContent = fullUrl;
 
-      if(document.querySelector('#BuildPics')){
+      if (document.querySelector('#BuildPics')) {
         document.querySelector('#BuildPics').remove();
       }
     }
@@ -451,59 +670,107 @@ function lienHttp(res){
 }
 
 
-function load(){
-        
-    const overlay = document.createElement('div');
-    overlay.classList.add('overlayLoad');
-    overlay.style.visibility="visible";
-    overlay.style.opacity="1"
-    
+function load(msg) {
 
-    const msgoverlay = document.createElement('p')
-    msgoverlay.classList.add('msgoverlay')
-    msgoverlay.textContent = "Construction de votre produit Pic's"
+  const overlay = document.createElement('div');
+  overlay.classList.add('overlayLoad');
+  overlay.style.visibility = "visible";
+  overlay.style.opacity = "1"
 
-    overlay.appendChild(msgoverlay)
 
-    // Ajout de l'overlay dans le body
-    document.body.appendChild(overlay);
-    const button=document.querySelector('.bubbly-button')
-    button.style.overflow='hidden'
-    const t = document.querySelector('#mooveAnim')
-    
-    t.style.zIndex="1"
-    t.style.opacity="1"
-    document.querySelector('#logonavbarre').style.opacity="0"
-    const div = document.createElement('div')
-    div.classList.add('loaderi')
-    
-    const img = document.createElement('img')
-    img.src="/logo/logocoupe.png"
-    img.style.width="auto"
-    img.style.height="58px"
-    img.style.borderRadius = "50px"
-    
-    const grad = document.createElement('div')
-    grad.classList.add('gradload')
-    grad.appendChild(img)
-    document.querySelector('#admin').appendChild(div)
-    document.querySelector('#admin').appendChild(grad)
-    
+  const msgoverlay = document.createElement('p')
+  msgoverlay.classList.add('msgoverlay')
+  msgoverlay.textContent = msg
+
+  overlay.appendChild(msgoverlay)
+
+  // Ajout de l'overlay dans le body
+  document.body.appendChild(overlay);
+  const button = document.querySelector('.bubbly-button')
+  button.style.overflow = 'hidden'
+  const t = document.querySelector('#mooveAnim')
+
+  t.style.zIndex = "1"
+  t.style.opacity = "1"
+  document.querySelector('#logonavbarre').style.opacity = "0"
+  const div = document.createElement('div')
+  div.classList.add('loaderi')
+
+  const img = document.createElement('img')
+  img.src = "/logo/logocoupe.png"
+  img.style.width = "auto"
+  img.style.height = "58px"
+  img.style.borderRadius = "50px"
+
+  const grad = document.createElement('div')
+  grad.classList.add('gradload')
+  grad.appendChild(img)
+  document.querySelector('#admin').appendChild(div)
+  document.querySelector('#admin').appendChild(grad)
+
 }
 
-function finload(){
-    document.querySelector('.loaderi').remove()
-    document.querySelector('.gradload').remove()
-    document.querySelector('#logonavbarre').style.opacity="1"
-    const button=document.querySelector('.bubbly-button')
-    button.style.overflow='visible'
-    button.classList.add('anima');
-    setTimeout(function(){
-        button.classList.remove('anima');
-        document.querySelector('.overlayLoad').style.visibility="hidden";
-        document.querySelector('.overlayLoad').style.opacity="0"
-        document.querySelector('.overlayLoad').remove()
-    },700);
+function sendFieldUpdate(field, newValue) {
+  load()
+  fetch('/api/update-user', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include', // Pour envoyer les cookies
+    body: JSON.stringify({
+      field,
+      value: newValue
+    })
+  })
+    .then(res => {
+      if (!res.ok) {
+        finload('Une erreur est survenue')
+      };
+      return res.json();
+    })
+    .then(data => {
+      finload(data.message);
+
+      let displayValue = data.value;
+
+      if (data.field === 'birthDate' && data.value) {
+        const date = new Date(data.value);
+        if (!isNaN(date)) {
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const year = date.getFullYear();
+          displayValue = `${day}/${month}/${year}`;
+        }
+      }
+
+      document.querySelector(`#${data.field}`).textContent = displayValue;
+      window.clientData[data.field] = data.value; // garde la valeur ISO pour la data interne
+    })
+    .catch(err => {
+      finload("Erreur lors de la mise à jour.")
+    });
 }
+
+function finload(msg) {
+  document.querySelector('.msgoverlay').textContent = msg
+  document.querySelector('.loaderi').remove()
+  document.querySelector('.gradload').remove()
+  document.querySelector('#logonavbarre').style.opacity = "1"
+  const button = document.querySelector('.bubbly-button')
+  button.style.overflow = 'visible'
+  button.classList.add('anima');
+  setTimeout(function () {
+    button.classList.remove('anima');
+    document.querySelector('.overlayLoad').style.visibility = "hidden";
+    document.querySelector('.overlayLoad').style.opacity = "0"
+    document.querySelector('.overlayLoad').remove()
+  }, 700);
+}
+
+
+
+
+
 
 

@@ -863,23 +863,7 @@
     /* filter: drop-shadow(10px 10px 10px rgba(0, 0, 0, 0.171)); */
 }
 
-.form-subfolder-creat{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 25px;
-    width: 90%;
-    max-width: 500px;
-}
 
-.h2-subfolder{
-    color: #fff;
-    font-family: var(--font-fam-one);
-    font-size: 1.3rem;
-    text-align: center;
-    font-weight: 500;
-}
 
 .h3-subfolder{
     color: #fff;
@@ -889,17 +873,6 @@
     font-weight: 500;
 }
 
-.input-subfolder{
-    border: none;
-    text-align: center;
-    padding: 20px;
-    border-radius: 50px;
-    width: 100%;
-    background-color: #ffffff;
-    color: black;
-    font-family: var(--font-fam-one);
-    outline: none;
-}
 
 
 

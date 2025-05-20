@@ -67,7 +67,7 @@
                 <p class="value" id="siteId">1</p>
             </div>
             <div class="background-button" style="width: auto;">
-                <button id="manage-billing" class="buttonform" style="margin: 2px;">Changer d'offre</button>
+                <button id="changePack" class="buttonform" style="margin: 2px;">Changer d'offre</button>
             </div>
         </div>
         <div class="cara" id="abonnementGestion">
@@ -91,7 +91,7 @@
             <p class="itserr">Il semble y avoir un problème avec votre abonnement ! </br>Verifiez votre méthode de paiement au risque d'une fermeture de votre compte.</p>
             
             <div class="background-button" style="width: auto;">
-                <button id="manage-billing" class="buttonform" style="margin: 2px; text-decoration: none;">Gérer mon abonnement</button>
+                <button id="manage-billinge" class="buttonform" style="margin: 2px; text-decoration: none;">Gérer mon abonnement</button>
             </div>
             
         </div>
@@ -101,33 +101,53 @@
         <div class="cara">
             <h2>Générales</h2>
             <div>
-                <p class="param">Nom
-                    
-                </p>
+                <div class="param">Nom
+                    <div class="editUser">
+                        <div class="background">
+                            <img class="edit" src="/icon/edit.svg" alt="bouton d'édit">
+                        </div>
+                    </div>
+                </div>
                 <p class="value" id="lastName">1</p>
             </div>
             <div>
-                <p class="param">Prénom
-                   
-                </p>
+                <div class="param">Prénom
+                   <div class="editUser">
+                        <div class="background">
+                            <img class="edit" src="/icon/edit.svg" alt="bouton d'édit">
+                        </div>
+                    </div>
+                </div>
                 <p class="value" id="firstName">1</p>
             </div>
             <div>
-                <p class="param">Date de Naissance
-                    
-                </p>
+                <div class="param">Date de Naissance
+                    <div class="editUser">
+                        <div class="background">
+                            <img class="edit" src="/icon/edit.svg" alt="bouton d'édit">
+                        </div>
+                    </div>
+                </div>
                 <p class="value" id="birthDate">1</p>
             </div>
             <div>
-                <p class="param">Adresse
-                    
-                </p>
+                <div class="param">Adresse
+                    <div class="editUser">
+                        <div class="background">
+                            <img class="edit" src="/icon/edit.svg" alt="bouton d'édit">
+                        </div>
+                    </div>
+                </div>
                 <p class="value" id="address">1</p>
             </div>
             <div>
-                <p class="param">Téléphone
-                    
-                </p>
+                <div class="param">Téléphone
+                    <div class="editUser">
+                        <div class="background">
+                            <img class="edit" src="/icon/edit.svg" alt="bouton d'édit">
+                        </div>
+                    </div>
+                </div>
                 <p class="value" id="phoneNumber">1</p>
             </div>
         </div>
@@ -147,10 +167,11 @@
                 <p class="value" id="isVerified">1</p>
             </div>
             <div>
-                <p class="param">Mot de passe
-                    
-                </p>
+                <div class="param">Mot de passe</div>
                 <p class="value" id="password">*********</p>
+                <div class="background-button">
+                    <button class="buttonform" id="editPassword">Modifier le mot de passe</button>
+                </div>
             </div>
             <div class="background-button" style="width: auto;">
                 <button id="deletedCompte" class="buttonform" style="margin: 2px; background-color: var(--red);">Supprimer le compte</button>

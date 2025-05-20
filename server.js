@@ -178,6 +178,9 @@ const webhookRoutes = require("./routes/paiement.js")
 const stripeRoutes = require("./routes/stripe.js")
 const buildSiteRoute = require("./routes/buildSite");
 const deleteAccount =  require("./routes/delete-account.js")
+const manageBilling = require("./routes/manageBilling.js")
+const updateUser = require("./routes/update-user.js")
+const verifyPassword = require("./routes/verify-password.js")
 
 
 // app.use(cors());
@@ -188,6 +191,9 @@ app.use("/api", webhookRoutes);
 app.use("/api", stripeRoutes); 
 app.use("/api", buildSiteRoute);
 app.use("/api", deleteAccount);
+app.use("/api", manageBilling)
+app.use("/api", updateUser)
+app.use("/api", verifyPassword)
 
 
 

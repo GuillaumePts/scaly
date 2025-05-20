@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scaly</title>
+</head>
+<body>
+  <p>Fermeture de la fenêtre en cours...</p>
+  <script>
+    window.opener.postMessage({ stripeSuccess: true }, "*");
+  setTimeout(() => {
+    window.close();
+  }, 500);
+</script>
+</body>
+</html>

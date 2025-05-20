@@ -1,0 +1,17 @@
+{
+  "starter": {
+    "price": 7,
+    "limit": 3221225472,
+    "approxPhotos": 4300
+  },
+  "pro": {
+    "price": 14,
+    "limit": 16106127360,
+    "approxPhotos": 21500
+  },
+  "unlimited": {
+    "price": 24,
+    "limit": 53687091200,
+    "approxPhotos": 71500
+  }
+}
