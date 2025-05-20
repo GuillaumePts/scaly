@@ -192,7 +192,7 @@ function setupMenu() {
     overlay.style.left = '0px';
     overlay.style.width = '100%';
     overlay.style.height = '100vh';
-    overlay.style.zIndex = '100';
+    overlay.style.zIndex = '89';
     overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
     overlay.style.display = 'flex';
     overlay.style.flexDirection = 'column';
@@ -209,6 +209,7 @@ function setupMenu() {
 
     const input = document.createElement('input');
     input.className = 'input-subfolder';
+    input.type = "password"
     input.placeholder = '***';
 
     const buttonContainer = document.createElement('div');
@@ -225,6 +226,8 @@ function setupMenu() {
     createBtn.textContent = 'Valider';
 
     createBtn.addEventListener('click', () => {
+
+      load()
       const password = input.value.trim();
 
 
@@ -238,11 +241,136 @@ function setupMenu() {
       })
         .then(response => response.json())
         .then(data => {
-          // Tu gères la réponse ici
-          console.log(data);
+
+          if (data.success) {
+
+            finload('')
+
+            form.textContent = ""
+
+            const pNew = document.createElement('p')
+            pNew.classList.add('pOverlayBack')
+            pNew.style.color = "#fff"
+            pNew.textContent = "Nouveau mot de passe :"
+
+            const inputNew = document.createElement('input');
+            inputNew.className = 'input-subfolder';
+            inputNew.placeholder = '***';
+
+            const pErr = document.createElement('p')
+            pErr.classList.add('errform')
+            pErr.style.color = '#ff5151'
+
+            const pNewConfirm = document.createElement('p')
+            pNewConfirm.classList.add('pOverlayBack')
+            pNewConfirm.style.color = "#fff"
+            pNewConfirm.type = "password"
+            pNewConfirm.textContent = "Confirmer le mot de passe :"
+
+            const confirminputNew = document.createElement('input');
+            confirminputNew.className = 'input-subfolder';
+            pNewConfirm.type = "password"
+            confirminputNew.placeholder = 'Confirmer le mot de passe';
+
+            const buttonContainerNew = document.createElement('div');
+            buttonContainerNew.style.display = 'flex';
+            buttonContainerNew.style.justifyContent = 'center';
+            buttonContainerNew.style.alignItems = 'center';
+            buttonContainerNew.style.gap = '25px';
+
+            const backgroundBtnDivNew = document.createElement('div');
+            backgroundBtnDivNew.className = 'background-button';
+
+            const createBtnNew = document.createElement('button');
+            createBtnNew.className = 'buttonform';
+            createBtnNew.textContent = 'Valider';
+
+
+
+
+            form.appendChild(pNew)
+            form.appendChild(inputNew)
+            form.appendChild(pErr)
+            form.appendChild(pNewConfirm)
+            form.appendChild(confirminputNew)
+            form.appendChild(buttonContainerNew)
+
+            createBtnNew.addEventListener('click', () => {
+              load('')
+              const newPassword = inputNew.value.trim();
+              const confirmPassword = confirminputNew.value.trim();
+
+              // Vérification de sécurité minimale
+              const passwordStrengthRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
+
+              if (!newPassword || !confirmPassword) {
+                finload('')
+                pErr.textContent = "Veuillez remplir les deux champs.";
+                return;
+              }
+
+              if (!passwordStrengthRegex.test(newPassword)) {
+                finload('')
+                pErr.textContent = "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.";
+                return;
+              }
+
+              if (newPassword !== confirmPassword) {
+                finload('')
+                pErr.textContent = "Les mots de passe ne correspondent pas.";
+                return;
+              }
+
+              // Réinitialise le message d’erreur
+              pErr.textContent = "";
+
+              // Envoi du fetch pour modifier le mot de passe
+              fetch('/api/change-password', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ newPassword })
+              })
+                .then(res => res.json())
+                .then(data => {
+                  if (data.success) {
+                    overlay.remove();
+                    finload('Mot de passe mis à jour avec succès !')
+                  } else {
+                    finload('')
+                    pErr.textContent = data.message || "Une erreur est survenue.";
+                  }
+                })
+                .catch(err => {
+                  finload('')
+                  console.error(err);
+                  pErr.textContent = "Erreur réseau ou serveur.";
+                });
+            });
+
+
+            const cancelBtnNew = document.createElement('button');
+            cancelBtnNew.className = 'button-close-subfolder';
+            cancelBtnNew.textContent = 'Annuler';
+
+            backgroundBtnDivNew.appendChild(createBtnNew);
+            buttonContainerNew.appendChild(backgroundBtnDivNew);
+            buttonContainerNew.appendChild(cancelBtnNew);
+
+            cancelBtnNew.addEventListener('click', () => {
+              overlay.remove();
+            });
+
+
+          } else {
+            finload("Mot de passe Incorrect")
+          }
         })
         .catch(error => {
-          console.error('Erreur lors de la vérification du mot de passe :', error);
+          finload('Erreur lors de la vérification du mot de passe')
+          console.log(error);
         });
     });
 
@@ -260,6 +388,7 @@ function setupMenu() {
     form.appendChild(buttonContainer);
 
     overlay.appendChild(form);
+
 
     cancelBtn.addEventListener('click', () => {
       overlay.remove();

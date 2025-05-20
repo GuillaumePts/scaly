@@ -6,6 +6,20 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
 const nodemailer = require('nodemailer');
 
+// Middleware pour vérifier le token
+function verifyToken(req, res, next) {
+  const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ success: false, message: "Token manquant." });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+    return res.status(401).json({ success: false, message: "Token invalide." });
+  }
+}
+
 router.post('/change-password', verifyToken, async (req, res) => {
   const { newPassword } = req.body;
 
@@ -26,8 +40,8 @@ router.post('/change-password', verifyToken, async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER, 
-        pass: process.env.EMAIL_PASS  
+        user: process.env.GMAIL_USER, 
+        pass: process.env.GMAIL_PASS  
       }
     });
 
@@ -39,7 +53,8 @@ router.post('/change-password', verifyToken, async (req, res) => {
         <p>Bonjour ${user.firstName || ''},</p>
         <p>Votre mot de passe a bien été modifié.</p>
         <p>Si vous n'êtes pas à l'origine de cette modification, veuillez immédiatement contacter notre support.</p>
-        <p>Merci,<br>L’équipe Scaly Pic’s</p>
+        <p>guillaume.pitois@proton.me</p>
+        <p>Merci,<br>L’équipe Scaly</p>
       `
     };
 
@@ -51,3 +66,5 @@ router.post('/change-password', verifyToken, async (req, res) => {
     res.status(500).json({ success: false, message: "Erreur serveur lors du changement." });
   }
 });
+
+module.exports = router;
