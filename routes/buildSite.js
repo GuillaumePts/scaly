@@ -12,9 +12,9 @@ function generateSecretKey(length = 64) {
 
 function getLimitFromPack(pack) {
   const limits = {
-    starter: 1073741824,
-    pro: 5368709120,
-    unlimited: 107374182400,
+    starter: 3221225472,
+    pro: 16106127360,
+    unlimited: 53687091200,
   };
   return limits[pack] || limits["starter"];
 }
@@ -29,6 +29,7 @@ function generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir) {
     PRENOM_PRO: prenom,
     NOM_PRO: nom,
     ID_PICS: siteId,
+    PACK : pack,
     LIMIT_STARTER: getLimitFromPack(pack)
   };
 
@@ -64,7 +65,7 @@ router.post("/build-site", async (req, res) => {
     console.log("🔧 Création du site pour :", email);
 
     const cleanedColor = color.toLowerCase();
-    const repoName = `${pack}-pics-${cleanedColor}`;
+    const repoName = `starter-pics-${cleanedColor}`;
     const targetDir = path.join(__dirname, "..", "clients", siteId);
     const repoUrl = `https://${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_USERNAME}/${repoName}.git`;
 

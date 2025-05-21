@@ -68,6 +68,8 @@ function fillUserData() {
   fillField("typePaiement", window.clientData.typePaiement);
   fillField("price", `${window.clientData.price}€`);
 
+  setupStripeClientButton()
+
   if (window.clientData.http) {
     fillField("http", `${window.clientData.http}`);
     document.querySelector('#http').href = window.clientData.http
@@ -1049,6 +1051,62 @@ function finload(msg) {
     document.querySelector('.overlayLoad').remove()
   }, 700);
 }
+
+
+
+function setupStripeClientButton() {
+  const button = document.getElementById("ActiverStripeClient");
+
+  if (!window.clientData) return;
+
+  const hasStripeAccount = window.clientData.stripeActivated === true;
+  const hasValidPack = ['Pro', 'Unlimited'].includes(window.clientData.subscriptionStock);
+
+  if (!hasValidPack) {
+    button.textContent = "Activer l'option paiement client";
+    button.disabled = true;
+    return;
+  }
+
+  if (hasStripeAccount) {
+    button.textContent = "Accéder au dashboard Stripe";
+    button.onclick = async () => {
+      load("Vérification de sécurité...");
+      const mailRes = await fetch("/api/send-verification-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+      });
+
+      if (!mailRes.ok) {
+        finload("Erreur lors de l’envoi du code.");
+        return;
+      }
+
+      // 👉 Ici tu peux réutiliser ton système d'overlay avec les 6 inputs + code
+      // Une fois le code validé, redirige avec createLoginLink
+    };
+  } else {
+    button.textContent = "Activer l'option paiement client";
+    button.onclick = async () => {
+      load("Création de votre compte Stripe...");
+      const res = await fetch("/api/stripe-connect-onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.open(data.url, "_blank");
+        finload("Redirection vers Stripe...");
+      } else {
+        finload("Erreur lors de la création du compte Stripe.");
+      }
+    };
+  }
+}
+
 
 
 

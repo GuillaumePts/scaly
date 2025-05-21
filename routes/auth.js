@@ -22,7 +22,7 @@ function requireAuth(req, res, next) {
     if (!token) {
         return res.status(401).json({ message: "Non autorisé : Token manquant" });
     }
-    
+
     try {
         // Vérifier et décoder le token JWT
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -54,8 +54,8 @@ router.post("/login", [
     body("password").isLength({ min: 1 })
 ], async (req, res) => {
 
-    const { email, password } = req.body;  
-    
+    const { email, password } = req.body;
+
     try {
         // Ne pas exclure le mot de passe ici, sinon impossible de le comparer
         const user = await User.findOne({ email });
@@ -69,7 +69,7 @@ router.post("/login", [
         if (!user.isVerified) return res.status(403).json({ message: "Veuillez vérifier votre e-mail." });
 
         // Générer un token JWT
-        const token = jwt.sign({ id: user._id , email: user.email}, process.env.JWT_SECRET, { expiresIn: "7d" });
+        const token = jwt.sign({ id: user._id, email: user.email, pics: user.siteId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         // Stocker le token en HttpOnly cookie
         res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
@@ -84,10 +84,10 @@ router.post("/login", [
         console.log(err);
         res.status(500).json({ message: "Erreur serveur" });
     }
-    
+
 });
 
-router.get("/user_client",requireAuth, async (req, res) => {
+router.get("/user_client", requireAuth, async (req, res) => {
     const token = req.cookies.token;
 
     if (!token) {
@@ -99,30 +99,47 @@ router.get("/user_client",requireAuth, async (req, res) => {
         const userId = decoded.id;
 
         const user = await User.findById(userId);
-
         if (!user) {
             return res.status(404).json({ message: "Utilisateur introuvable" });
         }
 
-        const userObj = user.toObject();
+        // 🎯 Construction explicite des données autorisées
+        const userData = {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            address: user.address,
+            phoneNumber: user.phoneNumber,
+            birthDate: user.birthDate,
 
-        // Champs à ne pas renvoyer côté client
-        const champsAExclure = [
-            "password",
-            "stripeSubscriptionId",
-            "stripeCustomerId",
-            "resetPasswordToken",
-            "resetPasswordExpires",
-            "roles", // si tu as des rôles admin, etc.
-        ];
+            // Abonnement
+            subscriptionStatus: user.subscriptionStatus,
+            subscriptionProduct: user.subscriptionProduct,
+            subscriptionColor: user.subscriptionColor,
+            subscriptionStock: user.subscriptionStock,
+            subscriptionDate: user.subscriptionDate,
 
-        champsAExclure.forEach(champ => delete userObj[champ]);
+            // Paiement
+            paiement: user.paiement,
+            typePaiement: user.typePaiement,
+            price: user.price,
 
-        res.json({ user: userObj });
+            // Produit lié
+            siteId: user.siteId,
+            http: user.http,
+
+            // Stripe C2C
+            stripeActivated: user.stripeActivated ?? false,
+
+            // Suppression programmée
+            deletionRequested: user.deletionRequested,
+        };
+
+        return res.status(200).json({ user: userData });
 
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Erreur serveur" });
+        console.error("Erreur dans /user_client :", err);
+        return res.status(500).json({ message: "Erreur serveur" });
     }
 });
 
@@ -191,7 +208,7 @@ router.get("/verify-email", async (req, res) => {
     try {
         const { token } = req.query;
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
+
         await User.findByIdAndUpdate(decoded.id, { isVerified: true });
 
         res.json({ message: "Email vérifié avec succès !" });

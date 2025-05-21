@@ -259,3 +259,14 @@
 .translate{
     transform: translateX(100%);
 }
+
+#ActiverStripeClient::before{
+    content: '(Disponible uniquement en Pro et Unlimited)';
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    font-family: var(--font-fam-one);
+    color: #eee;
+    font-size: 0.7rem;
+    font-weight: 300;
+}

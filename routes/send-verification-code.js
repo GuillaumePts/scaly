@@ -25,7 +25,7 @@ router.post("/send-verification-code", verifyToken, async (req, res) => {
         const userId = req.user.id;
         const email = req.user.email;
 
-        console.log(userId + ' 888888888 ' + email);
+
 
         const code = crypto.randomInt(100000, 999999).toString(); // 6 chiffres
         const expiresAt = Date.now() + 60 * 1000; // 1 minute
