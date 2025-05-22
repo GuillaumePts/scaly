@@ -1083,8 +1083,156 @@ function setupStripeClientButton() {
         return;
       }
 
-      // 👉 Ici tu peux réutiliser ton système d'overlay avec les 6 inputs + code
-      // Une fois le code validé, redirige avec createLoginLink
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0px';
+      overlay.style.left = '0px';
+      overlay.style.width = '100%';
+      overlay.style.height = '100vh';
+      overlay.style.zIndex = '100';
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+      overlay.style.display = 'flex';
+      overlay.style.flexDirection = 'column';
+      overlay.style.justifyContent = 'center';
+      overlay.style.alignItems = 'center';
+
+      const form = document.createElement('div');
+      form.className = 'form-subfolder-creat';
+
+      const p = document.createElement('p')
+      p.classList.add('pOverlayBack')
+      p.style.color = "#fff"
+      p.textContent = "Entrez le code de vérification envoyé à votre adresse e-mail";
+
+      const codeContainer = document.createElement('div');
+      codeContainer.className = 'code-container';
+
+      const codeInputs = [];
+      for (let i = 0; i < 6; i++) {
+        const input = document.createElement('input');
+        input.className = 'code-input';
+        input.setAttribute('type', 'text');
+        input.setAttribute('maxlength', '1');
+        input.setAttribute('inputmode', 'numeric'); // ou "text" si lettres autorisées
+        codeContainer.appendChild(input);
+        codeInputs.push(input);
+      }
+
+      // Gestion focus automatique
+      codeInputs.forEach((input, idx) => {
+        input.addEventListener('input', () => {
+          if (input.value.length === 1 && idx < codeInputs.length - 1) {
+            codeInputs[idx + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && input.value === '' && idx > 0) {
+            codeInputs[idx - 1].focus();
+          }
+        });
+      });
+
+
+
+      const buttonContainer = document.createElement('div');
+      buttonContainer.style.display = 'flex';
+      buttonContainer.style.justifyContent = 'center';
+      buttonContainer.style.alignItems = 'center';
+      buttonContainer.style.gap = '25px';
+
+      const createBtnNew = document.createElement('button');
+      createBtnNew.className = 'buttonform';
+      createBtnNew.textContent = 'Valider';
+
+      const backgroundBtnDiv = document.createElement('div');
+      backgroundBtnDiv.className = 'background-button';
+
+      backgroundBtnDiv.appendChild(createBtnNew)
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'button-close-subfolder';
+      cancelBtn.textContent = 'Annuler';
+
+      // Assemble les éléments
+      // backgroundBtnDiv.appendChild(createBtn);
+      buttonContainer.appendChild(backgroundBtnDiv);
+      buttonContainer.appendChild(cancelBtn);
+
+      const pErr = document.createElement('p')
+      pErr.classList.add('errform')
+      pErr.style.color = '#ff5151'
+
+
+      form.appendChild(p);
+      form.appendChild(codeContainer);
+      form.appendChild(pErr)
+      form.appendChild(buttonContainer);
+
+      createBtnNew.addEventListener("click", async () => {
+
+        const code = codeInputs.map(input => input.value).join("");
+
+        if (code.length !== 6) {
+          finload()
+          pErr.textContent = "Le code est incomplet.";
+          return;
+        }
+
+        const res = await fetch("/api/verify-code", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ code })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          finload()
+          pErr.textContent = data.error || "Erreur de vérification.";
+          return;
+        } else {
+          finload('Code validé !');
+          console.log('code ok');
+
+          fetch("/api/stripe-connect-dashboard", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            credentials: "include" // important pour envoyer les cookies (token)
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                overlay.remove()
+                window.open(data.url, "_blank"); 
+              } else {
+                alert("Erreur lors de la redirection vers Stripe.");
+              }
+            })
+            .catch(err => {
+              console.error("Erreur dashboard Stripe :", err);
+              alert("Erreur de connexion à Stripe.");
+            });
+        }
+
+
+        // 👉 Ici tu peux réutiliser ton système d'overlay avec les 6 inputs + code
+        // Une fois le code validé, redirige avec createLoginLink
+
+      });
+
+
+      overlay.appendChild(form);
+
+      cancelBtn.addEventListener('click', () => {
+        overlay.remove();
+      });
+      // Ajoute au DOM
+      document.body.appendChild(overlay);
+
     };
   } else {
     button.textContent = "Activer l'option paiement client";
