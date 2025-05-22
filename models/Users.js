@@ -32,10 +32,12 @@ const UsersSchema = new mongoose.Schema({
   stripeSubscriptionId: { type: String },
   stripePaymentMethodId: { type: String },
 
-  // Stripe Client to client
-stripeAccountId: String,      // l'ID du compte Express Stripe
-stripeActivated: Boolean,     // true si activé
-stripeActivationDate: Date,   // (optionnel)
+    // Stripe Client to client
+  stripeAccountId: String,      // l'ID du compte Express Stripe
+  stripeActivated: Boolean,     // true si activé
+  stripeActivationDate: Date,   // (optionnel)
+  stripeStatus: { type: String, enum: ["active", "inactive"], default: "inactive" },
+
 
   // 🔒 Suppression programmée
   deletionRequested: { type: Boolean, default: false }, // true = user veut supprimer son compte à la fin de la période

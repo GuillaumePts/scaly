@@ -19,7 +19,20 @@ function getLimitFromPack(pack) {
   return limits[pack] || limits["starter"];
 }
 
+function getPaymentSettings(pack) {
+  switch (pack.toLowerCase()) {
+    case "pro":
+      return { ALLOW_PAYMENT: true, COMMISSION: 5 };
+    case "unlimited":
+      return { ALLOW_PAYMENT: true, COMMISSION: 0 };
+    default:
+      return { ALLOW_PAYMENT: false, COMMISSION: 0 };
+  }
+}
+
 function generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir) {
+  const { ALLOW_PAYMENT, COMMISSION } = getPaymentSettings(pack);
+
   const config = {
     JWT_SECRET: generateSecretKey(32),
     JWT_SECRET_CLIENT: generateSecretKey(24),
@@ -29,8 +42,10 @@ function generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir) {
     PRENOM_PRO: prenom,
     NOM_PRO: nom,
     ID_PICS: siteId,
-    PACK : pack,
-    LIMIT_STARTER: getLimitFromPack(pack)
+    PACK: pack,
+    LIMIT_STARTER: getLimitFromPack(pack),
+    ALLOW_PAYMENT,
+    COMMISSION,
   };
 
   fs.writeFileSync(
@@ -40,7 +55,6 @@ function generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir) {
   );
   console.log(`✅ config.json généré pour ${prenom} ${nom}`);
 }
-
 
 const User = require("../models/Users"); // adapte le chemin si besoin
 

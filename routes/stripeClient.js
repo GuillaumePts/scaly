@@ -3,6 +3,8 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/Users");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const fs = require("fs");
+const path = require("path");
 
 
 function verifyToken(req, res, next) {
@@ -49,6 +51,17 @@ router.post("/stripe-connect-onboarding", verifyToken, async (req, res) => {
             user.stripeActivated = true;
             user.stripeActivationDate = new Date();
             await user.save();
+            const clientFolder = path.join(__dirname, "..", "clients", user.siteId, "config.json");
+
+            if (fs.existsSync(clientFolder)) {
+                const config = JSON.parse(fs.readFileSync(clientFolder, "utf8"));
+                config.STRIPE_ACCOUNT_ID = accountId;
+                fs.writeFileSync(clientFolder, JSON.stringify(config, null, 2), "utf8");
+                console.log(`✅ STRIPE_ACCOUNT_ID ajouté à config.json de ${user.siteId}`);
+            } else {
+                console.warn(`⚠️ config.json introuvable pour ${user.siteId}`);
+            }
+
         }
 
         // 🔗 Crée le lien d’onboarding
