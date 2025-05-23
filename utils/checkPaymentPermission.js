@@ -44,7 +44,7 @@ async function checkPaymentPermission(req, res, next) {
 
           // ✅ Mise à jour de la base MongoDB (optionnelle mais propre)
           if (req.user?.id) {
-            const user = await User.findById(req.user.id);
+            const user = await User.findOne({ email: req.user.id });
             if (user && user.stripeAccountId === config.STRIPE_ACCOUNT_ID) {
               user.stripeStatus = "active";
               await user.save();
