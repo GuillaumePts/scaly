@@ -14,10 +14,10 @@ module.exports = function createClientRouter(baseDir) {
   const jwt = require("jsonwebtoken");
   const bcrypt = require("bcrypt");
   const cookieParser = require("cookie-parser");
-
+  const { randomUUID } = require('crypto');
   const configPath = path.join(baseDir, 'config.json');
   const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-
+  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);  
   router.use(compression());
   router.use(express.static(baseDir));
 
@@ -462,7 +462,7 @@ module.exports = function createClientRouter(baseDir) {
       const ticket = tickets.ticket;
 
       if (ticket && ticket.idl === id && ticket.key === pass) {
-        const token = jwt.sign({ role: 'client', id }, config.JWT_SECRET_CLIENT, {
+        const token = jwt.sign({ role: 'client', ticketId: ticket.id }, config.JWT_SECRET_CLIENT, {
           expiresIn: '1h'
         });
 
@@ -517,9 +517,23 @@ module.exports = function createClientRouter(baseDir) {
     }
   });
 
+  const verifyClientToken = (req, res, next) => {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).send({ message: 'Non autorisé' });
 
-  router.post('/create-checkout-session-cc', async (req, res) => {
-    const { ticketId } = req.body;
+    try {
+      const decoded = jwt.verify(token, config.JWT_SECRET_CLIENT);
+      if (decoded.role !== 'client') throw new Error();
+      req.user = decoded;
+      next();
+    } catch (err) {
+      return res.status(403).send({ message: 'Token invalide' });
+    }
+  };
+
+
+  router.post('/create-checkout-session-cc', verifyClientToken, async (req, res) => {
+    const ticketId = req.user.ticketId; // Récupéré depuis le token
     const domain = req.headers.origin;
 
     try {
@@ -531,21 +545,22 @@ module.exports = function createClientRouter(baseDir) {
       const data = fs.readFileSync(ticketPath, 'utf8');
       const ticket = JSON.parse(data).ticket;
 
-      if (!ticket || ticket.idl !== ticketId || !ticket.price) {
+      if (!ticket || ticket.id !== ticketId || !ticket.price) {
+        console.log(ticket);
+        console.log(ticketId)
         return res.status(400).send({ error: 'Ticket invalide ou sans prix' });
+        
       }
 
       if (config.PACK === 'Starter' || config.STRIPE_STATUS !== 'active' || !config.ALLOW_PAYMENT) {
         return res.status(403).send({ error: 'Paiement non autorisé pour ce pack ou compte Stripe inactif' });
       }
 
-      // Prix de base en centimes
       let unitAmount = Math.round(parseFloat(ticket.price) * 100);
 
-      // Si pack Pro, on applique une commission de 5% (à notre charge)
       if (config.PACK === 'Pro') {
         const commission = (unitAmount * config.COMMISSION) / 100;
-        unitAmount = unitAmount - Math.round(commission); // le client reçoit moins
+        unitAmount = unitAmount - Math.round(commission);
       }
 
       const session = await stripe.checkout.sessions.create({
@@ -2352,9 +2367,10 @@ module.exports = function createClientRouter(baseDir) {
     const ticketJsonPath = path.join(ticketDir, 'ticket.json');
 
 
-
+    const ticketId = randomUUID();
     const ticketData = {
       ticket: {
+        id: ticketId,
         idl,
         key,
         nom,
@@ -2495,6 +2511,7 @@ module.exports = function createClientRouter(baseDir) {
 
       // Réinitialisation des données du ticket
       ticketData.ticket = {
+        "id": "",
         "idl": "",
         "key": "",
         "nom": "",
