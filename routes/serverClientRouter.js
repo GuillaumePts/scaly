@@ -17,7 +17,7 @@ module.exports = function createClientRouter(baseDir) {
   const { randomUUID } = require('crypto');
   const configPath = path.join(baseDir, 'config.json');
   const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);  
+  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
   router.use(compression());
   router.use(express.static(baseDir));
 
@@ -533,7 +533,6 @@ module.exports = function createClientRouter(baseDir) {
 
 
   router.post('/create-checkout-session-cc', verifyClientToken, async (req, res) => {
-    const ticketId = req.user.ticketId; // Récupéré depuis le token
     const domain = req.headers.origin;
 
     try {
@@ -545,24 +544,25 @@ module.exports = function createClientRouter(baseDir) {
       const data = fs.readFileSync(ticketPath, 'utf8');
       const ticket = JSON.parse(data).ticket;
 
-      if (!ticket || ticket.id !== ticketId || !ticket.price) {
-        console.log(ticket);
-        console.log(ticketId)
-        return res.status(400).send({ error: 'Ticket invalide ou sans prix' });
-        
+      if (!ticket || !ticket.price || !ticket.idl) {
+        return res.status(400).send({ error: 'Ticket invalide ou incomplet' });
       }
 
-      if (config.PACK === 'Starter' || config.STRIPE_STATUS !== 'active' || !config.ALLOW_PAYMENT) {
-        return res.status(403).send({ error: 'Paiement non autorisé pour ce pack ou compte Stripe inactif' });
+      // Vérifie qu'on a bien l'ID Stripe du compte connecté
+      const stripeAccountId = config.STRIPE_ACCOUNT_ID;
+      if (!stripeAccountId) {
+        return res.status(400).send({ error: 'Aucun compte Stripe connecté' });
       }
 
-      let unitAmount = Math.round(parseFloat(ticket.price) * 100);
+      let unitAmount = Math.round(parseFloat(ticket.price) * 100); // prix client
+      let applicationFee = 0;
 
+      // Appliquer une commission de 5% si le pack est "Pro"
       if (config.PACK === 'Pro') {
-        const commission = (unitAmount * config.COMMISSION) / 100;
-        unitAmount = unitAmount - Math.round(commission);
+        applicationFee = Math.round(unitAmount * config.COMMISSION / 100);
       }
 
+      // Crée la session de paiement pour le compte connecté
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
@@ -571,7 +571,7 @@ module.exports = function createClientRouter(baseDir) {
               currency: 'eur',
               product_data: {
                 name: `Accès à vos photos`,
-                description: `Téléchargement des photos pour le ticket ${ticketId}`,
+                description: `Téléchargement des photos pour le ticket ${ticket.idl}`,
               },
               unit_amount: unitAmount,
             },
@@ -579,12 +579,17 @@ module.exports = function createClientRouter(baseDir) {
           },
         ],
         mode: 'payment',
-        success_url: `${domain}/paiement-reussi?ticket=${ticketId}`,
+        success_url: `${domain}/paiement-reussi?ticket=${ticket.idl}`,
         cancel_url: `${domain}/paiement-annule`,
         metadata: {
           ticketId: ticket.idl,
           clientEmail: ticket.email || 'inconnu'
+        },
+        payment_intent_data: {
+          application_fee_amount: applicationFee
         }
+      }, {
+        stripeAccount: stripeAccountId
       });
 
       res.json({ url: session.url });
@@ -594,6 +599,37 @@ module.exports = function createClientRouter(baseDir) {
       res.status(500).send({ error: 'Impossible de créer la session de paiement' });
     }
   });
+
+// Route de test : vérifier les capacités du compte connecté Stripe
+router.get('/capabilities', async (req, res) => {
+  try {
+    // Chemin vers le config.json de TON CLIENT
+    const clientConfigPath = path.join(baseDir, 'config.json');
+    const configData = JSON.parse(fs.readFileSync(clientConfigPath, 'utf8'));
+
+    const stripeAccountId = configData.STRIPE_ACCOUNT_ID;
+
+    if (!stripeAccountId) {
+      return res.status(400).json({ error: 'Aucun STRIPE_ACCOUNT_ID trouvé dans le config.json' });
+    }
+
+    const connectedAccount = await stripe.accounts.retrieve(stripeAccountId);
+
+    res.json({
+      id: connectedAccount.id,
+      email: connectedAccount.email,
+      capabilities: connectedAccount.capabilities,
+      details_submitted: connectedAccount.details_submitted,
+      charges_enabled: connectedAccount.charges_enabled,
+      payouts_enabled: connectedAccount.payouts_enabled
+    });
+  } catch (err) {
+    console.error('Erreur récupération compte Stripe connecté:', err);
+    res.status(500).json({ error: 'Erreur Stripe', message: err.message });
+  }
+});
+
+
 
 
 
