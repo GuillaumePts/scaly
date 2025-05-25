@@ -581,7 +581,7 @@ module.exports = function createClientRouter(baseDir) {
         mode: 'payment',
 
 
-        success_url: `${domain}/api/ctoc-success?client=${clientId}&ticket=${ticket.id}`,
+        success_url: `${domain}/ctoc-success?client=${clientId}&ticket=${ticket.id}`,
         cancel_url: `${domain}/views/paiement-annule.html`,
 
 
@@ -604,39 +604,7 @@ module.exports = function createClientRouter(baseDir) {
     }
   });
 
-  router.post('/update-ticket-paiement', (req, res) => {
-    const clientId = req.query.client;
-    const ticketId = req.query.ticket;
 
-    const ticketPath = path.join(baseDir, 'clients', clientId, 'ticket', 'ticket.json');
-
-
-    if (!clientName || !ticketId) {
-      return res.status(400).send({ error: 'Paramètres manquants' });
-    }
-
-
-    try {
-      if (!fs.existsSync(ticketPath)) {
-        return res.status(404).send({ error: 'Fichier ticket introuvable' });
-      }
-
-      const data = JSON.parse(fs.readFileSync(ticketPath, 'utf8'));
-
-      if (data.ticket?.idl !== ticketId) {
-        return res.status(400).send({ error: 'Ticket non reconnu' });
-      }
-
-      data.ticket.paiementcheck = false;
-
-      fs.writeFileSync(ticketPath, JSON.stringify(data, null, 2), 'utf8');
-
-      res.status(200).send({ message: 'Mise à jour réussie' });
-    } catch (err) {
-      console.error('Erreur mise à jour ticket:', err);
-      res.status(500).send({ error: 'Erreur serveur' });
-    }
-  });
 
   router.get('/ctoc-success', async (req, res) => {
     const clientId = req.query.client;
@@ -646,8 +614,9 @@ module.exports = function createClientRouter(baseDir) {
       return res.status(400).send('Requête invalide');
     }
 
-    const ticketPath = path.join(baseDir, 'clients', clientId, 'ticket', 'ticket.json');
-
+    // const ticketPath = path.join(baseDir, 'clients', clientId, 'ticket', 'ticket.json');
+    const ticketPath = path.join(baseDir, 'ticket', 'ticket.json');
+    console.log(ticketPath)
     try {
       if (!fs.existsSync(ticketPath)) {
         return res.status(404).send('Fichier ticket introuvable');
@@ -657,7 +626,7 @@ module.exports = function createClientRouter(baseDir) {
       const json = JSON.parse(data);
 
       if (json.ticket && json.ticket.id === ticketId) {
-        json.ticket.paiementcheck = false;
+        json.ticket.paiementcheck = true;
         fs.writeFileSync(ticketPath, JSON.stringify(json, null, 2), 'utf8');
       }
 
