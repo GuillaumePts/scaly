@@ -534,7 +534,7 @@ module.exports = function createClientRouter(baseDir) {
 
   router.post('/create-checkout-session-cc', verifyClientToken, async (req, res) => {
     const domain = req.headers.origin;
-
+    const clientId = config.ID_PICS;
     try {
       const ticketPath = path.join(baseDir, 'ticket', 'ticket.json');
       if (!fs.existsSync(ticketPath)) {
@@ -571,7 +571,7 @@ module.exports = function createClientRouter(baseDir) {
               currency: 'eur',
               product_data: {
                 name: `Accès à vos photos`,
-                description: `Téléchargement des photos pour le ticket ${ticket.idl}`,
+                description: `Téléchargement des photos pour le ticket ${ticket.id}`,
               },
               unit_amount: unitAmount,
             },
@@ -579,10 +579,14 @@ module.exports = function createClientRouter(baseDir) {
           },
         ],
         mode: 'payment',
-        success_url: `${domain}/paiement-reussi?ticket=${ticket.idl}`,
-        cancel_url: `${domain}/paiement-annule`,
+
+
+        success_url: `${domain}/api/ctoc-success?client=${clientId}&ticket=${ticket.id}`,
+        cancel_url: `${domain}/views/paiement-annule.html`,
+
+
         metadata: {
-          ticketId: ticket.idl,
+          ticketId: ticket.id,
           clientEmail: ticket.email || 'inconnu'
         },
         payment_intent_data: {
@@ -600,34 +604,108 @@ module.exports = function createClientRouter(baseDir) {
     }
   });
 
-// Route de test : vérifier les capacités du compte connecté Stripe
-router.get('/capabilities', async (req, res) => {
-  try {
-    // Chemin vers le config.json de TON CLIENT
-    const clientConfigPath = path.join(baseDir, 'config.json');
-    const configData = JSON.parse(fs.readFileSync(clientConfigPath, 'utf8'));
+  router.post('/update-ticket-paiement', (req, res) => {
+    const clientId = req.query.client;
+    const ticketId = req.query.ticket;
 
-    const stripeAccountId = configData.STRIPE_ACCOUNT_ID;
+    const ticketPath = path.join(baseDir, 'clients', clientId, 'ticket', 'ticket.json');
 
-    if (!stripeAccountId) {
-      return res.status(400).json({ error: 'Aucun STRIPE_ACCOUNT_ID trouvé dans le config.json' });
+
+    if (!clientName || !ticketId) {
+      return res.status(400).send({ error: 'Paramètres manquants' });
     }
 
-    const connectedAccount = await stripe.accounts.retrieve(stripeAccountId);
 
-    res.json({
-      id: connectedAccount.id,
-      email: connectedAccount.email,
-      capabilities: connectedAccount.capabilities,
-      details_submitted: connectedAccount.details_submitted,
-      charges_enabled: connectedAccount.charges_enabled,
-      payouts_enabled: connectedAccount.payouts_enabled
-    });
-  } catch (err) {
-    console.error('Erreur récupération compte Stripe connecté:', err);
-    res.status(500).json({ error: 'Erreur Stripe', message: err.message });
-  }
-});
+    try {
+      if (!fs.existsSync(ticketPath)) {
+        return res.status(404).send({ error: 'Fichier ticket introuvable' });
+      }
+
+      const data = JSON.parse(fs.readFileSync(ticketPath, 'utf8'));
+
+      if (data.ticket?.idl !== ticketId) {
+        return res.status(400).send({ error: 'Ticket non reconnu' });
+      }
+
+      data.ticket.paiementcheck = false;
+
+      fs.writeFileSync(ticketPath, JSON.stringify(data, null, 2), 'utf8');
+
+      res.status(200).send({ message: 'Mise à jour réussie' });
+    } catch (err) {
+      console.error('Erreur mise à jour ticket:', err);
+      res.status(500).send({ error: 'Erreur serveur' });
+    }
+  });
+
+  router.get('/ctoc-success', async (req, res) => {
+    const clientId = req.query.client;
+    const ticketId = req.query.ticket;
+
+    if (!clientId || !ticketId) {
+      return res.status(400).send('Requête invalide');
+    }
+
+    const ticketPath = path.join(baseDir, 'clients', clientId, 'ticket', 'ticket.json');
+
+    try {
+      if (!fs.existsSync(ticketPath)) {
+        return res.status(404).send('Fichier ticket introuvable');
+      }
+
+      const data = fs.readFileSync(ticketPath, 'utf8');
+      const json = JSON.parse(data);
+
+      if (json.ticket && json.ticket.id === ticketId) {
+        json.ticket.paiementcheck = false;
+        fs.writeFileSync(ticketPath, JSON.stringify(json, null, 2), 'utf8');
+      }
+
+      // Redirection vers la page de confirmation
+      res.redirect(`/views/paiement-reussi.html`);
+    } catch (err) {
+      console.error('Erreur mise à jour ticket:', err);
+      res.status(500).send('Erreur serveur');
+    }
+  });
+
+  // router.get("/ctoc-success", (req, res) => {
+
+  //     res.sendFile(path.join(baseDir, 'views', 'payment-success.html'));
+  // });
+
+  // router.get("/ctoc-echec", (req, res) => {
+
+  //     res.sendFile(path.join(baseDir, 'views', 'payment-cancel.html'));
+  // });
+  // Route de test : vérifier les capacités du compte connecté Stripe
+  // router.get('/capabilities', async (req, res) => {
+  //   try {
+  //     // Chemin vers le config.json de TON CLIENT
+  //     const clientConfigPath = path.join(baseDir, 'config.json');
+  //     const configData = JSON.parse(fs.readFileSync(clientConfigPath, 'utf8'));
+
+  //     const stripeAccountId = configData.STRIPE_ACCOUNT_ID;
+
+  //     if (!stripeAccountId) {
+  //       return res.status(400).json({ error: 'Aucun STRIPE_ACCOUNT_ID trouvé dans le config.json' });
+  //     }
+
+  //     const connectedAccount = await stripe.accounts.retrieve(stripeAccountId);
+
+  //     res.json({
+  //       id: connectedAccount.id,
+  //       email: connectedAccount.email,
+  //       capabilities: connectedAccount.capabilities,
+  //       details_submitted: connectedAccount.details_submitted,
+  //       charges_enabled: connectedAccount.charges_enabled,
+  //       payouts_enabled: connectedAccount.payouts_enabled
+  //     });
+  //   } catch (err) {
+  //     console.error('Erreur récupération compte Stripe connecté:', err);
+  //     res.status(500).json({ error: 'Erreur Stripe', message: err.message });
+  //   }
+  // });
 
 
 
