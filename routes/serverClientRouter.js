@@ -585,12 +585,19 @@ module.exports = function createClientRouter(baseDir) {
         success_url: `http://${dossier}.localhost:9999/ticket?success=true`,
         cancel_url: `http://${dossier}.localhost:9999/ticket?canceled=true`,
 
-
         // 👇 Important : passer le nom du dossier client ici
         client_reference_id: dossier,
 
         // (facultatif mais recommandé)
-        customer_email: mail
+        customer_email: mail,
+
+        // 👇 Frais d'application + destination du paiement
+        payment_intent_data: {
+          application_fee_amount: applicationFee, // par exemple : 500 pour 5€
+          transfer_data: {
+            destination: stripeAccountId, // L’ID du compte connecté, ex: 'acct_1Nxxxyyy...'
+          },
+        },
       });
 
       res.json({ url: session.url });
@@ -687,9 +694,9 @@ module.exports = function createClientRouter(baseDir) {
 
 
       return fs.readFile(path.join(baseDir, '/views/ticket.html'), 'utf8', (err, html) => {
-          if (err) return res.status(500).send({ message: 'Erreur serveur' });
-          res.status(200).send({ html, message: 'Connexion réussie', session: 'client', success: true });
-        });
+        if (err) return res.status(500).send({ message: 'Erreur serveur' });
+        res.status(200).send({ html, message: 'Connexion réussie', session: 'client', success: true });
+      });
 
 
     } catch (err) {
