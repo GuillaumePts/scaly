@@ -7,9 +7,25 @@
 </head>
 <body>
     <script>
+        // idée de base non sécurisé
         // Envoie un message à la page d'origine
         window.opener.postMessage({ stripeSuccess: true }, "*");
         window.close(); // Ferme cette fenêtre Stripe
+
+
+        // le fetch pour version final 
+        fetch(`/verif-ticket?ticket=${ticketId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.valid) {
+                    // 🔓 Afficher les photos
+                    window.parent.postMessage({ stripeSuccess: true }, '*');
+                } else {
+                    // 🔒 Bloqué
+                    window.parent.postMessage({ stripeSuccess: false }, '*');
+                }
+            });
+
       </script>
 </body>
 </html>

@@ -462,7 +462,7 @@ module.exports = function createClientRouter(baseDir) {
       const ticket = tickets.ticket;
 
       if (ticket && ticket.idl === id && ticket.key === pass) {
-        const token = jwt.sign({ role: 'client', ticketId: ticket.id }, config.JWT_SECRET_CLIENT, {
+        const token = jwt.sign({ role: 'client', ticketId: ticket.id, dossier: config.ID_PICS, mail: ticket.mail }, config.JWT_SECRET_CLIENT, {
           expiresIn: '1h'
         });
 
@@ -517,14 +517,18 @@ module.exports = function createClientRouter(baseDir) {
     }
   });
 
+
   const verifyClientToken = (req, res, next) => {
     const token = req.cookies.token;
     if (!token) return res.status(401).send({ message: 'Non autorisé' });
 
     try {
       const decoded = jwt.verify(token, config.JWT_SECRET_CLIENT);
-      if (decoded.role !== 'client') throw new Error();
+      if (decoded.role !== 'client' || !decoded.dossier) throw new Error();
+
       req.user = decoded;
+      req.clientFolder = decoded.dossier;
+      req.mail = decoded.mail // ajoute le chemin ici
       next();
     } catch (err) {
       return res.status(403).send({ message: 'Token invalide' });
@@ -532,114 +536,168 @@ module.exports = function createClientRouter(baseDir) {
   };
 
 
-router.post('/create-checkout-session-cc', verifyClientToken, async (req, res) => {
-  const domain = req.headers.origin;
-  const clientId = config.ID_PICS;
 
-  try {
-    const ticketPath = path.join(baseDir, 'ticket', 'ticket.json');
-    if (!fs.existsSync(ticketPath)) {
-      return res.status(404).send({ error: 'Ticket introuvable' });
-    }
+  router.post('/create-checkout-session-cc', verifyClientToken, async (req, res) => {
 
-    const data = fs.readFileSync(ticketPath, 'utf8');
-    const ticket = JSON.parse(data).ticket;
+    const dossier = req.clientFolder
+    const mail = req.mail
 
-    if (!ticket || !ticket.price || !ticket.id) {
-      return res.status(400).send({ error: 'Ticket invalide ou incomplet' });
-    }
+    try {
+      const ticketPath = path.join(baseDir, 'ticket', 'ticket.json');
+      if (!fs.existsSync(ticketPath)) {
+        return res.status(404).send({ error: 'Ticket introuvable' });
+      }
 
-    const stripeAccountId = config.STRIPE_ACCOUNT_ID;
-    console.log("Compte connecté Stripe :", stripeAccountId);
+      const data = fs.readFileSync(ticketPath, 'utf8');
+      const ticket = JSON.parse(data).ticket;
 
-    if (!stripeAccountId) {
-      return res.status(400).send({ error: 'Aucun compte Stripe connecté' });
-    }
+      if (!ticket || !ticket.price || !ticket.id) {
+        return res.status(400).send({ error: 'Ticket invalide ou incomplet' });
+      }
 
-    let unitAmount = Math.round(parseFloat(ticket.price) * 100); // en centimes
-    let applicationFee = 0;
+      const stripeAccountId = config.STRIPE_ACCOUNT_ID;
+      console.log("Compte connecté Stripe :", stripeAccountId);
 
-    if (config.PACK === 'Pro') {
-      applicationFee = Math.round(unitAmount * config.COMMISSION / 100);
-    }
+      if (!stripeAccountId) {
+        return res.status(400).send({ error: 'Aucun compte Stripe connecté' });
+      }
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
+      let unitAmount = Math.round(parseFloat(ticket.price) * 100); // en centimes
+      let applicationFee = 0;
+
+      if (config.PACK === 'Pro') {
+        applicationFee = Math.round(unitAmount * config.COMMISSION / 100);
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        payment_method_types: ['card'],
+        line_items: [{
           price_data: {
             currency: 'eur',
             product_data: {
-              name: `Accès à vos photos`,
-              description: `Téléchargement des photos pour le ticket ${ticket.id}`,
+              name: 'Ticket de téléchargement',
             },
             unit_amount: unitAmount,
           },
           quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: `${domain}/ctoc-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${domain}/views/paiement-annule.html`,
-      metadata: {
-        ticketId: ticket.id,
-        clientEmail: ticket.email || 'inconnu'
-      },
-      payment_intent_data: {
-        application_fee_amount: applicationFee,
-        transfer_data: {
-          destination: stripeAccountId
-        }
-      }
-    });
-
-    res.json({ url: session.url });
-
-  } catch (error) {
-    console.error("Erreur Stripe session:", error);
-    res.status(500).send({ error: 'Impossible de créer la session de paiement' });
-  }
-});
+        }],
+        success_url: `http://${dossier}.localhost:9999/ticket?success=true`,
+        cancel_url: `http://${dossier}.localhost:9999/ticket?canceled=true`,
 
 
-  router.get('/ctoc-success', async (req, res) => {
-    const sessionId = req.query.session_id;
+        // 👇 Important : passer le nom du dossier client ici
+        client_reference_id: dossier,
 
-    if (!sessionId) {
-      return res.status(400).send('Session ID manquant');
-    }
+        // (facultatif mais recommandé)
+        customer_email: mail
+      });
 
-    try {
-      // Récupère la session Stripe via l'API
-      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      res.json({ url: session.url });
 
-      if (!session.metadata || !session.metadata.ticketId) {
-        return res.status(400).send('Ticket ID non trouvé dans la session');
-      }
-
-      const ticketId = session.metadata.ticketId;
-
-      const ticketPath = path.join(baseDir, 'ticket', 'ticket.json');
-      if (!fs.existsSync(ticketPath)) {
-        return res.status(404).send('Fichier ticket introuvable');
-      }
-
-      const data = fs.readFileSync(ticketPath, 'utf8');
-      const json = JSON.parse(data);
-
-      // Vérifie que l'ID du ticket correspond
-      if (json.ticket && json.ticket.id === ticketId) {
-        json.ticket.paiementcheck = true;
-        fs.writeFileSync(ticketPath, JSON.stringify(json, null, 2), 'utf8');
-      }
-
-      // Redirige vers une page propre
-      res.redirect(`/views/paiement-reussi.html`);
-    } catch (err) {
-      console.error('Erreur dans le callback Stripe:', err);
-      res.status(500).send('Erreur serveur');
+    } catch (error) {
+      console.error("Erreur Stripe session:", error);
+      res.status(500).send({ error: 'Impossible de créer la session de paiement' });
     }
   });
+
+
+  // en prod
+  // router.get('/ticket', (req, res) => {
+  //   // Tu peux récupérer success ou canceled dans les query params si besoin
+  //   const { success, canceled } = req.query;
+
+  //   // Chemin vers ton fichier HTML qui ferme la fenêtre automatiquement
+  //   const htmlPath = path.join(baseDir, 'views', 'paiement-reussi.html');
+
+  //   // Renvoie ce fichier dans tous les cas
+  //   res.sendFile(htmlPath);
+  // });
+
+  // en local
+
+
+  router.get('/ticket', async (req, res) => {
+    const { success, canceled } = req.query;
+    const htmlPath = path.join(baseDir, 'views', 'paiement-reussi.html');
+
+    if (success) {
+      try {
+        const clientFolder = baseDir;
+        const ticketDir = path.join(clientFolder, 'ticket');
+        const ticketFile = path.join(ticketDir, 'ticket-paiement-valid.json');
+        const ticketJsonPath = path.join(ticketDir, 'ticket.json');
+
+        fs.mkdirSync(ticketDir, { recursive: true });
+
+        // Création du ticket de paiement valide
+        const data = {
+          ok: true,
+          paidAt: new Date().toISOString()
+        };
+        fs.writeFileSync(ticketFile, JSON.stringify(data, null, 2));
+        console.log(`✅ Simulation webhook : ticket-paiement-valid.json créé pour ${clientFolder}`);
+
+        // Modification de ticket.json → paiementcheck: true
+        if (fs.existsSync(ticketJsonPath)) {
+          const ticketContent = fs.readFileSync(ticketJsonPath, 'utf-8');
+          const ticket = JSON.parse(ticketContent);
+
+          ticket.ticket.paiementcheck = true;
+
+          fs.writeFileSync(ticketJsonPath, JSON.stringify(ticket, null, 2));
+          console.log(`✅ ticket.json mis à jour avec "paiementcheck": true`);
+        } else {
+          console.warn(`⚠️ ticket.json introuvable à ${ticketJsonPath}, aucune mise à jour effectuée`);
+        }
+      } catch (err) {
+        console.error('❌ Erreur dans la simulation du webhook local :', err);
+      }
+    }
+
+
+
+    res.sendFile(htmlPath);
+  });
+
+
+
+
+
+  router.get('/check-payment-status', verifyClientToken, async (req, res) => {
+    try {
+      const clientFolder = req.clientFolder; // supposons que tu stockes le nom du dossier client via ton middleware `verifyClientToken`
+
+      const ticketDir = path.join(baseDir, 'ticket');
+      const ticketJsonPath = path.join(ticketDir, 'ticket.json');
+      const paiementValidPath = path.join(ticketDir, 'ticket-paiement-valid.json');
+      const ticketHtmlPath = path.join(baseDir, 'views', 'ticket.html');
+
+      // Vérifie si les deux fichiers existent
+      if (!fs.existsSync(ticketJsonPath) || !fs.existsSync(paiementValidPath)) {
+        return res.status(403).json({ success: false, message: 'Paiement non confirmé ou fichier manquant.' });
+      }
+
+      // Vérifie le contenu de ticket.json
+      const ticketData = JSON.parse(fs.readFileSync(ticketJsonPath, 'utf8'));
+      console.log(ticketData.ticket.paiementcheck)
+      if (ticketData.ticket.paiementcheck !== true) {
+        return res.status(403).json({ success: false, message: 'Paiement non validé dans ticket.json.' });
+      }
+
+
+      return fs.readFile(path.join(baseDir, '/views/ticket.html'), 'utf8', (err, html) => {
+          if (err) return res.status(500).send({ message: 'Erreur serveur' });
+          res.status(200).send({ html, message: 'Connexion réussie', session: 'client', success: true });
+        });
+
+
+    } catch (err) {
+      console.error('Erreur lors de la vérification du paiement :', err);
+      res.status(500).json({ success: false, message: 'Erreur serveur.' });
+    }
+  });
+
 
 
 

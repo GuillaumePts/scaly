@@ -3,6 +3,10 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 const port = 9999;
+
+// avant express.json
+app.post('/client-webhook', express.raw({ type: 'application/json' }));
+
 app.use(express.json());
 require('dotenv').config();
 // Configurer Multer pour stocker les fichiers en mémoire
@@ -184,7 +188,7 @@ const verifyPassword = require("./routes/verify-password.js")
 const changePassword = require("./routes/change-password.js")
 const verificationRoutes = require("./routes/send-verification-code.js");
 const stripeClient = require("./routes/stripeClient.js")
-
+const clientWebhook = require('./routes/clientWebhook');
 
 
 
@@ -202,6 +206,8 @@ app.use("/api", verifyPassword)
 app.use("/api", changePassword)
 app.use("/api", verificationRoutes);
 app.use("/api", stripeClient);
+app.use("/api", clientWebhook);
+
 
 
 
