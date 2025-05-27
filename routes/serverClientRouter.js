@@ -486,7 +486,7 @@ module.exports = function createClientRouter(baseDir) {
           STRIPE_STATUS: config.STRIPE_STATUS
         });
 
-        if (prix > 0 && !paiementFait ) {
+        if (prix > 0 && !paiementFait) {
           // Redirection Stripe à effectuer côté front
           return res.status(200).send({
             session: 'client',
@@ -553,7 +553,7 @@ module.exports = function createClientRouter(baseDir) {
       const stripeAccountId = config.STRIPE_ACCOUNT_ID;
       console.log("Compte connecté Stripe :", stripeAccountId);
 
-      if (!stripeAccountId || !config.STRIPE_STATUS || config.ALLOW_PAYMENT !== true ) {
+      if (!stripeAccountId || !config.STRIPE_STATUS || config.ALLOW_PAYMENT !== true) {
         return res.status(400).send({ error: 'Votre photographe n\'a pas fini de configurer son compte. N\hésitez pas à lui signaler.' });
       }
 
@@ -627,7 +627,7 @@ module.exports = function createClientRouter(baseDir) {
 
     if (success) {
 
-      
+
 
       try {
         const clientFolder = baseDir;
@@ -661,16 +661,16 @@ module.exports = function createClientRouter(baseDir) {
         console.error('❌ Erreur dans la simulation du webhook local :', err);
       }
 
-      sendMailTicket(config.MAIL, tickets.ticket.mail, true )
+      sendMailTicket(config.MAIL, tickets.ticket.mail, true)
 
-    }else{
+    } else {
 
-      sendMailTicket(config.MAIL, tickets.ticket.mail, false )
+      sendMailTicket(config.MAIL, tickets.ticket.mail, false)
     }
 
 
     res.sendFile(htmlPath);
-    
+
   });
 
 
@@ -2589,6 +2589,70 @@ module.exports = function createClientRouter(baseDir) {
       });
     } else {
       res.status(404).json({ message: 'Aucun ticket trouvé' });
+    }
+  });
+
+
+
+  router.post('/unlock-ticket', async (req, res) => {
+    const ticketFilePath = path.join(baseDir, 'ticket', 'ticket.json');
+    const validFilePath = path.join(baseDir, 'ticket', 'ticket-paiement-valid.json');
+
+    try {
+      if (!fs.existsSync(ticketFilePath)) {
+        return res.status(404).json({ error: 'ticket.json introuvable' });
+      }
+
+      const ticketData = JSON.parse(fs.readFileSync(ticketFilePath, 'utf-8'));
+
+      // Modification du paiementcheck
+      ticketData.ticket.paiementcheck = true;
+      fs.writeFileSync(ticketFilePath, JSON.stringify(ticketData, null, 2), 'utf-8');
+
+      // Création de ticket-paiement-valid.json s’il n’existe pas
+      if (!fs.existsSync(validFilePath)) {
+        const now = new Date().toISOString();
+        const validContent = {
+          ok: "manual",
+          paidAt: now
+        };
+        fs.writeFileSync(validFilePath, JSON.stringify(validContent, null, 2), 'utf-8');
+      }
+
+      // Envoi de l'email au client
+      const { mail, prenom, nom } = ticketData.ticket;
+
+      // ⚠️ Remplace ces informations par celles de ton service mail
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_PASS
+        }
+      });
+
+      const mailOptions = {
+        from: 'Scaly Pic’s <contact@tonsite.com>',
+        to: mail,
+        subject: 'Vos photos sont maintenant disponibles',
+        html: `
+        <p>Bonjour ${prenom} ${nom},</p>
+        <p>Votre photographe vient de débloquer l'accès à vos photos manuellement.</p>
+        <p>Vous pouvez désormais vous reconnecter avec les mêmes identifiants et procéder au téléchargement.</p>
+        <p style="margin-top: 20px;">Merci de votre confiance,</p>
+        <p>L’équipe Scaly Pic’s</p>
+      `
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      return res.json({ success: true, message: "Ticket débloqué manuellement et email envoyé" });
+
+    } catch (error) {
+      console.error('Erreur /unlock-ticket :', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
     }
   });
 

@@ -131,19 +131,6 @@
     gap: 10px;
 }
 
-.param {
-    color: #eee;
-    font-family: var(--font-fam-one);
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: start;
-
-}
 
 .input-subfolder{
     border: none;
@@ -209,6 +196,21 @@
     padding: 3px;
     margin: 0.5px;
 }
+
+.param {
+    color: #eee;
+    font-family: var(--font-fam-one);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+
+}
+
 
 .param::after{
     border-radius: 50px;
