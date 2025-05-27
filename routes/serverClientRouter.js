@@ -23,6 +23,7 @@ module.exports = function createClientRouter(baseDir) {
 
   const User = require('../models/User');
 
+  const verifpermisson = require('../utils/checkPaymentPermission')
 
 
 
@@ -485,14 +486,7 @@ module.exports = function createClientRouter(baseDir) {
           STRIPE_STATUS: config.STRIPE_STATUS
         });
 
-        if (
-          prix > 0 &&
-          !paiementFait &&
-          (config.PACK === 'Pro' || config.PACK === 'Unlimited') &&
-          config.ALLOW_PAYMENT === true &&
-          config.STRIPE_ACCOUNT_ID &&
-          config.STRIPE_STATUS === 'active'
-        ) {
+        if (prix > 0 && !paiementFait ) {
           // Redirection Stripe à effectuer côté front
           return res.status(200).send({
             session: 'client',
@@ -536,6 +530,7 @@ module.exports = function createClientRouter(baseDir) {
   };
 
 
+  const sendMailTicket = require('../utils/sendMailTicket')
 
   router.post('/create-checkout-session-cc', verifyClientToken, async (req, res) => {
 
@@ -558,8 +553,8 @@ module.exports = function createClientRouter(baseDir) {
       const stripeAccountId = config.STRIPE_ACCOUNT_ID;
       console.log("Compte connecté Stripe :", stripeAccountId);
 
-      if (!stripeAccountId) {
-        return res.status(400).send({ error: 'Aucun compte Stripe connecté' });
+      if (!stripeAccountId || !config.STRIPE_STATUS || config.ALLOW_PAYMENT !== true ) {
+        return res.status(400).send({ error: 'Votre photographe n\'a pas fini de configurer son compte. N\hésitez pas à lui signaler.' });
       }
 
       let unitAmount = Math.round(parseFloat(ticket.price) * 100); // en centimes
@@ -576,7 +571,8 @@ module.exports = function createClientRouter(baseDir) {
           price_data: {
             currency: 'eur',
             product_data: {
-              name: 'Ticket de téléchargement',
+              name: 'Album Photo',
+              description: 'Merci pour votre confiance ! Téléchargez toutes les photos en haute définition de votre séance. Chaque image est optimisée et soigneusement préparée pour une qualité optimale par votre photographe.',
             },
             unit_amount: unitAmount,
           },
@@ -628,7 +624,11 @@ module.exports = function createClientRouter(baseDir) {
     const { success, canceled } = req.query;
     const htmlPath = path.join(baseDir, 'views', 'paiement-reussi.html');
 
+
     if (success) {
+
+      
+
       try {
         const clientFolder = baseDir;
         const ticketDir = path.join(clientFolder, 'ticket');
@@ -660,11 +660,17 @@ module.exports = function createClientRouter(baseDir) {
       } catch (err) {
         console.error('❌ Erreur dans la simulation du webhook local :', err);
       }
+
+      sendMailTicket(config.MAIL, tickets.ticket.mail, true )
+
+    }else{
+
+      sendMailTicket(config.MAIL, tickets.ticket.mail, false )
     }
 
 
-
     res.sendFile(htmlPath);
+    
   });
 
 
