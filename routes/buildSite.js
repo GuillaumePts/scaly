@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const simpleGit = require("simple-git");
 const path = require("path");
 const fs = require("fs");
+const fse = require("fs-extra");
 const crypto = require("crypto");
 require("dotenv").config();
 
@@ -32,7 +32,6 @@ function getPaymentSettings(pack) {
   }
 }
 
-
 function generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir) {
   const { ALLOW_PAYMENT, COMMISSION } = getPaymentSettings(pack);
 
@@ -59,7 +58,7 @@ function generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir) {
   console.log(`✅ config.json généré pour ${prenom} ${nom}`);
 }
 
-const User = require("../models/Users"); // adapte le chemin si besoin
+const User = require("../models/Users");
 
 router.post("/build-site", async (req, res) => {
   const { nom, prenom, email, siteId, color, pack } = req.body;
@@ -82,46 +81,21 @@ router.post("/build-site", async (req, res) => {
     console.log("🔧 Création du site pour :", email);
 
     const cleanedColor = color.toLowerCase();
-    const repoName = `starter-pics-${cleanedColor}`;
+    const templateName = `pics-${cleanedColor}`;
+    const sourceDir = path.join(__dirname, "..", "build", templateName);
     const targetDir = path.join(__dirname, "..", "clients", siteId);
-    const repoUrl = `https://${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_USERNAME}/${repoName}.git`;
 
-    const git = simpleGit();
-
-    console.log(`📥 Clonage du dépôt ${repoName} dans ${targetDir}...`);
-    await git.clone(repoUrl, targetDir);
-    console.log("✅ Clonage terminé.");
-
-    // Suppression du dossier .git
-    const gitDir = path.join(targetDir, ".git");
-    if (fs.existsSync(gitDir)) {
-      fs.rmSync(gitDir, { recursive: true, force: true });
-      console.log("🗑️ Dossier .git supprimé.");
+    // 💥 Vérification que le template existe
+    if (!fs.existsSync(sourceDir)) {
+      return res.status(404).json({
+        success: false,
+        message: `Le produit "${templateName}" est introuvable dans /build.`,
+      });
     }
 
-    // Suppression de server.js
-    const serverFile = path.join(targetDir, "server.js");
-    if (fs.existsSync(serverFile)) {
-      fs.unlinkSync(serverFile);
-      console.log("🗑️ Fichier server.js supprimé.");
-    }
-
-    // Suppression du dossier models
-    const modelsDir = path.join(targetDir, "models");
-    if (fs.existsSync(modelsDir)) {
-      fs.rmSync(modelsDir, { recursive: true, force: true });
-      console.log("🗑️ Dossier models supprimé.");
-    }
-
-    // Suppression des fichiers package.json, package-lock.json, .gitignore
-    const filesToRemove = ["package.json", "package-lock.json", ".gitignore"];
-    for (const file of filesToRemove) {
-      const filePath = path.join(targetDir, file);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-        console.log(`🗑️ Fichier ${file} supprimé.`);
-      }
-    }
+    console.log(`📁 Copie depuis le modèle ${templateName} vers ${targetDir}...`);
+    await fse.copy(sourceDir, targetDir);
+    console.log("✅ Copie terminée.");
 
     // Génération du config.json
     generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir);
@@ -132,13 +106,12 @@ router.post("/build-site", async (req, res) => {
       { $set: { http: siteUrl } }
     );
 
-    res.json({ success: true, message: "Votre produit est prêt ! 🚀", url: siteUrl  });
+    res.json({ success: true, message: "Votre produit est prêt ! 🚀", url: siteUrl });
 
   } catch (err) {
     console.error("❌ Erreur :", err.message);
     res.status(500).json({ success: false, message: "Erreur lors de la création du site." });
   }
 });
-
 
 module.exports = router;

@@ -1,0 +1,12 @@
+{
+    "ticket": {
+        "idl": "",
+        "key": "",
+        "nom": "",
+        "prenom": "",
+        "dossier": "",
+        "nombrel": "",
+        "taille": "",
+        "download": "Votre client n’a pas encore téléchargé ses photos"
+    }
+}
