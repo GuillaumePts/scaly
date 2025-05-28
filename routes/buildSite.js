@@ -21,14 +21,17 @@ function getLimitFromPack(pack) {
 
 function getPaymentSettings(pack) {
   switch (pack.toLowerCase()) {
+    case "starter":
+      return { ALLOW_PAYMENT: true, COMMISSION: 6 };
     case "pro":
-      return { ALLOW_PAYMENT: true, COMMISSION: 5 };
+      return { ALLOW_PAYMENT: true, COMMISSION: 3 };
     case "unlimited":
       return { ALLOW_PAYMENT: true, COMMISSION: 0 };
     default:
       return { ALLOW_PAYMENT: false, COMMISSION: 0 };
   }
 }
+
 
 function generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir) {
   const { ALLOW_PAYMENT, COMMISSION } = getPaymentSettings(pack);

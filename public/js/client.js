@@ -1036,7 +1036,10 @@ function sendFieldUpdate(field, newValue) {
     });
 }
 
-function finload(msg) {
+function finload(msg, time) {
+
+  const sec = time ?? 1000
+
   document.querySelector('.msgoverlay').textContent = msg
   document.querySelector('.loaderi').remove()
   document.querySelector('.gradload').remove()
@@ -1049,7 +1052,7 @@ function finload(msg) {
     document.querySelector('.overlayLoad').style.visibility = "hidden";
     document.querySelector('.overlayLoad').style.opacity = "0"
     document.querySelector('.overlayLoad').remove()
-  }, 700);
+  }, sec);
 }
 
 
@@ -1060,7 +1063,7 @@ function setupStripeClientButton() {
   if (!window.clientData) return;
 
   const hasStripeAccount = window.clientData.stripeActivated === true;
-  const hasValidPack = ['Pro', 'Unlimited'].includes(window.clientData.subscriptionStock);
+  const hasValidPack = ['Starter','Pro', 'Unlimited'].includes(window.clientData.subscriptionStock);
 
   if (!hasValidPack) {
     button.textContent = "Activer l'option paiement client";
@@ -1249,7 +1252,7 @@ function setupStripeClientButton() {
         window.open(data.url, "_blank");
         finload("Redirection vers Stripe...");
       } else {
-        finload("Erreur lors de la création du compte Stripe.");
+        finload(data.message, 2500);
       }
     };
   }
