@@ -710,6 +710,7 @@ function setupMenu() {
 // ⚡ Gestion de la pagination
 function setupPagination() {
   const pages = document.querySelectorAll(".page");
+  changePack()
 
   pages.forEach(page => {
     page.addEventListener("click", () => {
@@ -1057,13 +1058,16 @@ function finload(msg, time) {
 
 
 
+
+
+
 function setupStripeClientButton() {
   const button = document.getElementById("ActiverStripeClient");
 
   if (!window.clientData) return;
 
   const hasStripeAccount = window.clientData.stripeActivated === true;
-  const hasValidPack = ['Starter','Pro', 'Unlimited'].includes(window.clientData.subscriptionStock);
+  const hasValidPack = ['Starter', 'Pro', 'Unlimited'].includes(window.clientData.subscriptionStock);
 
   if (!hasValidPack) {
     button.textContent = "Activer l'option paiement client";
@@ -1135,6 +1139,7 @@ function setupStripeClientButton() {
           }
         });
       });
+
 
 
 
@@ -1210,7 +1215,7 @@ function setupStripeClientButton() {
             .then(data => {
               if (data.success) {
                 overlay.remove()
-                window.open(data.url, "_blank"); 
+                window.open(data.url, "_blank");
               } else {
                 alert("Erreur lors de la redirection vers Stripe.");
               }
@@ -1265,3 +1270,196 @@ function setupStripeClientButton() {
 
 
 
+
+
+function changePack() {
+  document.querySelector('#changePack').addEventListener('click', () => {
+
+    const setupProduit = {
+      Starter: {
+        prix: "5€",
+        stockage: 1,
+        estimation: 2000,
+        commission: "6%"
+      },
+      Pro: {
+        prix: "10€",
+        stockage: 5,
+        estimation: 10000,
+        commission: "3%"
+      },
+      Unlimited: {
+        prix: "20€",
+        stockage: 30,
+        estimation: 60000,
+        commission: "0%"
+      }
+    }
+
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100vh'; // important !
+    overlay.style.zIndex = '200000000000';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'flex-start'; // pour scroller depuis le haut
+    overlay.style.alignItems = 'center';
+    overlay.style.overflowY = 'auto'; // permet le scroll à l'intérieur
+    overlay.style.padding = "50px 0"
+
+    // Empêche le scroll du body
+    document.body.style.overflow = 'hidden';
+
+    const form = document.createElement('div');
+    form.className = 'form-subfolder-creat';
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.justifyContent = 'center';
+    buttonContainer.style.alignItems = 'center';
+    buttonContainer.style.gap = '25px';
+
+    const createBtnNew = document.createElement('button');
+    createBtnNew.className = 'buttonform';
+    createBtnNew.textContent = 'Valider';
+
+    const backgroundBtnDiv = document.createElement('div');
+    backgroundBtnDiv.className = 'background-button';
+
+    backgroundBtnDiv.appendChild(createBtnNew)
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'button-close-subfolder';
+    cancelBtn.textContent = 'Annuler';
+
+    cancelBtn.addEventListener('click', () => {
+      overlay.remove()
+      document.body.style.overflow = 'auto';
+    })
+
+    // Assemble les éléments
+    // backgroundBtnDiv.appendChild(createBtn);
+    buttonContainer.appendChild(backgroundBtnDiv);
+    buttonContainer.appendChild(cancelBtn);
+
+
+    overlay.appendChild(form)
+    document.body.appendChild(overlay)
+
+    for (const packName in setupProduit) {
+      const packData = setupProduit[packName];
+
+      const pack = document.createElement('div');
+      pack.classList.add('changepackdiv');
+
+      const namePack = document.createElement('h3');
+      namePack.style.fontSize = "2rem"
+      namePack.style.width = "auto"
+      namePack.classList.add('param');
+      namePack.textContent = packName;
+
+      const prix = document.createElement('p');
+      prix.classList.add('pOverlayBack');
+      prix.style.color = "#fff"
+      prix.style.fontSize = "2rem"
+      prix.textContent = `${packData.prix}/mois`;
+
+      const ul = document.createElement('ul');
+
+      const li1 = document.createElement('li');
+      li1.classList.add('pOverlayBack')
+      li1.textContent = '* '; // Texte avant
+
+      const p1 = document.createElement('p');
+      p1.style.fontSize = "2rem"
+      p1.classList.add('param');
+      p1.textContent = packData.stockage;
+
+      li1.appendChild(p1);
+      li1.append('go de stockage');
+
+      const estim = document.createElement('span');
+      estim.textContent = ` (~${packData.estimation} photos)`;
+      li1.appendChild(estim);
+
+      const li2 = document.createElement('li');
+      li2.classList.add('pOverlayBack')
+      li2.textContent = '* '; // Texte avant
+
+      const p2 = document.createElement('p');
+      p2.style.fontSize = "2rem"
+      p2.classList.add('param');
+      p2.textContent = packData.commission;
+
+      li2.appendChild(p2);
+      li2.append(' de commission'); // Texte après
+
+      const color = document.createElement('p');
+      color.classList.add('pOverlayBack');
+      color.style.color = "#fff"
+      color.textContent = "Couleur";
+
+      const contentChoicecolor = document.createElement('div')
+      contentChoicecolor.classList.add('contentChoiceColorChangePack')
+
+      const bk1 = document.createElement('div')
+      const noir = document.createElement('div')
+      noir.style.backgroundColor = "#000"
+      noir.id = "choiceColorChangePackNoir"
+      noir.style.border = "0.5px solid #fff"
+      noir.style.borderRadius = "50%"
+      noir.style.width = "30px"
+      noir.style.height = "30px"
+      noir.style.margin = "2px"
+      bk1.appendChild(noir)
+
+      const bk2 = document.createElement('div')
+      const blanc = document.createElement('div')
+      blanc.id = "choiceColorChangePackBlanc"
+      blanc.style.backgroundColor = "#fff"
+      blanc.style.border = "0.5px solid #fff"
+      blanc.style.borderRadius = "50%"
+      blanc.style.width = "30px"
+      blanc.style.height = "30px"
+      blanc.style.margin = "2px"
+      bk2.appendChild(blanc)
+
+      const tabButton = [
+        { btn: blanc, wrapper: bk2, otherWrapper: bk1 },
+        { btn: noir, wrapper: bk1, otherWrapper: bk2 }
+      ]
+
+      tabButton.forEach(({ btn, wrapper, otherWrapper }) => {
+        btn.addEventListener('click', () => {
+          wrapper.classList.add("background")
+          otherWrapper.classList.remove("background")
+        })
+      })
+
+      contentChoicecolor.appendChild(bk1)
+      contentChoicecolor.appendChild(bk2)
+
+
+      ul.appendChild(li1);
+      ul.appendChild(li2);
+
+      pack.appendChild(namePack);
+      pack.appendChild(prix);
+      pack.appendChild(ul);
+      pack.appendChild(color)
+      pack.appendChild(contentChoicecolor)
+      form.appendChild(pack);
+
+    }
+
+
+    form.appendChild(buttonContainer)
+
+
+
+  })
+}

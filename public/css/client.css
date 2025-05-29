@@ -262,3 +262,54 @@
     transform: translateX(100%);
 }
 
+.changepackdiv{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    color: #fff;
+    font-family: var(--font-fam-one);
+    margin: 50px 0;
+    border: 2px solid #fff;
+    padding: 20px 0;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 10px;
+}
+
+.changepackdiv ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    gap: 35px;
+}
+
+.changepackdiv ul li{
+    list-style-type: none;
+    position: relative;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items:end;
+    white-space: nowrap;
+    gap: 5px;
+}
+
+.changepackdiv ul li span{
+    position: absolute;
+    color: #ffffffbb;
+    font-size: 0.8rem;
+    font-weight: 300;
+    bottom: -20px;
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+.contentChoiceColorChangePack{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+}
