@@ -1,6 +1,6 @@
 @import 'style.css';
 
-#one{
+#one {
     width: 100%;
     min-height: 100vh;
     background-color: #000000e6;
@@ -12,7 +12,7 @@
     padding: 150px 10px;
 }
 
-#one #navback{
+#one #navback {
     position: absolute;
     top: 0;
     left: 0;
@@ -26,26 +26,26 @@
     background-color: #000000;
 }
 
-#sous-nav{
+#sous-nav {
     position: absolute;
     width: 50%;
     right: 0;
     top: 100px;
     background-color: #000000;
     height: 100%;
-    display: flex ;
+    display: flex;
     flex-direction: column;
     justify-content: start;
     gap: 100px;
     align-items: center;
     padding: 50px auto 100px auto;
     transition: all 0.2s ease-out;
-    border-left: 2px solid #fff ;
+    border-left: 2px solid #fff;
     z-index: 10;
-    
+
 }
 
-#sous-nav div{
+#sous-nav div {
     width: 90%;
     display: flex;
     justify-content: center;
@@ -55,7 +55,7 @@
     padding-top: 50px;
 }
 
-#sous-nav div p{
+#sous-nav div p {
     font-family: var(--font-fam-one);
     color: var(--color-font);
     font-size: 1.3rem;
@@ -63,16 +63,18 @@
     letter-spacing: 2px;
 }
 
-.itsok{
-    color: green; /* Évite les bugs sur certains navigateurs */
+.itsok {
+    color: green;
+    /* Évite les bugs sur certains navigateurs */
     font-family: var(--font-fam-one);
     font-size: 0.9rem;
     font-weight: 400;
     letter-spacing: 2px;
 }
 
-.itserr{
-    color: red; /* Évite les bugs sur certains navigateurs */
+.itserr {
+    color: red;
+    /* Évite les bugs sur certains navigateurs */
     font-family: var(--font-fam-one);
     font-size: 0.9rem;
     font-weight: 400;
@@ -81,7 +83,7 @@
 
 
 
-.pageback{
+.pageback {
     width: 95%;
     display: flex;
     min-height: 100vh;
@@ -92,7 +94,7 @@
 }
 
 
-.cara{
+.cara {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -101,7 +103,7 @@
     gap: 50px;
 }
 
-.cara h2{
+.cara h2 {
     font-family: var(--font-fam-one);
     color: var(--color-font);
     font-size: 1.5rem;
@@ -111,7 +113,7 @@
     width: 100%;
 }
 
-.cara h2::before{
+.cara h2::before {
     position: absolute;
     content: '';
     bottom: -10px;
@@ -122,7 +124,7 @@
 
 }
 
-.cara > div{
+.cara>div {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -132,7 +134,7 @@
 }
 
 
-.input-subfolder{
+.input-subfolder {
     border: none;
     text-align: center;
     padding: 20px;
@@ -144,14 +146,14 @@
     outline: none;
 }
 
-.code-container{
+.code-container {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
 }
 
-.code-input{
+.code-input {
     width: 20px;
     height: 30px;
     border: none;
@@ -163,7 +165,7 @@
 
 }
 
-.form-subfolder-creat{
+.form-subfolder-creat {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -173,7 +175,7 @@
     max-width: 500px;
 }
 
-.h2-subfolder{
+.h2-subfolder {
     color: #fff;
     font-family: var(--font-fam-one);
     font-size: 1.3rem;
@@ -181,14 +183,14 @@
     font-weight: 500;
 }
 
-.editUser{
+.editUser {
     position: absolute;
     right: -30px;
     top: -10px;
     transform: translateX(50%);
 }
 
-.edit{
+.edit {
     border-radius: 50%;
     height: 30px;
     width: 30px;
@@ -212,7 +214,7 @@
 }
 
 
-.param::after{
+.param::after {
     border-radius: 50px;
     content: '';
     background: linear-gradient(var(--deg-), rgb(255 0 67) 0%, rgb(0 7 185) 88%);
@@ -220,7 +222,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2; 
+    z-index: 2;
     bottom: 0;
     left: 0;
     width: 100%;
@@ -228,12 +230,14 @@
 
 }
 
-.param::before{
+.param::before {
     content: '';
     position: absolute;
     background: linear-gradient(var(--deg-), rgb(255 0 67) 0%, rgb(0 7 185) 88%);
-    filter: blur(10px); /* Intensifie l'effet lumineux */
-    border-radius: 60px; /* Doit être un peu plus grand pour bien entourer l'élément */
+    filter: blur(10px);
+    /* Intensifie l'effet lumineux */
+    border-radius: 60px;
+    /* Doit être un peu plus grand pour bien entourer l'élément */
     bottom: 0;
     left: 0;
     width: 100%;
@@ -241,16 +245,18 @@
 }
 
 
-.value{
-    color: #fff; /* Évite les bugs sur certains navigateurs */
+.value {
+    color: #fff;
+    /* Évite les bugs sur certains navigateurs */
     font-family: var(--font-fam-one);
     font-size: 1rem;
     font-weight: 400;
     letter-spacing: 2px;
 }
 
-#http{
-    color: var(--green); /* Évite les bugs sur certains navigateurs */
+#http {
+    color: var(--green);
+    /* Évite les bugs sur certains navigateurs */
     font-family: var(--font-fam-one);
     font-size: 0.7rem;
     font-weight: 400;
@@ -258,11 +264,11 @@
 }
 
 
-.translate{
+.translate {
     transform: translateX(100%);
 }
 
-.changepackdiv{
+.changepackdiv {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -271,11 +277,17 @@
     color: #fff;
     font-family: var(--font-fam-one);
     margin: 50px 0;
-    border: 2px solid #fff;
+
     padding: 20px 0;
     width: 90%;
     max-width: 400px;
     border-radius: 10px;
+    background: rgb(255 255 255 / 10%);
+    box-shadow: 0 8px 32px 0 rgb(144 0 255 / 26%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .changepackdiv ul {
@@ -286,18 +298,18 @@
     gap: 35px;
 }
 
-.changepackdiv ul li{
+.changepackdiv ul li {
     list-style-type: none;
     position: relative;
     color: #fff;
     display: flex;
     justify-content: center;
-    align-items:end;
+    align-items: end;
     white-space: nowrap;
-    gap: 5px;
+
 }
 
-.changepackdiv ul li span{
+.changepackdiv ul li span {
     position: absolute;
     color: #ffffffbb;
     font-size: 0.8rem;
@@ -307,7 +319,7 @@
     left: 50%;
 }
 
-.contentChoiceColorChangePack{
+.contentChoiceColorChangePack {
     display: flex;
     justify-content: center;
     align-items: center;
