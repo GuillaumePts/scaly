@@ -460,7 +460,7 @@ document.querySelector('#admin').addEventListener('click',()=>{
 
 function load(){
     const button=document.querySelector('.bubbly-button')
-    button.style.overflow='hidden'
+    
     const t = document.querySelector('#mooveAnim')
     
     t.style.zIndex="1"

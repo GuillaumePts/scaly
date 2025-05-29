@@ -162,21 +162,21 @@ updateVh();
 
 
 let gradientmoove = document.querySelector('.background');
-let countdeg = 3;
-
-// setInterval(() => {
-//     // Animez l'arrière-plan de l'élément principal
-//     gradientmoove.style.background = `linear-gradient(${countdeg}deg, rgb(255 0 67) 0%, rgb(0 7 185) 88%)`;
-
-//     document.documentElement.style.setProperty('--deg-', `${countdeg}deg`);
-
-//     // Incrémentez l'angle
-//     countdeg = (countdeg + 1) % 360;
-// }, 1000);
 
 
-document.documentElement.style.setProperty('--deg-', `${34}deg`);
+let countdeg = 0;
+function animateGradient() {
+  // Met à jour le CSS custom property
+  document.documentElement.style.setProperty('--deg-', `${countdeg}deg`);
+  
+  // Optionnel : directement mettre à jour un élément
+  // gradientmoove.style.background = `linear-gradient(${countdeg}deg, rgb(255, 0, 67), rgb(0, 7, 185))`;
 
+  countdeg = (countdeg + 0.2) % 360; // Valeur fine pour un mouvement lent et fluide
+  requestAnimationFrame(animateGradient);
+}
+
+animateGradient(); // Lance l'animation
 
 
 async function loadImages() {

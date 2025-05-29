@@ -1494,9 +1494,11 @@ module.exports = function createClientRouter(baseDir) {
 
     const isMainUpload = !sub;
 
-    const resizeOptions = isMainUpload
-      ? { width: 1920, height: 1920, fit: 'inside', withoutEnlargement: true } // 6K
-      : { width: 1500, height: 1500, fit: 'inside', withoutEnlargement: true }; // standard
+
+        const resizeOptions = isMainUpload
+    ? { width: 2500, height: 2500, fit: 'inside', withoutEnlargement: true } 
+    : { width: 2000, height: 2000, fit: 'inside', withoutEnlargement: true }; 
+
 
     const quality = isMainUpload ? 90 : 80;
 

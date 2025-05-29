@@ -1278,21 +1278,21 @@ function changePack() {
         prix: "5€",
         stockage: 1,
         estimation: 2000,
-        commission: "6%",
+        commission: 6,
         name: "Starter"
       },
       Pro: {
         prix: "10€",
         stockage: 5,
         estimation: 10000,
-        commission: "3%",
+        commission: 3,
         name: "Pro"
       },
       Unlimited: {
         prix: "20€",
         stockage: 30,
         estimation: 60000,
-        commission: "0%",
+        commission: 0,
         name: "Unlimited"
       }
     };
@@ -1358,7 +1358,7 @@ function changePack() {
 
       const li1 = document.createElement('li');
       li1.classList.add('pOverlayBack');
-      li1.textContent = '*  ';
+
 
       const p1 = document.createElement('p');
       p1.style.fontSize = "2rem";
@@ -1374,7 +1374,7 @@ function changePack() {
 
       const li2 = document.createElement('li');
       li2.classList.add('pOverlayBack');
-      li2.textContent = '*  ';
+      
 
       const p2 = document.createElement('p');
       p2.style.fontSize = "2rem";
@@ -1382,7 +1382,7 @@ function changePack() {
       p2.textContent = packData.commission;
 
       li2.appendChild(p2);
-      li2.append('  de commission');
+      li2.append('% de commission');
 
       const color = document.createElement('p');
       color.classList.add('pOverlayBack');
