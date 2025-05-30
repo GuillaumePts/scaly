@@ -14,6 +14,7 @@ const UsersSchema = new mongoose.Schema({
 
   // Abonnement
   subscriptionStatus: { type: String, default: "Inactif" }, // "actif", "annulé", "suppression demandée"
+  // subscriptionStatus: { type: String, enum: ['inactive', 'active', 'canceled', 'pending_deletion'], default: 'inactive' }
   subscriptionProduct: { type: String, required: true },
   subscriptionColor: { type: String, required: true },
   subscriptionStock: { type: String, required: true },
@@ -31,6 +32,11 @@ const UsersSchema = new mongoose.Schema({
   stripeCustomerId: { type: String, required: true },
   stripeSubscriptionId: { type: String },
   stripePaymentMethodId: { type: String },
+
+  // changement pack
+  currentPlan: { type: String, enum: ['starter', 'pro', 'unlimited'], required: true },
+  pendingPlan: { type: String, enum: ['starter', 'pro', 'unlimited'], default: null },
+  changeAt: { type: Date, default: null },
 
     // Stripe Client to client
   stripeAccountId: String,      // l'ID du compte Express Stripe

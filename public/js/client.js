@@ -1303,7 +1303,7 @@ function changePack() {
     overlay.style.left = '0';
     overlay.style.width = '100%';
     overlay.style.height = '100vh';
-    overlay.style.zIndex = '200000000000';
+    overlay.style.zIndex = '2000000000';
     overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
     overlay.style.display = 'flex';
     overlay.style.flexDirection = 'column';
@@ -1374,7 +1374,7 @@ function changePack() {
 
       const li2 = document.createElement('li');
       li2.classList.add('pOverlayBack');
-      
+
 
       const p2 = document.createElement('p');
       p2.style.fontSize = "2rem";
@@ -1392,12 +1392,13 @@ function changePack() {
       const hiddenColorInput = document.createElement('input');
       hiddenColorInput.type = 'hidden';
       hiddenColorInput.name = 'selectedColor';
-      hiddenColorInput.value = '';
+      hiddenColorInput.value = 'Noir';
 
       const contentChoicecolor = document.createElement('div');
       contentChoicecolor.classList.add('contentChoiceColorChangePack');
 
       const bk1 = document.createElement('div');
+      bk1.classList.add('background')
       const noir = document.createElement('div');
       noir.style.backgroundColor = "#000";
       noir.id = "choiceColorChangePackNoir";
@@ -1429,12 +1430,11 @@ function changePack() {
           wrapper.classList.add("background");
           otherWrapper.classList.remove("background");
           color.textContent = coulor;
-          hiddenColorInput.value = coulor.toLowerCase();
+          hiddenColorInput.value = coulor;
         });
       });
 
-      contentChoicecolor.appendChild(bk1);
-      contentChoicecolor.appendChild(bk2);
+
 
       ul.appendChild(li1);
       ul.appendChild(li2);
@@ -1451,7 +1451,7 @@ function changePack() {
             wrapper.classList.add("background");
             otherWrapper.classList.remove("background");
             color.textContent = coulor;
-            hiddenColorInput.value = coulor.toLowerCase();
+            hiddenColorInput.value = coulor;
           }
         });
 
@@ -1467,6 +1467,9 @@ function changePack() {
         pack.appendChild(currentPackMsg);
 
       } else {
+
+        contentChoicecolor.appendChild(bk1);
+        contentChoicecolor.appendChild(bk2);
         const createBtnNew = document.createElement('button');
         createBtnNew.className = 'buttonform';
         createBtnNew.textContent = 'Choisir';
@@ -1481,12 +1484,110 @@ function changePack() {
           const selectedColor = hiddenColorInput.value;
           const selectedPack = packData.name;
 
-          // Tu peux maintenant utiliser ces valeurs :
-          console.log("Pack choisi :", selectedPack);
-          console.log("Couleur choisie :", selectedColor);
+          const planPriority = {
+            Starter: 1,
+            Pro: 2,
+            Unlimited: 3
+          };
 
-          // Par exemple, tu peux envoyer ces infos à ton serveur avec fetch ou les insérer dans un formulaire hidden
-          // ou mettre à jour le front selon ton besoin
+          const currentPlan = window.clientData.subscriptionStock; // exemple: "starter"
+          const targetPlan = packData.name;                 // exemple: "pro"
+
+          const isUpgrade = planPriority[targetPlan] > planPriority[currentPlan];
+          const isDowngrade = planPriority[targetPlan] < planPriority[currentPlan];
+
+
+
+          const sousoverlay = document.createElement('div')
+          sousoverlay.style.position = 'fixed';
+          sousoverlay.style.top = '0';
+          sousoverlay.style.left = '0';
+          sousoverlay.style.width = '100%';
+          sousoverlay.style.height = '100vh';
+          sousoverlay.style.zIndex = '2000000001';
+          sousoverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+          sousoverlay.style.display = 'flex';
+          sousoverlay.style.flexDirection = 'column';
+          sousoverlay.style.justifyContent = 'center';
+          sousoverlay.style.alignItems = 'center';
+          sousoverlay.style.overflowY = 'auto';
+          sousoverlay.style.padding = "50px 0";
+
+          const sousform = document.createElement('div');
+          sousform.className = 'form-subfolder-creat';
+
+          const sousbuttonContainer = document.createElement('div');
+          sousbuttonContainer.style.display = 'flex';
+          sousbuttonContainer.style.justifyContent = 'center';
+          sousbuttonContainer.style.alignItems = 'center';
+          sousbuttonContainer.style.gap = '25px';
+
+          const souscancelBtn = document.createElement('button');
+          souscancelBtn.className = 'button-close-subfolder';
+          souscancelBtn.textContent = 'Annuler';
+
+          souscancelBtn.addEventListener('click', () => {
+            sousoverlay.remove();
+
+          });
+
+          const souscreateBtnNew = document.createElement('button');
+          souscreateBtnNew.className = 'buttonform';
+          souscreateBtnNew.textContent = 'Valider';
+
+          
+
+
+          // Ligne 1 : intro
+          const line1 = document.createElement('p');
+          line1.classList.add('pOverlayBack');
+          line1.style.color = "#fff";
+          line1.textContent = `Vous allez passer de ${window.clientData.subscriptionStock} (couleur ${window.clientData.subscriptionColor}) à ${selectedPack} (couleur ${selectedColor}).`;
+          sousform.appendChild(line1);
+
+          // Ligne 2+ : détails selon type
+          if (isUpgrade) {
+            const line2 = document.createElement('p');
+
+            line2.classList.add('pOverlayBack');
+            line2.style.color = "#fff";
+            line2.textContent = "Le changement sera immédiat et le prorata sera facturé aujourd’hui.";
+            const line3 = document.createElement('p');
+            line3.style.color = "#fff";
+            line3.textContent = "Les nouvelles fonctionnalités seront débloquées immédiatement.";
+            sousform.appendChild(line2);
+            sousform.appendChild(line3);
+          } else if (isDowngrade) {
+            const line2 = document.createElement('p');
+            line2.classList.add('pOverlayBack');
+            line2.style.color = "#fff";
+            line2.textContent = "Le changement prendra effet à la fin de votre période actuelle.";
+            const line3 = document.createElement('p');
+            line3.classList.add('pOverlayBack');
+            line3.style.color = "#fff";
+            line3.textContent = "Vous conservez les options de votre pack actuel jusqu’à cette date.";
+            sousform.appendChild(line2);
+            sousform.appendChild(line3);
+          } else {
+            const line2 = document.createElement('p');
+            line2.classList.add('pOverlayBack');
+            line2.style.color = "#fff";
+            line2.textContent = "Vous êtes déjà sur ce plan. Seule la couleur sera modifiée.";
+            sousform.appendChild(line2);
+          }
+
+
+          const sousbackgroundBtnDiv = document.createElement('div');
+          sousbackgroundBtnDiv.className = 'background-button';
+
+          sousbackgroundBtnDiv.appendChild(souscreateBtnNew)
+          sousbuttonContainer.appendChild(souscancelBtn)
+          sousbuttonContainer.appendChild(sousbackgroundBtnDiv)
+          sousform.appendChild(sousbuttonContainer)
+
+          sousoverlay.appendChild(sousform)
+          document.body.appendChild(sousoverlay)
+
         });
 
         pack.appendChild(color);

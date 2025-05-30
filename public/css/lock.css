@@ -16,33 +16,6 @@
 
 
 
-.background{
-    border-radius: 50px;
-    width: auto;
-    background: linear-gradient(var(--deg-), rgb(255 0 67) 0%, rgb(0 7 185) 88%);
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2; 
-    transition: background 20s linear;
-}
-
-
-
-.background::before{
-    content: '';
-    position: absolute;
-    top: 6px;
-    left: 6px;
-    right: 6px;
-    bottom: 6px;
-    background: linear-gradient(var(--deg-), rgb(255 0 67) 0%, rgb(0 7 185) 88%);
-    transition: background 20s linear; /* Transition fluide */
-    filter: blur(10px); /* Intensifie l'effet lumineux */
-    z-index: -1; /* Place derrière la div principale */
-    border-radius: 60px; /* Doit être un peu plus grand pour bien entourer l'élément */
-}
 
 .backgroundB{
     width: auto;
