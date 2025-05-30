@@ -1,17 +1,20 @@
 {
-  "starter": {
-    "price": 7,
-    "limit": 3221225472,
-    "approxPhotos": 4300
+  "Starter": {
+    "price": 5,
+    "limit": 1073741824,
+    "approxPhotos": 4300,
+    "commission" : 6
   },
-  "pro": {
-    "price": 14,
-    "limit": 16106127360,
-    "approxPhotos": 21500
+  "Pro": {
+    "price": 10,
+    "limit": 5368709120,
+    "approxPhotos": 21500,
+    "commission" : 3
   },
-  "unlimited": {
-    "price": 24,
-    "limit": 53687091200,
-    "approxPhotos": 71500
+  "Unlimited": {
+    "price": 20,
+    "limit": 32212254720,
+    "approxPhotos": 71500,
+    "commission" : 0
   }
 }

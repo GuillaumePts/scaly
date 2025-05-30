@@ -1535,7 +1535,67 @@ function changePack() {
           souscreateBtnNew.className = 'buttonform';
           souscreateBtnNew.textContent = 'Valider';
 
-          
+          souscreateBtnNew.addEventListener('click', async () => {
+            load('Changement en cours... ')
+            try {
+              const response = await fetch('/api/changePack', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  newPack: packData.name, // par ex: "pro"
+                  newColor: hiddenColorInput.value
+                })
+              });
+
+              const result = await response.json();
+
+              if (response.ok) {
+
+                finload(result.message, 3000)
+                overlay.remove()
+                sousoverlay.remove()
+
+                if(result.url){
+                  window.addEventListener("message", (event) => {
+                  if (event.data.stripeSuccess && event.data.type === "upgrade") {
+                    console.log("🎉 Upgrade validé !");
+
+                    fetch("/api/stripe/upgrade-confirmation", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json"
+                      },
+                      credentials: "include",
+                      body: JSON.stringify({
+                        newPack: event.data.pack,
+                        newColor: event.data.color
+                      })
+                    })
+                      .then(res => res.json())
+                      .then(data => {
+                        if (data.success) {
+                          console.log("✅ Upgrade activé côté serveur");
+                          goback();
+                        }
+                      });
+                  }
+                });
+
+                }
+
+                
+              } else {
+                finload(result.message, 3000)
+              }
+            } catch (error) {
+              console.error('Erreur réseau :', error);
+              finload("Une erreur est survenue. Veuillez réessayer.", 2500);
+            }
+          });
+
 
 
           // Ligne 1 : intro

@@ -5,6 +5,7 @@ const fs = require("fs");
 const fse = require("fs-extra");
 const crypto = require("crypto");
 require("dotenv").config();
+const verifyToken = require('../utils/verifyToken')
 
 function generateSecretKey(length = 64) {
   return crypto.randomBytes(length).toString("hex");
@@ -60,7 +61,7 @@ function generateConfigFile({ prenom, nom, email, siteId, pack }, targetDir) {
 
 const User = require("../models/Users");
 
-router.post("/build-site", async (req, res) => {
+router.post("/build-site", verifyToken, async (req, res) => {
   const { nom, prenom, email, siteId, color, pack } = req.body;
 
   if (!nom || !prenom || !email || !siteId || !color || !pack) {

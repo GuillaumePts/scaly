@@ -191,7 +191,7 @@ const changePassword = require("./routes/change-password.js")
 const verificationRoutes = require("./routes/send-verification-code.js");
 const stripeClient = require("./routes/stripeClient.js")
 const clientWebhook = require('./routes/clientWebhook');
-
+const changePack = require('./routes/changePack.js')
 
 
 // app.use(cors());
@@ -209,6 +209,7 @@ app.use("/api", changePassword)
 app.use("/api", verificationRoutes);
 app.use("/api", stripeClient);
 app.use("/api", clientWebhook);
+app.use("/api", changePack)
 
 
 
