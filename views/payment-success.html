@@ -14,17 +14,17 @@
 
 
         // le fetch pour version final 
-        fetch(`/verif-ticket?ticket=${ticketId}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.valid) {
-                    // 🔓 Afficher les photos
-                    window.parent.postMessage({ stripeSuccess: true }, '*');
-                } else {
-                    // 🔒 Bloqué
-                    window.parent.postMessage({ stripeSuccess: false }, '*');
-                }
-            });
+        // fetch(`/verif-ticket?ticket=${ticketId}`)
+        //     .then(res => res.json())
+        //     .then(data => {
+        //         if (data.valid) {
+        //             // 🔓 Afficher les photos
+        //             window.parent.postMessage({ stripeSuccess: true }, '*');
+        //         } else {
+        //             // 🔒 Bloqué
+        //             window.parent.postMessage({ stripeSuccess: false }, '*');
+        //         }
+        //     });
 
       </script>
 </body>

@@ -1303,7 +1303,7 @@ function changePack() {
     overlay.style.left = '0';
     overlay.style.width = '100%';
     overlay.style.height = '100vh';
-    overlay.style.zIndex = '2000000000';
+    overlay.style.zIndex = '2000';
     overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
     overlay.style.display = 'flex';
     overlay.style.flexDirection = 'column';
@@ -1504,7 +1504,7 @@ function changePack() {
           sousoverlay.style.left = '0';
           sousoverlay.style.width = '100%';
           sousoverlay.style.height = '100vh';
-          sousoverlay.style.zIndex = '2000000001';
+          sousoverlay.style.zIndex = '2001';
           sousoverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
           sousoverlay.style.display = 'flex';
           sousoverlay.style.flexDirection = 'column';
@@ -1536,6 +1536,8 @@ function changePack() {
           souscreateBtnNew.textContent = 'Valider';
 
           souscreateBtnNew.addEventListener('click', async () => {
+            overlay.style.zIndex = "88"
+            sousoverlay.style.zIndex = "89"
             load('Changement en cours... ')
             try {
               const response = await fetch('/api/changePack', {
@@ -1554,45 +1556,70 @@ function changePack() {
 
               if (response.ok) {
 
-                finload(result.message, 3000)
-                overlay.remove()
-                sousoverlay.remove()
 
-                if(result.url){
+
+                if (result.url) {
+                  localStorage.setItem("pendingPack", packData.name);
+                  localStorage.setItem("pendingColor", hiddenColorInput.value);
+
+                  window.open(result.url, "_blank");
                   window.addEventListener("message", (event) => {
-                  if (event.data.stripeSuccess && event.data.type === "upgrade") {
-                    console.log("🎉 Upgrade validé !");
+                    if (event.data.stripeSuccess) {
+                      console.log("🎉 Upgrade validé !");
 
-                    fetch("/api/stripe/upgrade-confirmation", {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json"
-                      },
-                      credentials: "include",
-                      body: JSON.stringify({
-                        newPack: event.data.pack,
-                        newColor: event.data.color
+                      const pendingPack = localStorage.getItem("pendingPack");
+                      const pendingColor = localStorage.getItem("pendingColor");
+
+                      if (!pendingPack || !pendingColor) {
+                        console.warn("❌ Données manquantes dans localStorage");
+                        return;
+                      }
+
+                      fetch("/api/stripe/upgrade-confirmation", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json"
+                        },
+                        credentials: "include",
+                        body: JSON.stringify({
+                          newPack: pendingPack,
+                          newColor: pendingColor
+                        })
                       })
-                    })
-                      .then(res => res.json())
-                      .then(data => {
-                        if (data.success) {
-                          console.log("✅ Upgrade activé côté serveur");
-                          goback();
-                        }
-                      });
-                  }
-                });
+                        .then(res => res.json())
+                        .then(data => {
+                          if (data.success) {
+                            console.log("✅ Upgrade activé côté serveur");
+                            localStorage.removeItem("pendingPack");
+                            localStorage.removeItem("pendingColor");
+                            // goback();
+                          }
+                        });
+                    }
+                  });
 
+
+                } else {
+                  finload(result.message, 3000)
+                  overlay.remove()
+                  sousoverlay.remove()
                 }
 
-                
+
               } else {
                 finload(result.message, 3000)
+                setTimeout(() => {
+                  overlay.style.zIndex = "2000"
+                  sousoverlay.style.zIndex = "2001"
+                }, 3000);
               }
             } catch (error) {
               console.error('Erreur réseau :', error);
               finload("Une erreur est survenue. Veuillez réessayer.", 2500);
+              setTimeout(() => {
+                overlay.style.zIndex = "2000"
+                sousoverlay.style.zIndex = "2001"
+              }, 2500);
             }
           });
 

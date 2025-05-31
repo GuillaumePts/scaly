@@ -33,12 +33,9 @@ const UsersSchema = new mongoose.Schema({
   stripeSubscriptionId: { type: String },
   stripePaymentMethodId: { type: String },
 
-  // changement pack
-  currentPlan: { type: String, enum: ['starter', 'pro', 'unlimited'], required: true },
-  pendingPlan: { type: String, enum: ['starter', 'pro', 'unlimited'], default: null },
-  changeAt: { type: Date, default: null },
 
-    // Stripe Client to client
+
+  // Stripe Client to client
   stripeAccountId: String,      // l'ID du compte Express Stripe
   stripeActivated: Boolean,     // true si activé
   stripeActivationDate: Date,   // (optionnel)

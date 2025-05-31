@@ -21,7 +21,7 @@ module.exports = function createClientRouter(baseDir) {
   router.use(compression());
   router.use(express.static(baseDir));
 
-  const User = require('../models/User');
+  const User = require('../models/Users');
 
   const verifpermisson = require('../utils/checkPaymentPermission')
 

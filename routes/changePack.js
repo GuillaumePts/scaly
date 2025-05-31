@@ -3,7 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const verifyToken = require('../utils/verifyToken');
-const User = require('../models/User');
+const Users = require('../models/Users');
 
 // Charger les packs
 const packsPath = path.join(__dirname, '../pics.json');
@@ -34,15 +34,17 @@ router.post('/changePack', verifyToken, async (req, res) => {
     const { newPack, newColor } = req.body;
 
     if (!newPack || !newColor || !packs[newPack]) {
-        return res.status(400).json({ error: 'Données invalides.' });
+        return res.status(400).json({ message: 'Données invalides.' });
     }
 
     try {
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
+        const user = await Users.findById(userId);
+        if (!user) return res.status(404).json({ message: 'Utilisateur introuvable.' });
 
         const currentPack = user.subscriptionStock;
         const targetPack = newPack;
+
+
 
         if (!packs[currentPack]) {
             return res.status(400).json({ message: 'Pack actuel inconnu.' });
@@ -64,7 +66,7 @@ router.post('/changePack', verifyToken, async (req, res) => {
             const portfolioPath = path.join(__dirname, '..', 'clients', siteId, 'public', 'portfolio');
 
             if (!fs.existsSync(portfolioPath)) {
-                return res.status(400).json({ error: "Le dossier portfolio n'existe pas." });
+                return res.status(400).json({ message: "Le dossier portfolio n'existe pas." });
             }
 
             let portfolioSizeInBytes = 0;
@@ -73,17 +75,38 @@ router.post('/changePack', verifyToken, async (req, res) => {
                 portfolioSizeInBytes = await getFolderSize(portfolioPath);
             } catch (err) {
                 console.error("Erreur lors du calcul de la taille du portfolio :", err);
-                return res.status(500).json({ error: "Impossible de vérifier le quota de stockage." });
+                return res.status(500).json({ message: "Impossible de vérifier le quota de stockage." });
             }
 
-            const targetLimit = packs[targetPack].limit;
+            const pics = require('../pics.json');
+            const targetLimit = pics[targetPack].limit;
 
             if (portfolioSizeInBytes > targetLimit) {
-                return res.status(403).json({
-                    error: "Impossible de changer vers ce pack : vous dépassez la limite de stockage autorisée."
+                return res.status(400).json({
+                    message: `Votre dossier "portfolio" dépasse la limite autorisée pour le pack ${targetPack}. Merci de réduire votre espace utilisé avant de changer de pack.`,
+                    currentSize: portfolioSizeInBytes,
+                    maxAllowed: targetLimit
                 });
             }
+
+            // ✅ Changement immédiat
+            user.subscriptionStock = targetPack;
+            user.subscriptionColor = newColor;
+            user.price = pics[targetPack].price;
+            
+
+            try {
+                await user.save();
+                await updateClientConfig(user.siteId, targetPack, packs);
+
+                return res.status(200).json({ message: `Pack changé pour ${targetPack}.Profitez maintenant de votre nouvel abonnement ! ` });
+            } catch (err) {
+                console.error("Erreur lors de l'enregistrement du changement :", err);
+                return res.status(500).json({ message: "Erreur serveur lors du changement de pack." });
+            }
         }
+
+
 
         // Même pack → mise à jour couleur uniquement
         if (samePack) {
@@ -112,8 +135,9 @@ router.post('/changePack', verifyToken, async (req, res) => {
                     quantity: 1,
                 }],
                 mode: 'payment',
-                success_url: `${process.env.FRONTEND_URL}/successUpgrade?session_id={CHECKOUT_SESSION_ID}`,
-                cancel_url: `${process.env.FRONTEND_URL}/cancelUpgrade`,
+                success_url: `http://192.168.1.69:9999/api/success`,
+                cancel_url: `http://192.168.1.69:9999/api/cancel`,
+                // client_reference_id: user._id.toString(),
                 metadata: {
                     userId: user._id.toString(),
                     fromPack: currentPack,
@@ -125,22 +149,6 @@ router.post('/changePack', verifyToken, async (req, res) => {
             return res.json({ url: session.url });
         }
 
-        // Downgrade → planifié pour la fin du mois
-        if (isDowngrade) {
-            const endOfSubscription = new Date(user.subscriptionDate);
-            endOfSubscription.setMonth(endOfSubscription.getMonth() + 1);
-
-            user.deletionRequested = true;
-            user.deletionDate = endOfSubscription;
-            user.futurePack = targetPack;
-            user.futureColor = newColor;
-            await user.save();
-
-            return res.json({
-                message: `Le changement vers ${targetPack} est programmé pour la fin de votre période actuelle.`,
-                effectiveDate: endOfSubscription
-            });
-        }
 
     } catch (error) {
         console.error(error);
@@ -150,17 +158,21 @@ router.post('/changePack', verifyToken, async (req, res) => {
 
 router.post("/stripe/upgrade-confirmation", verifyToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const user = await Users.findById(req.user.id);
         if (!user) return res.status(404).json({ success: false, message: "Utilisateur non trouvé." });
 
         const { newPack, newColor } = req.body;
         if (!newPack || !newColor) {
             return res.status(400).json({ success: false, message: "Données manquantes." });
         }
+        const pics = require('../pics.json');
 
         user.subscriptionStock = newPack;
         user.subscriptionColor = newColor;
+        user.price = pics[newPack].price;
         await user.save();
+        await updateClientConfig(user.siteId, newPack, packs);
+
 
         return res.json({ success: true, message: "Upgrade effectué avec succès." });
     } catch (err) {
@@ -168,6 +180,25 @@ router.post("/stripe/upgrade-confirmation", verifyToken, async (req, res) => {
         return res.status(500).json({ success: false, message: "Erreur serveur." });
     }
 });
+
+
+const updateClientConfig = async (siteId, newPack, packs) => {
+  const configPath = path.join(__dirname, '..', 'clients', siteId, 'config.json');
+  
+  if (!fs.existsSync(configPath)) {
+    throw new Error("Le fichier config.json n'existe pas.");
+  }
+
+  const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+
+  config.PACK = newPack;
+  config.LIMIT_STARTER = packs[newPack].limit;
+  config.ALLOW_PAYMENT = packs[newPack].allowPayment;
+  config.COMMISSION = packs[newPack].commission;
+
+  await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2), 'utf-8');
+};
+
 
 
 module.exports = router;
