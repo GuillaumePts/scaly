@@ -1564,14 +1564,17 @@ function changePack() {
 
                   window.open(result.url, "_blank");
                   window.addEventListener("message", (event) => {
+
                     if (event.data.stripeSuccess) {
-                      console.log("🎉 Upgrade validé !");
+                      document.querySelector('.msgoverlay').textContent = "🎉 Paiement validé ! Votre pack est en cours de mise à jour. Cela peut prendre quelques instants...";
 
                       const pendingPack = localStorage.getItem("pendingPack");
                       const pendingColor = localStorage.getItem("pendingColor");
 
                       if (!pendingPack || !pendingColor) {
-                        console.warn("❌ Données manquantes dans localStorage");
+                        console.log("❌ Données manquantes dans localStorage");
+                        finload("Une erreur est survenue... Veuillez réessayer ou contacter le support.", 3000);
+
                         return;
                       }
 
@@ -1589,7 +1592,9 @@ function changePack() {
                         .then(res => res.json())
                         .then(data => {
                           if (data.success) {
-                            console.log("✅ Upgrade activé côté serveur");
+                            finload("Tout est prêt ! Vous pouvez désormais profiter de votre nouveau pack.", 2500);
+                            overlay.remove()
+                            sousoverlay.remove()
                             localStorage.removeItem("pendingPack");
                             localStorage.removeItem("pendingColor");
                             // goback();
@@ -1600,7 +1605,7 @@ function changePack() {
 
 
                 } else {
-                  finload(result.message, 3000)
+                  finload("Tout est prêt ! Vous pouvez désormais profiter de votre nouveau pack.", 2500);
                   overlay.remove()
                   sousoverlay.remove()
                 }
