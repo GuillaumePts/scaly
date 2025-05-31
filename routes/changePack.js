@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const verifyToken = require('../utils/verifyToken');
 const Users = require('../models/Users');
+const updateClientTheme = require('../utils/updateClientTheme');
+
 
 // Charger les packs
 const packsPath = path.join(__dirname, '../pics.json');
@@ -98,6 +100,7 @@ router.post('/changePack', verifyToken, async (req, res) => {
             try {
                 await user.save();
                 await updateClientConfig(user.siteId, targetPack, packs);
+                await updateClientTheme(user.siteId, newColor);
 
                 return res.status(200).json({ message: `Pack changé pour ${targetPack}.Profitez maintenant de votre nouvel abonnement ! ` });
             } catch (err) {
@@ -172,7 +175,7 @@ router.post("/stripe/upgrade-confirmation", verifyToken, async (req, res) => {
         user.price = pics[newPack].price;
         await user.save();
         await updateClientConfig(user.siteId, newPack, packs);
-
+        await updateClientTheme(user.siteId, newColor);
 
         return res.json({ success: true, message: "Upgrade effectué avec succès." });
     } catch (err) {
