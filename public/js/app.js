@@ -67,7 +67,7 @@ updateVh();
 loadImages()
 
 let gradientmoove = document.querySelector('.background');
-let countdeg = 0;
+let countdeg = 1;
 function animateGradient() {
   // Met à jour le CSS custom property
   document.documentElement.style.setProperty('--deg-', `${countdeg}deg`);
@@ -79,7 +79,8 @@ function animateGradient() {
   requestAnimationFrame(animateGradient);
 }
 
-animateGradient(); // Lance l'animation
+// animateGradient(); // Lance l'animation
+document.documentElement.style.setProperty('--deg-', `${countdeg}deg`);
 
 
 

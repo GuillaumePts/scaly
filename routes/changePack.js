@@ -95,12 +95,17 @@ router.post('/changePack', verifyToken, async (req, res) => {
             user.subscriptionStock = targetPack;
             user.subscriptionColor = newColor;
             user.price = pics[targetPack].price;
-            
+
 
             try {
                 await user.save();
-                await updateClientConfig(user.siteId, targetPack, packs);
-                await updateClientTheme(user.siteId, newColor);
+                const clientPath = path.join(__dirname, '..', 'clients', user.siteId);
+                const isPublished = fs.existsSync(clientPath);
+
+                if (isPublished) {
+                    await updateClientConfig(user.siteId, targetPack, packs);
+                    await updateClientTheme(user.siteId, newColor);
+                }
 
                 return res.status(200).json({ message: `Pack changé pour ${targetPack}.Profitez maintenant de votre nouvel abonnement ! ` });
             } catch (err) {
@@ -170,13 +175,24 @@ router.post("/stripe/upgrade-confirmation", verifyToken, async (req, res) => {
         }
         const pics = require('../pics.json');
 
+        const now = new Date();
+        const nextMonth = new Date(now);
+        nextMonth.setMonth(now.getMonth() + 1);
+
         user.subscriptionStock = newPack;
         user.subscriptionColor = newColor;
+        user.billingDate = now;
+        user.nextBillingDate = nextMonth;
         user.price = pics[newPack].price;
         await user.save();
-        await updateClientConfig(user.siteId, newPack, packs);
-        await updateClientTheme(user.siteId, newColor);
 
+        const clientPath = path.join(__dirname, '..', 'clients', user.siteId);
+        const isPublished = fs.existsSync(clientPath);
+
+        if (isPublished) {
+            await updateClientConfig(user.siteId, newPack, packs);
+            await updateClientTheme(user.siteId, newColor);
+        }
         return res.json({ success: true, message: "Upgrade effectué avec succès." });
     } catch (err) {
         console.error("Erreur /stripe/upgrade-confirmation :", err);
@@ -186,20 +202,20 @@ router.post("/stripe/upgrade-confirmation", verifyToken, async (req, res) => {
 
 
 const updateClientConfig = async (siteId, newPack, packs) => {
-  const configPath = path.join(__dirname, '..', 'clients', siteId, 'config.json');
-  
-  if (!fs.existsSync(configPath)) {
-    throw new Error("Le fichier config.json n'existe pas.");
-  }
+    const configPath = path.join(__dirname, '..', 'clients', siteId, 'config.json');
 
-  const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    if (!fs.existsSync(configPath)) {
+        throw new Error("Le fichier config.json n'existe pas.");
+    }
 
-  config.PACK = newPack;
-  config.LIMIT_STARTER = packs[newPack].limit;
-  config.ALLOW_PAYMENT = packs[newPack].allowPayment;
-  config.COMMISSION = packs[newPack].commission;
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
 
-  await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2), 'utf-8');
+    config.PACK = newPack;
+    config.LIMIT_STARTER = packs[newPack].limit;
+    config.ALLOW_PAYMENT = packs[newPack].allowPayment;
+    config.COMMISSION = packs[newPack].commission;
+
+    await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2), 'utf-8');
 };
 
 

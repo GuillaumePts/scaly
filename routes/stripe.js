@@ -79,15 +79,22 @@ router.post("/stripe/confirmation", authMiddleware, async (req, res) => {
             return res.status(404).json({ success: false, message: "Utilisateur non trouvé." });
         }
 
+        const now = new Date();
+        const nextMonth = new Date(now);
+        nextMonth.setMonth(now.getMonth() + 1);
+
         user.subscriptionStatus = "actif";
+        user.billingDate = now;
+        user.nextBillingDate = nextMonth;
+
         await user.save();
 
         res.json({ success: true, message: "Abonnement activé." });
     } catch (error) {
         console.error("Erreur /stripe/confirmation :", error);
         res.status(500).json({ success: false, message: "Erreur serveur." });
-        
     }
 });
+
 
 module.exports = router;

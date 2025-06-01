@@ -55,6 +55,7 @@ function fillUserData() {
   fillField("subscriptionStock", window.clientData.subscriptionStock);
   fillField("subscriptionColor", window.clientData.subscriptionColor);
   fillField("siteId", window.clientData.siteId);
+  fillField("nextBillingDate",  new Date(window.clientData.nextBillingDate).toLocaleDateString());
 
   fillField("lastName", window.clientData.lastName);
   fillField("firstName", window.clientData.firstName);
@@ -63,10 +64,10 @@ function fillUserData() {
   fillField("phoneNumber", window.clientData.phoneNumber);
 
   fillField("email", window.clientData.email);
-  fillField("isVerified", window.clientData.isVerified ? "Oui" : "Non");
+  // fillField("isVerified", window.clientData.isVerified ? "Oui" : "Non");
   fillField("paiement", window.clientData.paiement);
   fillField("typePaiement", window.clientData.typePaiement);
-  fillField("price", `${window.clientData.price}€`);
+  fillField("price", `${window.clientData.price}€/mois`);
 
   setupStripeClientButton()
 
@@ -181,11 +182,22 @@ function fillUserData() {
 // ⚡ Gestion du menu burger
 function setupMenu() {
   const menu = document.querySelector("#burger");
-  if (menu) {
-    menu.addEventListener("click", () => {
-      document.querySelector("#sous-nav").classList.toggle("translate");
-    });
+  const sousNav = document.querySelector("#sous-nav");
+  const overlayburger = document.querySelector("#sous-menu-overlay");
+
+  if (menu && sousNav && overlayburger) {
+    const toggleMenu = () => {
+      const isOpen = !sousNav.classList.contains("translate"); // ← inversé ici
+      menu.classList.toggle("open", !isOpen);
+      sousNav.classList.toggle("translate", isOpen); // ← si ouvert, on remet la classe pour cacher
+      overlayburger.classList.toggle("active", !isOpen);
+    };
+
+    menu.addEventListener("click", toggleMenu);
+    overlayburger.addEventListener("click", toggleMenu);
   }
+
+
 
   document.querySelector('#editPassword').addEventListener('click', () => {
     const overlay = document.createElement('div');

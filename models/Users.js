@@ -33,6 +33,9 @@ const UsersSchema = new mongoose.Schema({
   stripeSubscriptionId: { type: String },
   stripePaymentMethodId: { type: String },
 
+  billingDate: { type: Date },           // Date du dernier paiement réussi
+  nextBillingDate: { type: Date },       // Date de la prochaine facturation prévue
+
 
 
   // Stripe Client to client

@@ -1,4 +1,6 @@
 <div id="one">
+    <div id="sous-menu-overlay"></div>
+
     <div id="navback">
 
         <div>
@@ -7,8 +9,9 @@
         </div>
 
         <div id="burger">
-            <div class="background">
-                <img class="imgform" src="/icon/burger.svg" alt="logo du menu">
+            <div class="background" style="position: relative; width: 50px; height: 50px;">
+                <img class="imgform-sousmenu" id="open" src="/icon/burger.svg" alt="logo du menu">
+                <img class="imgform-sousmenu" id="close" src="/icon/close-sous-menu.svg" alt="logo du menu">
             </div>
         </div>
 
@@ -22,7 +25,7 @@
         </div>
 
         <div id="logout">
-            <span class="background-button" style="width: auto;">
+            <span class="background-button" style="width: auto; transform: translateX(-50%); margin-left : 50%;">
                 <button type="button" id="logout" class="buttonform"
                     style="background-color: black;">Déconnexion</button>
             </span>
@@ -51,10 +54,10 @@
                 <p class="value" id="subscriptionStock">1</p>
             </div>
             <div>
-                <p class="param">Prélèvement
+                <p class="param">Prochain prélèvement
 
                 </p>
-                <p class="value" id="typePaiement">1</p>
+                <p class="value" id="nextBillingDate">1</p>
             </div>
             <div>
                 <p class="param">Prix
@@ -71,13 +74,13 @@
 
 
             <div id="buttonActiverStripeClient" class="background-button" style="width: auto;">
-                <button id="ActiverStripeClient" class="buttonform" style="margin: 2px;"></button>
+                <button id="ActiverStripeClient" class="buttonform" ></button>
             </div>
 
 
 
             <div class="background-button" style="width: auto;">
-                <button id="changePack" class="buttonform" style="margin: 2px;">Changer d'offre</button>
+                <button id="changePack" class="buttonform" >Changer d'offre</button>
             </div>
         </div>
         <div class="cara" id="abonnementGestion">
@@ -102,7 +105,7 @@
                 paiement au risque d'une fermeture de votre compte.</p>
 
             <div class="background-button" style="width: auto;">
-                <button id="manage-billinge" class="buttonform" style="margin: 2px; text-decoration: none;">Gérer mon
+                <button id="manage-billinge" class="buttonform" style=" text-decoration: none;">Gérer mon
                     abonnement</button>
             </div>
 
@@ -173,21 +176,18 @@
                 <p class="value" id="email">1</p>
             </div>
             <div>
-                <p class="param">Adresse Mail vérifiée
-
-                </p>
-                <p class="value" id="isVerified">1</p>
-            </div>
-            <div>
                 <div class="param">Mot de passe</div>
                 <p class="value" id="password">*********</p>
-                <div class="background-button">
-                    <button class="buttonform" id="editPassword">Modifier le mot de passe</button>
+                <div class="editUser">
+                    <div class="background">
+                        <img class="edit" id="editPassword" src="/icon/edit.svg" alt="bouton d'édit">
+                    </div>
                 </div>
+
             </div>
             <div class="background-button" style="width: auto;">
                 <button id="deletedCompte" class="buttonform"
-                    style="margin: 2px; background-color: var(--red);">Supprimer le compte</button>
+                    style="background-color: var(--red);">Supprimer le compte</button>
             </div>
         </div>
     </div>

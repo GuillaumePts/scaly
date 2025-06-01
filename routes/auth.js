@@ -123,6 +123,7 @@ router.get("/user_client", requireAuth, async (req, res) => {
             paiement: user.paiement,
             typePaiement: user.typePaiement,
             price: user.price,
+            nextBillingDate: user.nextBillingDate,
 
             // Produit lié
             siteId: user.siteId,
