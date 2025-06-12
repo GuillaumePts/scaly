@@ -64,19 +64,19 @@ updateVh();
 
 
 
-loadImages()
+// loadImages()
 
 let gradientmoove = document.querySelector('.background');
 let countdeg = 1;
 function animateGradient() {
-  // Met à jour le CSS custom property
-  document.documentElement.style.setProperty('--deg-', `${countdeg}deg`);
-  
-  // Optionnel : directement mettre à jour un élément
-  // gradientmoove.style.background = `linear-gradient(${countdeg}deg, rgb(255, 0, 67), rgb(0, 7, 185))`;
+    // Met à jour le CSS custom property
+    document.documentElement.style.setProperty('--deg-', `${countdeg}deg`);
 
-  countdeg = (countdeg + 0.2) % 360; // Valeur fine pour un mouvement lent et fluide
-  requestAnimationFrame(animateGradient);
+    // Optionnel : directement mettre à jour un élément
+    // gradientmoove.style.background = `linear-gradient(${countdeg}deg, rgb(255, 0, 67), rgb(0, 7, 185))`;
+
+    countdeg = (countdeg + 0.2) % 360; // Valeur fine pour un mouvement lent et fluide
+    requestAnimationFrame(animateGradient);
 }
 
 // animateGradient(); // Lance l'animation
@@ -92,16 +92,16 @@ async function loadImages() {
         const images = await response.json();
 
         // Utilisez le tableau d'images pour configurer le carrousel
-     // Vous pouvez l'utiliser dans votre fonction carrousel
+        // Vous pouvez l'utiliser dans votre fonction carrousel
         // Exemple : afficher chaque image dans un élément img
         let tabImg = []
         images.forEach(imagePath => {
             tabImg.push(imagePath)
-            
-        });
-        
 
-        
+        });
+
+
+
     } catch (error) {
         console.error('Erreur:', error);
     }
@@ -111,16 +111,16 @@ async function loadImages() {
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 // css dynamique
 
-function dynamicCss(css){
+function dynamicCss(css) {
     const leslinks = document.querySelectorAll('.dynamic-css')
-    leslinks.forEach(link=>{
-        if(link.id === css){
+    leslinks.forEach(link => {
+        if (link.id === css) {
             link.rel = 'stylesheet';
             link.media = "all"
-        }else{
+        } else {
             link.media = "none"
         }
-        
+
     })
 }
 
@@ -128,11 +128,11 @@ function dynamicCss(css){
 const htmlCache = {};
 
 function preloadHTMLPages() {
-    const pages = ['accueil', 'pics', 'contact', 'lock']; 
+    const pages = ['accueil', 'pics', 'contact', 'lock'];
     const promises = pages.map(page => {
         return fetch(`/content/${page}`).then(response => response.text()).then(html => {
-            htmlCache[page] = html;  
-            
+            htmlCache[page] = html;
+
         });
     });
 
@@ -148,33 +148,33 @@ preloadHTMLPages();
 function loadContent(page) {
     const mainContent = document.getElementById('main-content');
 
-    mainContent.style.transition="0s"
+    mainContent.style.transition = "0s"
     mainContent.scrollIntoView({
         behavior: 'smooth', // Défilement fluide
         block: 'start',     // Aligne l'élément au début de la vue
     });
-    
+
     mainContent.style.opacity = 0
     setTimeout(() => {
-        mainContent.style.transition="0.1s ease-out"
+        mainContent.style.transition = "0.1s ease-out"
         mainContent.style.opacity = 1
     }, 100);
-    
-    
+
+
     if (htmlCache[page]) {
         const html = htmlCache[page];
-        console.log(html);
+
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
-        
+
         mainContent.textContent = '';
         Array.from(doc.body.childNodes).forEach(node => {
             dynamicCss(page);
             mainContent.appendChild(node);
         });
 
-        
-        if(page == "accueil"){
+
+        if (page == "accueil") {
             document.querySelector('#jsaccueil').remove()
             const sc = document.createElement('script')
             sc.src = "/js/accueil.js"
@@ -182,7 +182,7 @@ function loadContent(page) {
             document.body.appendChild(sc)
             actupage = "accueil"
         }
-        if(page == "contact"){
+        if (page == "contact") {
             document.querySelector('#jscontact').remove()
             const sc = document.createElement('script')
             sc.src = "/js/contact.js"
@@ -190,16 +190,18 @@ function loadContent(page) {
             document.body.appendChild(sc)
             actupage = "contact"
         }
-        if(page == "pics"){
-            document.querySelector('#jspics').remove()
-            const sc = document.createElement('script')
-            sc.type="module"
-            sc.src = "/js/pics.js"
-            sc.id = "jspics"
-            document.body.appendChild(sc)
-            actupage = "pics"
+        if (page == "pics") {
+            document.querySelector('#jspics')?.remove();
+
+            const sc = document.createElement('script');
+            sc.type = "text/javascript";
+            sc.src = `/js/pics.js?v=${Date.now()}`; // force un nouveau chargement
+            sc.id = "jspics";
+
+            document.body.appendChild(sc);
+            actupage = "pics";
         }
-        if(page == "lock"){
+        if (page == "lock") {
             document.querySelector('#jslock').remove()
             const sc = document.createElement('script')
             sc.src = "/js/lock.js"
@@ -217,16 +219,16 @@ function loadContent(page) {
 
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-function loadUnlock(){
-    if(document.querySelector('#clientjs')){
+function loadUnlock() {
+    if (document.querySelector('#clientjs')) {
         document.querySelector('#clientjs').remove()
     }
-    if(document.querySelector('#cssclient')){
+    if (document.querySelector('#cssclient')) {
         document.querySelector('#cssclient').remove()
     }
 
     const script = document.createElement('script')
-    script.id ="clientjs"
+    script.id = "clientjs"
     script.src = "/js/client.js"
     document.body.appendChild(script)
 
@@ -236,8 +238,8 @@ function loadUnlock(){
     link.href = "/css/client.css";
     document.head.appendChild(link);
 
-    document.querySelector('#divlock').style.display ="none"
-    document.querySelector('#unlock').style.display ="flex"
+    document.querySelector('#divlock').style.display = "none"
+    document.querySelector('#unlock').style.display = "flex"
 
     document.querySelector('#charging').style.display = "flex"
 
@@ -253,20 +255,20 @@ function loadUnlock(){
             }
         })
         .then(data => {
-            
+
             document.querySelector('#main-content').textContent = ''
-            
+
             if (typeof data === "string") {
                 // Si on reçoit du texte, cela signifie probablement qu'on a une page HTML
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(data, "text/html");
-    
+
                 // Ajoute chaque enfant du <body> à #main-content
                 Array.from(doc.body.children).forEach(child => {
                     document.querySelector('#main-content').appendChild(child);
                 });
 
-                
+
             } else {
                 // Si c'est un objet JSON, on gère l'erreur
                 document.querySelector('#charging').style.display = "none"
@@ -276,7 +278,7 @@ function loadUnlock(){
         .catch((err) => {
             console.log("Erreur : ", err);
         });
-    
+
 }
 
 
@@ -304,12 +306,12 @@ function animvisible() {
 // Initialisation
 animvisible();
 
-function testnum(){
+function testnum() {
     // Numéro de téléphone à composer
-const phoneNumber = "+1234567890";
+    const phoneNumber = "+1234567890";
 
-// Ouvrir l'application d'appel avec ce numéro
-window.location.href = `tel:${phoneNumber}`;
+    // Ouvrir l'application d'appel avec ce numéro
+    window.location.href = `tel:${phoneNumber}`;
 }
 
 
@@ -329,32 +331,32 @@ fetch('/contactfooter')
     .then(data => {
         console.log('Contacts récupérés:', data);
         traitement(data)
-        
+
     })
     .catch(error => {
         console.error('Erreur:', error);
     });
 
 
-function traitement(data){
+function traitement(data) {
     const reseaufooter = document.querySelector('#reseaufooter')
-    reseaufooter.textContent=""
+    reseaufooter.textContent = ""
 
     data.forEach(contact => {
         Object.keys(contact).forEach(key => {
             const value = contact[key];
 
 
-            if(key !== "mail" && key !=="telephone" ){
+            if (key !== "mail" && key !== "telephone") {
                 const a = document.createElement('a')
                 a.href = value.link
                 const slink = document.createElement('img')
-                slink.src= `/iconfooter/${key}.svg`
+                slink.src = `/iconfooter/${key}.svg`
 
                 a.appendChild(slink)
                 reseaufooter.appendChild(a)
             }
-            
+
         });
     });
 
@@ -370,130 +372,134 @@ fetch('/globale')
         return response.json();
     })
     .then(data => {
-        
+
         globale(data)
-        
+
     })
     .catch(error => {
         console.error('Erreur:', error);
     });
 
-function globale(data){
-    
-    const signature  = document.querySelector('#signature')
-    
-    
-    signature.textContent=data.signature
+function globale(data) {
+
+    const signature = document.querySelector('#signature')
+
+
+    signature.textContent = data.signature
 
 }
-
 
 setTimeout(() => {
-    const header = document.querySelector("header")
-    const main = document.querySelector("main")
-    const footer = document.querySelector("footer")
-
-    header.style.transform="scale(1.0)"
-    header.style.opacity="1"
-    
-
-    document.querySelector('#charging').style.opacity="0"
-    document.querySelector('#getstarted').style.opacity = "1"
-
-    
-    setTimeout(() => {
-        document.querySelector('#charging').style.display = "none"
-        animHead()
-    }, 1000);
-    addobserver()
-}, 2000);
+    document.querySelector('#navigation').style.opacity = 1
+}, 1500);
 
 
-function animHead() {
-    setTimeout(() => {
-        document.querySelector('#getstarted').style.opacity = "1"
-    }, 150);
-    
-    setTimeout(() => {
-        document.querySelector('#arrow').style.transform ="translateX(0)"
-        document.querySelector('#picsbuttonhead').style.transform ="translateX(0)"
-    }, 170);
-}
+// setTimeout(() => {
+//     const header = document.querySelector("header")
+//     const main = document.querySelector("main")
+//     const footer = document.querySelector("footer")
 
-function resetAnim() {
-    document.querySelector('#getstarted').style.opacity = "0";
-    document.querySelector('#arrow').style.transform = "translateX(30px)";
-    document.querySelector('#picsbuttonhead').style.transform = "translateX(-40px)";
-}
+//     header.style.transform = "scale(1.0)"
+//     header.style.opacity = "1"
+
+
+//     document.querySelector('#charging').style.opacity = "0"
+//     // document.querySelector('#getstarted').style.opacity = "1"
+
+
+//     setTimeout(() => {
+//         document.querySelector('#charging').style.display = "none"
+//         // animHead()
+//     }, 1000);
+//     // addobserver()
+// }, 2000);
+
+
+// function animHead() {
+//     setTimeout(() => {
+//         document.querySelector('#getstarted').style.opacity = "1"
+//     }, 150);
+
+//     setTimeout(() => {
+//         document.querySelector('#arrow').style.transform ="translateX(0)"
+//         document.querySelector('#picsbuttonhead').style.transform ="translateX(0)"
+//     }, 170);
+// }
+
+// function resetAnim() {
+//     document.querySelector('#getstarted').style.opacity = "0";
+//     document.querySelector('#arrow').style.transform = "translateX(30px)";
+//     document.querySelector('#picsbuttonhead').style.transform = "translateX(-40px)";
+// }
 
 
 // Observer
-function addobserver(){
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animHead(); // L'élément entre dans l'écran
-            } else {
-                resetAnim(); // L'élément sort de l'écran
-            }
-        });
-    }, { threshold: 0.2 }); // Déclenche quand 20% de l'élément est visible
-    
-    // Observer sur l'élément cible
-    const target = document.querySelector('#getstarted');
-    if (target) {
-        observer.observe(target);
-    }
-    
-}
+// function addobserver(){
+//     const observer = new IntersectionObserver(entries => {
+//         entries.forEach(entry => {
+//             if (entry.isIntersecting) {
+//                 animHead(); // L'élément entre dans l'écran
+//             } else {
+//                 resetAnim(); // L'élément sort de l'écran
+//             }
+//         });
+//     }, { threshold: 0.2 }); // Déclenche quand 20% de l'élément est visible
 
-document.querySelector('#admin').addEventListener('click',()=>{
-    if(!document.querySelector('.loaderi')){
+//     // Observer sur l'élément cible
+//     const target = document.querySelector('#getstarted');
+//     if (target) {
+//         observer.observe(target);
+//     }
+
+// }
+
+document.querySelector('#admin').addEventListener('click', () => {
+    if (!document.querySelector('.loaderi')) {
         load()
 
-    setTimeout(() => {
-        document.querySelector('#logonavbarre').style.opacity="1"
-        finload()
-    }, 2000);
+        setTimeout(() => {
+            document.querySelector('#logonavbarre').style.opacity = "1"
+            finload()
+        }, 2000);
     }
-    
+
 })
 
-function load(){
-    const button=document.querySelector('.bubbly-button')
-    
+function load() {
+    const button = document.querySelector('.bubbly-button')
+
     const t = document.querySelector('#mooveAnim')
-    
-    t.style.zIndex="1"
-    t.style.opacity="1"
-    document.querySelector('#logonavbarre').style.opacity="0"
+
+    t.style.zIndex = "1"
+    t.style.opacity = "1"
+    document.querySelector('#logonavbarre').style.opacity = "0"
     const div = document.createElement('div')
     div.classList.add('loaderi')
-    
+
     const img = document.createElement('img')
-    img.src="/logo/logocoupe.png"
-    img.style.width="auto"
-    img.style.height="58px"
+    img.src = "/logo/logocoupe.png"
+    img.style.width = "auto"
+    img.style.height = "58px"
     img.style.borderRadius = "50px"
-    
+
     const grad = document.createElement('div')
     grad.classList.add('gradload')
     grad.appendChild(img)
     document.querySelector('#admin').appendChild(div)
     document.querySelector('#admin').appendChild(grad)
-    
+
 }
 
-function finload(){
+function finload() {
     document.querySelector('.loaderi').remove()
     document.querySelector('.gradload').remove()
-    document.querySelector('#logonavbarre').style.opacity="1"
-    const button=document.querySelector('.bubbly-button')
-    button.style.overflow='visible'
+    document.querySelector('#logonavbarre').style.opacity = "1"
+    const button = document.querySelector('.bubbly-button')
+    button.style.overflow = 'visible'
     button.classList.add('anima');
-    setTimeout(function(){
-      button.classList.remove('anima');
-    },700);
+    setTimeout(function () {
+        button.classList.remove('anima');
+    }, 700);
 }
 
 

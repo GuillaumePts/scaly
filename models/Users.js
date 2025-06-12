@@ -36,7 +36,9 @@ const UsersSchema = new mongoose.Schema({
   billingDate: { type: Date },           // Date du dernier paiement réussi
   nextBillingDate: { type: Date },       // Date de la prochaine facturation prévue
 
-
+  //reset-password
+  resetToken: String,
+  resetTokenExpiry: Date,
 
   // Stripe Client to client
   stripeAccountId: String,      // l'ID du compte Express Stripe

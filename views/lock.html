@@ -2,17 +2,25 @@
 
 <div class="conteneurform translate">
     <div class="conteneurimgform">
-        <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
+        <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise scaly"></div>
     </div>
     <h2 class="titreform">Connexion</h2>
     <form class="formform" action="">
-        <input class="inputform" type="text" id="id" placeholder="username" style="padding-right: 60px;">
+        <div style="position: relative; width: 100%;">
+            <img class="logoLock" src="/icon/password.svg" alt="logo password">
+            <input class="inputform" type="email" id="id" placeholder="example@scaly.com" style="padding-right: 50px; padding-left: 50px;">
+        </div>
+        
         <div style="position: relative; width: 100%;">
             <img src="/icon/eye-close.svg" id="view" alt="oeil fermés" style="position: absolute;height: 55px ;width: 55px;transform: translateY(-50%); right: 0;top: 50%;">
             <img src="/icon/eye-open.svg" id="notview" alt="oeil ouvert" style="position: absolute;height: 55px ;width: 55px;transform: translateY(-50%); right: 0;top: 50%; display: none;">
-            <input class="inputform" type="password" id="password" placeholder="password" style="padding-right: 60px;">
+            <input class="inputform" type="password" id="password" placeholder="****" style="padding-right: 50px; padding-left: 50px;">
+            
         </div>
-        <div class="background" ><button type="button" id="submit-button" class="buttonform">Valider</button></div>
+        
+        <div class="background-button" ><button type="button" id="submit-button" class="buttonform">Valider</button></div>
     </form>
+    <p id="resetpassword">Mot de passe oublié ?</p>
+    <p class="err"></p>
 </div>
 

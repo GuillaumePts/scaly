@@ -1007,6 +1007,28 @@ function load(msg) {
 
 }
 
+
+function finload(msg, time) {
+
+  const sec = time ?? 1000
+
+  document.querySelector('.msgoverlay').textContent = msg
+  document.querySelector('.loaderi').remove()
+  document.querySelector('.gradload').remove()
+  document.querySelector('#logonavbarre').style.opacity = "1"
+  const button = document.querySelector('.bubbly-button')
+  button.style.overflow = 'visible'
+  button.classList.add('anima');
+  setTimeout(function () {
+    button.classList.remove('anima');
+    document.querySelector('.overlayLoad').style.visibility = "hidden";
+    document.querySelector('.overlayLoad').style.opacity = "0"
+    document.querySelector('.overlayLoad').remove()
+  }, sec);
+}
+
+
+
 function sendFieldUpdate(field, newValue) {
   load()
   fetch('/api/update-user', {
@@ -1049,24 +1071,6 @@ function sendFieldUpdate(field, newValue) {
     });
 }
 
-function finload(msg, time) {
-
-  const sec = time ?? 1000
-
-  document.querySelector('.msgoverlay').textContent = msg
-  document.querySelector('.loaderi').remove()
-  document.querySelector('.gradload').remove()
-  document.querySelector('#logonavbarre').style.opacity = "1"
-  const button = document.querySelector('.bubbly-button')
-  button.style.overflow = 'visible'
-  button.classList.add('anima');
-  setTimeout(function () {
-    button.classList.remove('anima');
-    document.querySelector('.overlayLoad').style.visibility = "hidden";
-    document.querySelector('.overlayLoad').style.opacity = "0"
-    document.querySelector('.overlayLoad').remove()
-  }, sec);
-}
 
 
 

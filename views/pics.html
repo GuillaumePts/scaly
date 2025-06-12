@@ -1,79 +1,126 @@
 <div id="pics">
+    <svg width="0" height="0" style="position:absolute">
+        <filter id="textShadowFilter" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="black" flood-opacity="0.4" />
+        </filter>
+    </svg>
 
-    <img class="backimg" id="Blanc" src="/Blanc/Blancback.jpg" alt="fond d'écran Blanc">
-    <img class="backimg" id="Noir" style="display: none;" src="/Noir/Noirback.jpg" alt="fond d'écran Noir">
-    <img class="backimg" id="Vert" style="display: none;" src="/Vert/Vertback.jpg" alt="fond d'écran Vert">
-    <img class="backimg" id="Rose" style="display: none;" src="/Rose/Roseback.jpg" alt="fond d'écran Rose">
+    <div class="choice-wrapper">
+        <div class="choice-box white">
+            <!-- <div class="background">
+                <img src="/logo/logotransparantblanc.png" alt="" class="imgform">
+            </div> -->
 
-    
+            <p class="slogan">Pureté, minimalisme, idéal pour un portfolio lumineux.</p>
 
-    <div id="place"></div>
 
-    <img id="produitimg" class="translate" src="/imgPc/portfolio2.png" alt="photo du produit scaly p'ics">
-    
-    <div id="conf">
-
-        <div id="choice">
-            <input type="text" id="colorSelect" value="Blanc">
-            <div id="colorsChoice">
-                <div id="Blanc" class="colorBubble"></div>
-                <div id="Noir" class="colorBubble"></div>
+            <div class="animebuttoncontent">
+                <button id="blanchoisi" style="background-color: #000; color: #fff;">Blanc</button>
+                <div class="animebutton" style="background-color: #fff;"></div>
             </div>
-            <select name="selectPack" id="selectPack">
-                <option value="Starter">Starter</option>
-                <option value="Pro" selected>Pro</option>
-                <option value="Unlimited">Unlimited</option>
-            </select>
-        </div>
-        
 
-        <div id="titleProduit">
-            <h2>Pic's</h2>
-            <h3 id="colorResult">White</h3>
-        </div>
-        <div id="contentpricee">
-            <div id="price">
-                <p class="bse-price" id="prixpack">10</p>
-                <!-- <p class="bse-price">€</p> -->
-                <span>.99€/mois</span>
+            <div id="blancontent">
+
+                <div class="returncontent">
+                    <img src="/icon/returnoir.svg" alt="">
+                </div>
+
+                <div class="contentcarousel">
+                    <div class="carousel">
+                        <div class="carousel__item active">
+                            <div class="image-container">
+                                <img src="imgPc/portfolio1.png" class="main-img" />
+                                <img src="imgPc/portfolio1.png" class="mirror" />
+                            </div>
+                        </div>
+                        <div class="carousel__item left">
+                            <div class="image-container">
+                                <img src="imgPc/portfolio1.png" class="main-img" />
+                                <img src="imgPc/portfolio1.png" class="mirror" />
+                            </div>
+                        </div>
+                        <div class="carousel__item right">
+                            <div class="image-container">
+                                <img src="imgPc/portfolio1.png" class="main-img" />
+                                <img src="imgPc/portfolio1.png" class="mirror" />
+                            </div>
+                        </div>
+                        <div class="carousel__item left">
+                            <div class="image-container">
+                                <img src="imgPc/portfolio1.png" class="main-img" />
+                                <img src="imgPc/portfolio1.png" class="mirror" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="choixpacktitre">Choisie ton Pack</h2>
+
+                <div class="choixpack">
+                    <div class="imgscontent">
+                        <img src="photos/choixvide2.png" alt="" class="normal">
+                    </div>
+                
+                    <div class="choicepack" id="choicepackblanc">
+                        <h2>Unlimited</h2>
+                    </div>
+                </div>
             </div>
-            <div class="barre"></div>
-            <p id="pack">Pro</p>
-            <p id="stockagePack">5<span>go</span> de Stockage</p>
+
         </div>
-        
-        <ul>
-            <li>
-                <p id="customchoice" style="text-decoration: underline;">* Gestion de paiement</p>
-            </li>
-            <li>
-                <p>* Photo en 2k, meilleure qualité que sur les réseaux sociaux</p>
-            </li>
-            <li>
-                <p>* Livraisons client depuis le site sans compression</p>
-            </li>
-             <li>
-                <p>* Formulaire de contact</p>
-            </li>
-             <li>
-                <p>* Gestion des mails</p>
-            </li>
-            
-            <li>
-                <p>* Immédiatement utilisable après achat</p>
-            </li>
-            <li>
-                <p>* Sans engagement</p>
-            </li>
 
-        </ul>
+        <div class="choice-box black">
 
-        
-        <button id="formulaire">Continuer</button>
+            <h2 class="titless">
+                <span class="black filtered">CHOISIS</span>
+                <span class="gradientTA filtered">TA</span>
+                <span class="white">TEAM</span>
+            </h2>
+
+
+
+            <div class="animebuttoncontent">
+                <button id="noirchoisi" style="background-color: #fff; color: #000;">Noir</button>
+                <div class="animebutton" style="background-color: #000;"></div>
+            </div>
+
+
+            <p class="slogan">Élégance, contraste, parfait pour une ambiance cinématographique.</p>
+
+            <div id="noircontent">
+                <div class="returncontent">
+                    <img src="/icon/returnblanc.svg" alt="">
+                </div>
+            </div>
+
+        </div>
     </div>
+
+</div>
+<!-- <p class="title">Élégant et intemporel, il affirme votre style tout en mettant vos images au premier plan. Idéal pour les photographes studio, mode ou corporate.</p> -->
+<!-- <p class="title" >Un look épuré et professionnel, parfait pour les photographes spécialisés dans le mariage, le lifestyle ou les portraits lumineux.</p> -->
+
+<div id="conf" style="display: none;">
+
+    <div id="choice">
+        <input type="text" id="colorSelect" value="Blanc">
+        <div id="colorsChoice">
+            <div id="Blanc" class="colorBubble"></div>
+            <div id="Noir" class="colorBubble"></div>
+        </div>
+        <select name="selectPack" id="selectPack">
+            <option value="Starter">Starter</option>
+            <option value="Pro" selected>Pro</option>
+            <option value="Unlimited">Unlimited</option>
+        </select>
+    </div>
+
+
+    <button id="formulaire">Continuer</button>
+</div>
 </div>
 
-<div id="form">
+<div id="form" style="display: none;">
 
     <div class="blur-background"></div>
 
@@ -81,15 +128,16 @@
     <div id="paiementformSuccess" class="formProduit">
 
         <div id="successAnim" style="width: 150px; height: 150px;"></div>
-        
-        <p  class="good msgInscription">Votre compte à bien été créé !</p>
+
+        <p class="good msgInscription">Votre compte à bien été créé !</p>
 
         <div class="background-button" id="buyyy">
             <div class="buttonform">Procéder au paiement</div>
         </div>
 
         <div class="conteneurimgformproduit">
-            <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
+            <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp">
+            </div>
         </div>
 
     </div>
@@ -105,7 +153,8 @@
         </div>
 
         <div class="conteneurimgformproduit">
-            <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp"></div>
+            <div class="background"><img class="imgform" src="logo/logotransparant.png" alt="logo entreprise siteUp">
+            </div>
         </div>
     </div>
 
@@ -129,7 +178,8 @@
             </div>
             <div>
                 <label for="adresse">Adresse :</label>
-                <input class="inputform2" type="text" id="adresse" name="adresse" autocomplete="street-address" required>
+                <input class="inputform2" type="text" id="adresse" name="adresse" autocomplete="street-address"
+                    required>
                 <p class="errform"></p>
             </div>
             <div>
@@ -139,7 +189,8 @@
             </div>
             <div>
                 <label for="code_postal">Code Postal :</label>
-                <input class="inputform2" type="text" id="code_postal" name="code_postal" pattern="[0-9]{5}" maxlength="5" autocomplete="postal-code" required>
+                <input class="inputform2" type="text" id="code_postal" name="code_postal" pattern="[0-9]{5}"
+                    maxlength="5" autocomplete="postal-code" required>
                 <p class="errform"></p>
             </div>
             <div>
@@ -165,10 +216,10 @@
             <span class="background-button">
                 <button id="submit-button" class="buttonform">Valider</button>
             </span>
-            
+
         </form>
     </div>
 
-    
+
 
 </div>

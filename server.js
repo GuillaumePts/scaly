@@ -90,6 +90,10 @@ app.get('/content/lock', (req, res) => {
 const User = require("./models/Users");
 
 
+app.get('/formpass', (req, res) => {
+  res.sendFile(path.resolve('views/reset-password.html'));
+});
+
 
 async function connect() {
   try {
@@ -192,6 +196,7 @@ const verificationRoutes = require("./routes/send-verification-code.js");
 const stripeClient = require("./routes/stripeClient.js")
 const clientWebhook = require('./routes/clientWebhook');
 const changePack = require('./routes/changePack.js')
+const password = require("./routes/forgot-password.js")
 
 
 // app.use(cors());
@@ -209,7 +214,8 @@ app.use("/api", changePassword)
 app.use("/api", verificationRoutes);
 app.use("/api", stripeClient);
 app.use("/api", clientWebhook);
-app.use("/api", changePack)
+app.use("/api", changePack);
+app.use("/api", password)
 
 
 

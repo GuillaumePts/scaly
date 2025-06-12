@@ -1,8 +1,97 @@
 
 
+function gestionCarrou() {
+    const items = document.querySelectorAll('.carousel__item');
+    let current = 0;
+
+    // Pour ajouter la transition
+    items.forEach(item => {
+        item.style.transition = 'transform 0.6s ease';
+    });
+
+    function updateClasses() {
+        items.forEach((item, index) => {
+            item.classList.remove('left', 'right', 'active');
+
+            if (index === current) {
+                item.classList.add('active');
+            } else if (index === (current - 1 + items.length) % items.length) {
+                item.classList.add('left');
+            } else if (index === (current + 1) % items.length) {
+                item.classList.add('right');
+            }
+        });
+    }
+
+    function next() {
+        current = (current + 1) % items.length;
+        updateClasses();
+    }
+
+    function prev() {
+        current = (current - 1 + items.length) % items.length;
+        updateClasses();
+    }
+
+    // Gestion du swipe (touch mobile)
+    let startX = 0;
+
+    document.querySelector('.carousel').addEventListener('touchstart', e => {
+        startX = e.touches[0].clientX;
+    });
+
+    document.querySelector('.carousel').addEventListener('touchend', e => {
+        const endX = e.changedTouches[0].clientX;
+        const diff = endX - startX;
+
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+                prev(); // swipe droite → gauche
+            } else {
+                next(); // swipe gauche → droite
+            }
+        }
+    });
+
+    // Init
+    updateClasses();
+}
+
 
 (() => {
 
+
+    const target = document.querySelector('.titless');
+    const whiteBox = document.querySelector('.choice-box.white');
+    const blackBox = document.querySelector('.choice-box.black');
+    const buttons = document.querySelectorAll('.animebutton');
+
+    let timeout;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                whiteBox.classList.add('active');
+                blackBox.classList.add('active');
+
+                // Petite pause pour laisser les box se positionner
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    buttons.forEach(btn => btn.classList.add('translatebuttoncolor'));
+                }, 400);
+
+            } else {
+                whiteBox.classList.remove('active');
+                blackBox.classList.remove('active');
+
+
+                // Retire immédiatement la classe pour permettre une relecture plus tard
+                buttons.forEach(btn => btn.classList.remove('translatebuttoncolor'));
+            }
+        });
+    }, { threshold: 0.5 });
+
+    observer.observe(target);
 
     function preloadImages(colors) {
         for (const name in colors) {
@@ -10,6 +99,190 @@
             img.src = `/${name}/${name}back.jpg`;
         }
     }
+
+    document.querySelector('#blanchoisi').addEventListener('click', () => {
+        document.querySelectorAll('.slogan').forEach(el => {
+            el.style.display = "none"
+        })
+
+        document.querySelector('.titless').style.display = "none"
+
+        document.querySelectorAll('.animebuttoncontent').forEach(el => {
+            el.style.display = "none"
+        })
+
+        document.querySelector('.white').style.height = 'auto'
+        document.querySelector('.white').style.minHeight = '100vh'
+        document.querySelector('.black').style.height = '0vh'
+
+        document.querySelector('.choice-box').style.padding = '0'
+
+        document.querySelector('#blancontent').style.display = "flex"
+
+        // const observer = new IntersectionObserver((entries) => {
+        //     entries.forEach(entry => {
+        //         if (entry.isIntersecting) {
+        //             entry.target.classList.add('active');
+        //             document.querySelector('#choicepackblanc').classList.add('active')
+        //         } else {
+        //             entry.target.classList.remove('active');
+        //             document.querySelector('#choicepackblanc').classList.remove('active')
+        //         }
+        //     });
+        // }, {
+        //     threshold: 0.5
+        // });
+
+        document.querySelectorAll('.imgscontent').forEach(el => observer.observe(el));
+
+        gestionCarrou()
+
+
+        document.querySelector('.returncontent').addEventListener('click', () => {
+            document.querySelector('#menupics').click()
+        })
+    })
+
+    document.querySelector('#noirchoisi').addEventListener('click', () => {
+        document.querySelectorAll('.slogan').forEach(el => {
+            el.style.display = "none"
+        })
+
+        document.querySelector('.titless').style.display = "none"
+
+        document.querySelectorAll('.animebuttoncontent').forEach(el => {
+            el.style.display = "none"
+        })
+
+        document.querySelector('.black').style.height = 'auto'
+        document.querySelector('.black').style.minHeight = '100vh'
+        document.querySelector('.white').style.height = '0vh'
+
+        document.querySelector('.choice-box').style.padding = '0'
+
+        document.querySelector('#noircontent').style.display = "flex"
+
+        gestionCarrou()
+
+        document.querySelectorAll('.returncontent').forEach(el => {
+            el.addEventListener('click', () => {
+                document.querySelector('#menupics').click()
+            })
+        })
+
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     document.querySelector('#selectPack').addEventListener('change', () => {
@@ -45,7 +318,7 @@
 
     setupProduit()
     function setupProduit() {
-        choiceColor("Blanc", '#eee', '#fff')
+
         const obj = {
             Blanc: ['#eee', '#fff'],
             Noir: ['#000', '#fff'],
@@ -58,7 +331,7 @@
 
         tabbuttoncolor.forEach(button => {
             button.addEventListener('click', () => {
-                console.log("tructructruc");
+
                 const name = button.id; // l'id correspond à la clé de l'objet
                 const [color, neon] = obj[name];
                 choiceColor(name, color, neon);
@@ -76,9 +349,9 @@
 
         if (color === "#eee") {
             document.querySelector('#conf').style.color = "#666"
-            document.querySelector('#colorResult').style.textShadow = `0px 0px 10px ${neon}`
+
             document.querySelector('#colorResult').style.color = "#fff"
-            document.querySelector('#pack').style.textShadow = `0px 0px 10px ${neon}`
+
             document.querySelector('#pack').style.color = "#fff"
             document.querySelector('#selectPack').style.color = "#666"
             document.querySelector('#selectPack').style.border = "2px solid #666"
@@ -86,24 +359,24 @@
             document.querySelector('#formulaire').style.textShadow = "0px 0px 10px #fff, 0px 0px 20px #000000"
             document.querySelector('#formulaire').style.color = "#fff"
             document.querySelector('#formulaire').style.backgroundColor = color
-            document.querySelector('#formulaire').style.boxShadow = `0px 0px 10px ${neon}`
+
         } else {
             document.querySelector('#conf').style.color = "#fff"
-            document.querySelector('#colorResult').style.textShadow = `0px 0px 10px ${neon}`
+
             document.querySelector('#selectPack').style.color = "#fff"
             document.querySelector('#selectPack').style.border = "2px solid #fff"
-            document.querySelector('#pack').style.textShadow = `0px 0px 10px ${neon}`
+
             document.querySelector('#pack').style.color = "#fff"
             document.querySelector('.barre').style.backgroundColor = "#fff"
-            document.querySelector('#formulaire').style.textShadow = `0px 0px 10px ${neon}`
+
             document.querySelector('#formulaire').style.color = "#fff"
-            document.querySelector('#formulaire').style.boxShadow = `0px 0px 10px ${neon}`
+
             document.querySelector('#formulaire').style.backgroundColor = color
         }
         // document.querySelector('#form').style.backgroundColor = color;
         // document.querySelector('#form').style.backgroundImage = `url(/${name}/${name}back.jpg)`;
         // Modifier la variable CSS pour le ::before
-        document.documentElement.style.setProperty('--before-color', neon);
+
         document.documentElement.style.setProperty('--inputform2', color);
 
         const tabimg = document.querySelectorAll('.backimg');
