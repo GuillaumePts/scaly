@@ -1,3 +1,90 @@
+function initInfiniteScroll() {
+    const images = [
+        "White/1742805143259-210.webp",
+        "White/1742805143259-402.webp",
+        "White/1742805143259-478.webp",
+        "White/1742805143260-451.webp",
+        "White/1742805143260-512.webp",
+        "White/1742805143260-733.webp"
+    ];
+
+    let indexSubcat = 0;
+    let indexMansory = 0;
+
+    const subcat = document.querySelector('#subcategoryclient');
+    const mansory = document.querySelector('#imgsMansory');
+    const sentinelSubcat = document.querySelector('#sentinel-subcat');
+    const sentinelMansory = document.querySelector('#sentinel-mansory');
+
+    function loadMoreImages(type) {
+        if (type === 'subcat') {
+            const container = subcat;
+            const sentinel = sentinelSubcat;
+
+            for (let i = 0; i < 3; i++) {
+                const imgIndex = indexSubcat % images.length;
+
+                const div = document.createElement('div');
+                div.classList.add('subcategoryclient-b');
+
+                const img = document.createElement('img');
+                img.className = "animphoto visible";
+                img.loading = "lazy";
+                img.decoding = "async";
+                img.src = images[imgIndex];
+
+                div.appendChild(img);
+                container.insertBefore(div, sentinel);
+
+                indexSubcat++;
+            }
+        }
+
+        if (type === 'mansory') {
+            const container = document.querySelector('#imgsMansory .imgsMansory');
+
+            for (let i = 0; i < 3; i++) {
+                const imgIndex = indexMansory % images.length;
+
+                const img = document.createElement('img');
+                img.loading = "lazy";
+                img.decoding = "async";
+                img.src = images[imgIndex];
+                img.style = "width: 100%; height: auto; box-shadow: rgba(0, 0, 0, 0.11) 0px 0px 20px; margin-bottom: 2px; break-inside: avoid;";
+                img.classList.add('visible');
+
+                container.appendChild(img);
+
+                indexMansory++;
+            }
+        }
+    }
+
+    if (subcat && sentinelSubcat) {
+        const observerSubcat = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && subcat.classList.contains('visible')) {
+                    loadMoreImages('subcat');
+                }
+            });
+        }, { root: subcat, rootMargin: '0px', threshold: 1 });
+
+        observerSubcat.observe(sentinelSubcat);
+    }
+
+    if (mansory && sentinelMansory) {
+        const observerMansory = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && mansory.classList.contains('visible')) {
+                    loadMoreImages('mansory');
+                }
+            });
+        }, { root: mansory, rootMargin: '0px', threshold: 1 });
+
+        observerMansory.observe(sentinelMansory);
+    }
+}
+
 
 
 function gestionCarrou() {
@@ -56,6 +143,8 @@ function gestionCarrou() {
     // Init
     updateClasses();
 }
+
+
 
 
 (() => {
@@ -119,23 +208,44 @@ function gestionCarrou() {
 
         document.querySelector('#blancontent').style.display = "flex"
 
-        // const observer = new IntersectionObserver((entries) => {
-        //     entries.forEach(entry => {
-        //         if (entry.isIntersecting) {
-        //             entry.target.classList.add('active');
-        //             document.querySelector('#choicepackblanc').classList.add('active')
-        //         } else {
-        //             entry.target.classList.remove('active');
-        //             document.querySelector('#choicepackblanc').classList.remove('active')
-        //         }
-        //     });
-        // }, {
-        //     threshold: 0.5
-        // });
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    document.querySelector('#choicepackblanc').classList.add('active')
+                    document.querySelectorAll('.layout').forEach(el=>{
+                        el.classList.add('active')
+                    })
+                    document.querySelectorAll('.scrollgalerie').forEach(el=>{
+                        el.classList.add('active')
+                        
+                    })
+                    document.querySelectorAll('.layout').forEach(el =>{
+                        el.addEventListener('click',()=>{
+                            document.querySelector('#imgsMansory').classList.toggle('visible')
+                            document.querySelector('#subcategoryclient').classList.toggle('visible')
+                            initInfiniteScroll()
+                        })
+                    })
+                } else {
+                    entry.target.classList.remove('active');
+                    document.querySelector('#choicepackblanc').classList.remove('active')
+                    document.querySelectorAll('.layout').forEach(el=>{
+                        el.classList.remove('active')
+                    })
+                    document.querySelectorAll('.scrollgalerie').forEach(el=>{
+                        el.classList.remove('active')
+                    })
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
 
-        document.querySelectorAll('.imgscontent').forEach(el => observer.observe(el));
+        document.querySelectorAll('.normal').forEach(el => observer.observe(el));
 
         gestionCarrou()
+        initInfiniteScroll()
 
 
         document.querySelector('.returncontent').addEventListener('click', () => {
