@@ -1,90 +1,3 @@
-function initInfiniteScroll() {
-    const images = [
-        "White/1742805143259-210.webp",
-        "White/1742805143259-402.webp",
-        "White/1742805143259-478.webp",
-        "White/1742805143260-451.webp",
-        "White/1742805143260-512.webp",
-        "White/1742805143260-733.webp"
-    ];
-
-    let indexSubcat = 0;
-    let indexMansory = 0;
-
-    const subcat = document.querySelector('#subcategoryclient');
-    const mansory = document.querySelector('#imgsMansory');
-    const sentinelSubcat = document.querySelector('#sentinel-subcat');
-    const sentinelMansory = document.querySelector('#sentinel-mansory');
-
-    function loadMoreImages(type) {
-        if (type === 'subcat') {
-            const container = subcat;
-            const sentinel = sentinelSubcat;
-
-            for (let i = 0; i < 3; i++) {
-                const imgIndex = indexSubcat % images.length;
-
-                const div = document.createElement('div');
-                div.classList.add('subcategoryclient-b');
-
-                const img = document.createElement('img');
-                img.className = "animphoto visible";
-                img.loading = "lazy";
-                img.decoding = "async";
-                img.src = images[imgIndex];
-
-                div.appendChild(img);
-                container.insertBefore(div, sentinel);
-
-                indexSubcat++;
-            }
-        }
-
-        if (type === 'mansory') {
-            const container = document.querySelector('#imgsMansory .imgsMansory');
-
-            for (let i = 0; i < 3; i++) {
-                const imgIndex = indexMansory % images.length;
-
-                const img = document.createElement('img');
-                img.loading = "lazy";
-                img.decoding = "async";
-                img.src = images[imgIndex];
-                img.style = "width: 100%; height: auto; box-shadow: rgba(0, 0, 0, 0.11) 0px 0px 20px; margin-bottom: 2px; break-inside: avoid;";
-                img.classList.add('visible');
-
-                container.appendChild(img);
-
-                indexMansory++;
-            }
-        }
-    }
-
-    if (subcat && sentinelSubcat) {
-        const observerSubcat = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && subcat.classList.contains('visible')) {
-                    loadMoreImages('subcat');
-                }
-            });
-        }, { root: subcat, rootMargin: '0px', threshold: 1 });
-
-        observerSubcat.observe(sentinelSubcat);
-    }
-
-    if (mansory && sentinelMansory) {
-        const observerMansory = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && mansory.classList.contains('visible')) {
-                    loadMoreImages('mansory');
-                }
-            });
-        }, { root: mansory, rootMargin: '0px', threshold: 1 });
-
-        observerMansory.observe(sentinelMansory);
-    }
-}
-
 
 
 function gestionCarrou() {
@@ -146,11 +59,116 @@ function gestionCarrou() {
 
 
 
-
 (() => {
 
+    let masonryObserver = null;
+    let subcatObserver = null;
 
-    const target = document.querySelector('.titless');
+    let masonryInitialized = false;
+    let subcatInitialized = false;
+
+    let indexMansory = 0;
+    let indexSubcat = 0;
+
+    const images = [
+        "White/1742805143259-210.webp",
+        "White/1742805143259-402.webp",
+        "White/1742805143259-478.webp",
+        "White/1742805143260-451.webp",
+        "White/1742805143260-512.webp",
+        "White/1742805143260-733.webp"
+    ];
+
+    function loadSubcatImages() {
+        const container = document.querySelector('#subcategoryclient');
+        const sentinel = document.querySelector('#sentinel-subcat');
+        for (let i = 0; i < 3; i++) {
+            const img = document.createElement('img');
+            img.src = images[indexSubcat++ % images.length];
+            img.loading = "lazy";
+            img.decoding = "async";
+            img.className = "animphoto visible";
+
+            const wrapper = document.createElement('div');
+            wrapper.className = "subcategoryclient-b";
+            wrapper.appendChild(img);
+            container.insertBefore(wrapper, sentinel);
+        }
+    }
+
+    function loadMasonryImages() {
+        const container = document.querySelector('#imgsMansory .imgsMansory');
+        const sentinel = document.querySelector('#sentinel-mansory');
+        for (let i = 0; i < 3; i++) {
+            const img = document.createElement('img');
+            img.src = images[indexMansory++ % images.length];
+            img.loading = "lazy";
+            img.decoding = "async";
+            img.className = "visible";
+            img.style = "width: 100%; height: auto; box-shadow: rgba(0,0,0,0.11) 0px 0px 20px; margin-bottom: 2px; break-inside: avoid;";
+            container.insertBefore(img, sentinel);
+        }
+    }
+
+    function observeInfiniteScroll(container, sentinel, callback, existingObserver) {
+        if (!container || !sentinel) return null;
+
+        if (existingObserver) existingObserver.disconnect();
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && container.classList.contains('visible')) {
+                    callback();
+                }
+            });
+        }, {
+            root: container,
+            threshold: 1
+        });
+
+        observer.observe(sentinel);
+        return observer;
+    }
+
+    function toggleLayoutView() {
+        const masonry = document.querySelector('#imgsMansory');
+        const subcat = document.querySelector('#subcategoryclient');
+
+        // Alterne visuellement
+        masonry.classList.toggle('visible');
+        subcat.classList.toggle('visible');
+
+        // Laisser le DOM s'adapter avant observer
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                if (masonry.classList.contains('visible') && !masonryInitialized) {
+                    masonry.scrollTop = 0;
+                    masonryObserver = observeInfiniteScroll(
+                        masonry,
+                        document.querySelector('#sentinel-mansory'),
+                        loadMasonryImages,
+                        masonryObserver
+                    );
+                    masonryInitialized = true;
+                }
+
+                if (subcat.classList.contains('visible') && !subcatInitialized) {
+                    subcat.scrollTop = 0;
+                    subcatObserver = observeInfiniteScroll(
+                        subcat,
+                        document.querySelector('#sentinel-subcat'),
+                        loadSubcatImages,
+                        subcatObserver
+                    );
+                    subcatInitialized = true;
+                }
+            });
+        });
+    }
+
+
+
+    const target = document.querySelector('.white');
     const whiteBox = document.querySelector('.choice-box.white');
     const blackBox = document.querySelector('.choice-box.black');
     const buttons = document.querySelectorAll('.animebutton');
@@ -178,7 +196,7 @@ function gestionCarrou() {
                 buttons.forEach(btn => btn.classList.remove('translatebuttoncolor'));
             }
         });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.4 });
 
     observer.observe(target);
 
@@ -200,52 +218,46 @@ function gestionCarrou() {
             el.style.display = "none"
         })
 
-        document.querySelector('.white').style.height = 'auto'
-        document.querySelector('.white').style.minHeight = '100vh'
-        document.querySelector('.black').style.height = '0vh'
+        whiteBox.classList.remove('active');
+        blackBox.classList.remove('active');
 
         document.querySelector('.choice-box').style.padding = '0'
 
-        document.querySelector('#blancontent').style.display = "flex"
+        setTimeout(() => {
+            document.querySelector('.white').style.height = 'auto'
+            document.querySelector('.white').style.minHeight = '100vh'
+            document.querySelector('.black').style.height = '0vh'
+            document.querySelector('#blancontent').style.display = "flex"
+
+            setTimeout(() => {
+                document.querySelector('#blancontent').style.opacity = "1"
+            }, 50);
+        }, 400);
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
-                    document.querySelector('#choicepackblanc').classList.add('active')
-                    document.querySelectorAll('.layout').forEach(el=>{
-                        el.classList.add('active')
-                    })
-                    document.querySelectorAll('.scrollgalerie').forEach(el=>{
-                        el.classList.add('active')
-                        
-                    })
-                    document.querySelectorAll('.layout').forEach(el =>{
-                        el.addEventListener('click',()=>{
-                            document.querySelector('#imgsMansory').classList.toggle('visible')
-                            document.querySelector('#subcategoryclient').classList.toggle('visible')
-                            initInfiniteScroll()
-                        })
-                    })
+
+                    document.querySelector('#layoutb').classList.add('active')
+                    document.querySelector('#imgsMansory').classList.add('active')
+                    document.querySelector('#subcategoryclient').classList.add('active')
+
+
                 } else {
                     entry.target.classList.remove('active');
-                    document.querySelector('#choicepackblanc').classList.remove('active')
-                    document.querySelectorAll('.layout').forEach(el=>{
-                        el.classList.remove('active')
-                    })
-                    document.querySelectorAll('.scrollgalerie').forEach(el=>{
-                        el.classList.remove('active')
-                    })
+                    document.querySelector('#layoutb').classList.remove('active')
+                    document.querySelector('#imgsMansory').classList.remove('active')
+                    document.querySelector('#subcategoryclient').classList.remove('active')
                 }
             });
         }, {
-            threshold: 0.5
+            threshold: 0.9
         });
 
         document.querySelectorAll('.normal').forEach(el => observer.observe(el));
 
         gestionCarrou()
-        initInfiniteScroll()
 
 
         document.querySelector('.returncontent').addEventListener('click', () => {
@@ -262,8 +274,11 @@ function gestionCarrou() {
 
         document.querySelectorAll('.animebuttoncontent').forEach(el => {
             el.style.display = "none"
+            const masonry = document.querySelector('#imgsMansory');
+            console.log(masonry.scrollHeight, masonry.clientHeight); // doit être scrollable
         })
-
+        const masonry = document.querySelector('#imgsMansory');
+        console.log(masonry.scrollHeight, masonry.clientHeight); // doit être scrollable
         document.querySelector('.black').style.height = 'auto'
         document.querySelector('.black').style.minHeight = '100vh'
         document.querySelector('.white').style.height = '0vh'

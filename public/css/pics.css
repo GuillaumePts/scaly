@@ -123,9 +123,9 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: all 0.4s ease;
+    transition: all 0.8s ease;
     font-family: sans-serif;
-    transition: height 1s ease;
+
     width: 100%;
     gap: 20px;
     position: relative;
@@ -173,13 +173,14 @@
 .choice-box.white {
     background-color: white;
     color: black;
-    height: 80vh;
+    height: 100vh;
+
 }
 
 .choice-box.black {
     background-color: black;
     color: white;
-    height: 20vh;
+    height: 0vh;
 }
 
 /* .choice-box:hover {
@@ -240,9 +241,9 @@
 
 #blancontent {
     width: 100%;
-    min-height: 100vh;
     position: relative;
     display: none;
+    opacity: 0;
     gap: 100px;
     flex-direction: column;
     justify-content: start;
@@ -251,6 +252,7 @@
     align-items: center;
     margin: 0;
     perspective: 1200px;
+    transition: all 0.8s ease
 }
 
 #noircontent {
@@ -269,11 +271,12 @@
 }
 
 .contentcarousel {
-    background: radial-gradient(#001a28, #000);
+
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 0;
+    min-height: 100vh;
     perspective: 1200px;
 }
 
@@ -381,12 +384,36 @@
 }
 
 
+.separateur {
+    width: 95%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+
+}
+
+.neumorphic-text {
+  font-size: 2.5rem;
+  color: #ffffffdd;
+  font-weight: 700;
+  font-family: "Segoe UI", sans-serif;
+  letter-spacing: 2px;
+  text-shadow:
+    2px 2px 5px rgba(0, 0, 0, 0.15),
+    4px 4px 10px rgba(0, 0, 0, 0.1),
+    6px 6px 14px rgba(0, 0, 0, 0.05),
+    1px 1px 0 #ffffff; /* légère lumière en haut à gauche */
+}
+
+
 .choixpack {
     display: flex;
     justify-content: center;
     flex-direction: column;
     gap: 25px;
     align-items: center;
+    min-height: 100vh;
     width: 100%;
     perspective: 1200px;
 }
@@ -399,15 +426,7 @@
     will-change: transform, box-shadow;
 }
 
-.normal.active {
-    transform: rotateY(5deg) rotateX(5deg) translateZ(-10px);
-    box-shadow: 0px 0px 20px 20px rgb(0 0 0 / 6%);
-}
 
-.layout.active {
-    transform: translateZ(50px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
 
 
 /* Image normale */
@@ -443,12 +462,26 @@
     height: 30px;
 }
 
+.normal.active {
+    transform: rotateY(5deg) rotateX(5deg) translateZ(-10px);
+    box-shadow: 0px 0px 20px 20px rgb(0 0 0 / 6%);
+}
+
+#subcategoryclient.active , #imgsMansory.active{
+    transform: translateZ(50px) rotateY(5deg) rotateX(5deg) translateX(-50%) translateY(-50%);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+#layoutb.active {
+    transform: translateZ(50px) rotateY(5deg) rotateX(5deg);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
 /* Galerie flottante (au centre) */
 .scrollgalerie {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%);
     transform-style: preserve-3d;
     transition: transform 0.8s ease, box-shadow 0.8s ease;
     z-index: 1;
@@ -499,22 +532,25 @@
     z-index: 50;
 }
 
-#imgsMansory,
+#subcategoryclient{
+    opacity: 1;
+}
+
+#imgsMansory{
+    opacity: 0;
+}
+
+
+
+/* #imgsMansory,
 #subcategoryclient {
     opacity: 0;
-    transform: scale(0.98)  translate(-50%, -50%) rotateY(5deg) rotateX(5deg) translateZ(50px) ;
+    transform: scale(0.98) translate(-50%, -50%) rotateY(0deg) rotateX(0deg) translateZ(0px);
     pointer-events: none;
     transition: opacity 0.4s ease, transform 0.4s ease;
-    height: auto; /* ou fixe si besoin */
-}
+    height: auto;
 
-#imgsMansory.visible,
-#subcategoryclient.visible {
-    opacity: 1;
-    transform: scale(1) translate(-50%, -50%) rotateY(5deg) rotateX(5deg) translateZ(50px) ;
-    pointer-events: auto;
-}
-
+} */
 
 /* Reflet miroir */
 .miroirpack {

@@ -27,17 +27,7 @@
     padding: 20px;
 }
 
-h1{
-    font-size: 2.7rem;
-    font-weight: 500;
-    letter-spacing: 3px;
-    font-family: var(--font-fam-one);
-    text-transform: uppercase;
-    display: inline-block;
-    position: relative;
 
-    
-}
 
 
 .black-part {
